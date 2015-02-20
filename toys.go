@@ -35,3 +35,5 @@ func NewToyDomain(identifier, domainSize, domainStride int) *Domain {
 		vals:   domainValues,
 	}
 }
+
+func NewToyObjective(identifier Int, problemParameters Parameters, problemDomain, )
