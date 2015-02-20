@@ -39,9 +39,9 @@ func NewObjective(identifier int, fitnessValues []float64) *Objective {
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////
 // new individual initialization function
-func NewIndividual(problemParameters Parameters, problemDomain Domain) 
-	*Individual {
-
-	//
-}
+//func NewIndividual(problemParameters Parameters, problemDomain Domain) 
+//	*Individual {
+//
+//}
