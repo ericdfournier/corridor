@@ -11,6 +11,8 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
+// mvnrnd generates pairs of bivariate normally distributed random numbers
+// given an input mean vector and covariance matrix
 func Mvnrnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 
 	// initialize vector slices
@@ -39,6 +41,9 @@ func Mvnrnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 	return output
 }
 
+// fixrnd converts an input vector of bivariate normally distributed random
+// numbers into a version where the values have been fixed to a [-1, 0 ,1]
+// range
 func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 
 	// initialize vector slice

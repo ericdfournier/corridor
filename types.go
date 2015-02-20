@@ -4,54 +4,24 @@
 
 package corridor
 
-// domains are comprised of maps which use location indices
-// to key to boolean values of feasible search domain
+// parameters are comprised of fixed input avlues that are
+// unique to the problem specification that are referenced
+// by the algorithm at various stage of the solution process
+type Parameters struct {
+	srcInd  int
+	dstInd  int
+	srcSub  [2]int
+	dstSub  [2]int
+	popSize int
+}
+
+// domains are comprised of boolean arrays which indicate the
+// feasible locations for the search algorithm
 type Domain struct {
-	id   int
-	size int
-	vals []bool
-}
-
-// new domain initialization function
-func NewDomain(identifier, domainSize int, domainValues []bool) *Domain {
-
-	//return output
-	return &Domain{
-		id:   identifier,
-		size: domainSize,
-		vals: domainValues,
-	}
-}
-
-// new test domain initialization function
-func NewTestDomain(identifier, domainSize, domainStride int) *Domain {
-
-	// initialize value slice
-	domainValues := make([]bool, domainSize)
-
-	// loop through index values define domain
-	for i := 0; i < domainSize; i++ {
-		if i >= 0 && i < domainStride {
-			domainValues[i] = false
-		} else if i > (domainSize - domainStride) {
-			domainValues[i] = false
-		} else {
-			domainValues[i] = true
-		}
-	}
-	for i := 0; i < domainSize; i = (i + domainStride) {
-		domainValues[i] = false
-	}
-	for i := 1; i < domainSize; i = (i + domainStride) {
-		domainValues[i] = false
-	}
-
-	// return output
-	return &Domain{
-		id:   identifier,
-		size: domainSize,
-		vals: domainValues,
-	}
+	id     int
+	size   int
+	stride int
+	vals   []bool
 }
 
 // objectives are comprised of maps which use location indices
@@ -61,17 +31,6 @@ type Objective struct {
 	id      int
 	size    int
 	fitness []float64
-}
-
-// new objective initialization function
-func NewObjective(identifier, objectiveSize int, fitnessValues []float64) *Objective {
-
-	// return output
-	return &Objective{
-		id:      identifier,
-		size:    objectiveSize,
-		fitness: fitnessValues,
-	}
 }
 
 // individuals are comprised of row column indices to some
