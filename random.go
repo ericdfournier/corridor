@@ -11,7 +11,7 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-func Mvnrnd(mu, sigma *mat64.Dense) (out *mat64.Dense) {
+func Mvnrnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 
 	// initialize vector slices
 	o := make([]float64, 2)
@@ -39,26 +39,26 @@ func Mvnrnd(mu, sigma *mat64.Dense) (out *mat64.Dense) {
 	return output
 }
 
-func Fixrnd(rnd *mat64.Dense) (out *mat64.Dense) {
-	
+func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
+
 	// initialize vector slice
 	o := make([]float64, 2)
 
 	// write up down movement direction
-	if rnd.At(0, 0) > 1 {
+	if rndsmp.At(0, 0) > 1 {
 		o[0] = 1
-	} else if rnd.At(0, 0) >= -1 && rnd.At(0, 0) <= 1 {
+	} else if rndsmp.At(0, 0) >= -1 && rndsmp.At(0, 0) <= 1 {
 		o[0] = 0
-	} else if rnd.At(0, 0) < -1 {
+	} else if rndsmp.At(0, 0) < -1 {
 		o[0] = -1
 	}
 
 	// write left right movement direction
-	if rnd.At(0, 1) > 1 {
+	if rndsmp.At(0, 1) > 1 {
 		o[1] = 1
-	} else if rnd.At(0, 1) >= -1 && rnd.At(0, 0) <= 1 {
+	} else if rndsmp.At(0, 1) >= -1 && rndsmp.At(0, 0) <= 1 {
 		o[1] = 0
-	} else if rnd.At(0, 1) < -1 {
+	} else if rndsmp.At(0, 1) < -1 {
 		o[1] = -1
 	}
 
