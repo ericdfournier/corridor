@@ -9,11 +9,44 @@ package corridor
 type Domain struct {
 	id   int
 	size int
-	vals map[int]bool
+	vals []bool
 }
 
 // new domain initialization function
-func NewDomain(identifier, domainSize int, domainValues map[int]bool) *Domain {
+func NewDomain(identifier, domainSize int, domainValues []bool) *Domain {
+
+	//return output
+	return &Domain{
+		id:   identifier,
+		size: domainSize,
+		vals: domainValues,
+	}
+}
+
+// new test domain initialization function
+func NewTestDomain(identifier, domainSize, domainStride int) *Domain {
+
+	// initialize value slice
+	domainValues := make([]bool, domainSize)
+
+	// loop through index values define domain
+	for i := 0; i < domainSize; i++ {
+		if i >= 0 && i < domainStride {
+			domainValues[i] = false
+		} else if i > (domainSize - domainStride) {
+			domainValues[i] = false
+		} else {
+			domainValues[i] = true
+		}
+	}
+	for i := 0; i < domainSize; i = (i + domainStride) {
+		domainValues[i] = false
+	}
+	for i := 1; i < domainSize; i = (i + domainStride) {
+		domainValues[i] = false
+	}
+
+	// return output
 	return &Domain{
 		id:   identifier,
 		size: domainSize,
@@ -27,11 +60,13 @@ func NewDomain(identifier, domainSize int, domainValues map[int]bool) *Domain {
 type Objective struct {
 	id      int
 	size    int
-	fitness map[int]float64
+	fitness []float64
 }
 
 // new objective initialization function
-func NewObjective(identifier, objectiveSize int, fitnessValues map[int]float64) *Objective {
+func NewObjective(identifier, objectiveSize int, fitnessValues []float64) *Objective {
+
+	// return output
 	return &Objective{
 		id:      identifier,
 		size:    objectiveSize,
