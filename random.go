@@ -75,6 +75,8 @@ func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	return output
 }
 
+// newrnd repeatedly generates a new random sample from mvrnd and then fixes
+// it using fixrnd until the sample is comprised of a non [0, 0] case
 func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
