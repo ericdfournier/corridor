@@ -15,6 +15,17 @@ type Parameters struct {
 	popSize int
 }
 
+// new problem parameters function
+func NewParameters(sourceIndex, destinationIndex, populationSize int) *Parameters {
+
+	// return output
+	return &Parameters{
+		srcInd:  sourceIndex,
+		dstInd:  destinationIndex,
+		popSize: populationSize,
+	}
+}
+
 // domains are comprised of boolean arrays which indicate the
 // feasible locations for the search algorithm
 type Domain struct {
@@ -24,6 +35,18 @@ type Domain struct {
 	vals   []bool
 }
 
+// new domain initialization function
+func NewDomain(identifier, domainSize, domainStride int, domainValues []bool) *Domain {
+
+	//return output
+	return &Domain{
+		id:     identifier,
+		size:   domainSize,
+		stride: domainStride,
+		vals:   domainValues,
+	}
+}
+
 // objectives are comprised of maps which use location indices
 // to key to floating point fitness values within the search
 // domain
@@ -31,6 +54,16 @@ type Objective struct {
 	id      int
 	size    int
 	fitness []float64
+}
+
+// new objective initialization function
+func NewObjective(identifier int, fitnessValues []float64) *Objective {
+
+	// return output
+	return &Objective{
+		id:      identifier,
+		fitness: fitnessValues,
+	}
 }
 
 // individuals are comprised of row column indices to some
