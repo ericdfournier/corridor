@@ -83,7 +83,8 @@ func NewIndividual(searchDomain *Domain, problemParameters *Parameters) *Individ
 
 	// initialize iterator and output variables
 	i := 1
-	ind := make([]int, 1, 100)
+	maxLen := 100
+	ind := make([]int, 1, maxLen)
 	ind[0] = problemParameters.SrcInd
 
 	// initialize mu and sigma
@@ -107,7 +108,7 @@ func NewIndividual(searchDomain *Domain, problemParameters *Parameters) *Individ
 
 	for {
 		try = Newind(ind[len(ind)-1], mu, sigma, searchDomain)
-		if i == 100 {
+		if i == maxLen-1 {
 			break
 		} else if try == problemParameters.DstInd {
 			ind = append(ind, try)
@@ -118,6 +119,8 @@ func NewIndividual(searchDomain *Domain, problemParameters *Parameters) *Individ
 		}
 	}
 
+	// FOR NOW I AM JUST WRITING SOME PLACE HOLDER VALUES HERE BUT THESE
+	// WILL BE REPLACED BY FITNESS EVALUATIONS IN THE FUTURE
 	uuid, _ := uuid.NewV4()
 	fit := make([]float64, len(ind))
 	var meanfit float64

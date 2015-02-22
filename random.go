@@ -75,13 +75,39 @@ func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	return output
 }
 
-// newind generates a feasible new index value within the input search
-// domain
-func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (newIndex int) {
+func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
 	rndsmp := mat64.NewDense(1, 2, nil)
 	fixsmp := mat64.NewDense(1, 2, nil)
+
+	// generate random vectors prohibiting zero-zero cases
+	for {
+		rndsmp = Mvnrnd(mu, sigma)
+		fixsmp = Fixrnd(rndsmp)
+		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
+			continue
+		} else {
+			break
+		}
+	}
+
+	// initialize output
+	output := make([]int, 2)
+
+	// write output values
+	output[0] = int(fixsmp.At(0, 0))
+	output[1] = int(fixsmp.At(0, 1))
+
+	// return final output
+	return output
+}
+
+// newind generates a feasible new index value within the input search
+// domain
+func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (newIndex int) {
+
+	// initialize output
 	var output int
 
 	// generate and fix a bivariate normally distributed random vector
@@ -89,34 +115,28 @@ func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (new
 	for {
 
 		// generate fixed random bivariate normally distributed numbers
-		for {
-			rndsmp = Mvnrnd(mu, sigma)
-			fixsmp = Fixrnd(rndsmp)
-			if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
-				continue
-			} else {
-				break
-			}
-		}
+		nR := Newrnd(mu, sigma)
 
 		// check cases and assign values
-		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == -1 {
+		if nR[0] == 0 && nR[1] == -1 {
 			output = currentIndex - 1
-		} else if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 1 {
+		} else if nR[0] == 0 && nR[1] == 1 {
 			output = currentIndex + 1
-		} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == -1 {
+		} else if nR[0] == -1 && nR[1] == -1 {
 			output = currentIndex - searchDomain.Stride - 1
-		} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == 1 {
+		} else if nR[0] == -1 && nR[1] == 1 {
 			output = currentIndex - searchDomain.Stride + 1
-		} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == 1 {
+		} else if nR[0] == 1 && nR[1] == 1 {
 			output = currentIndex + searchDomain.Stride + 1
-		} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == -1 {
+		} else if nR[0] == 1 && nR[1] == -1 {
 			output = currentIndex + searchDomain.Stride - 1
-		} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == 0 {
+		} else if nR[0] == -1 && nR[1] == 0 {
 			output = currentIndex - searchDomain.Stride
-		} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == 0 {
+		} else if nR[0] == 1 && nR[1] == 0 {
 			output = currentIndex + searchDomain.Stride
 		}
+
+		// NEED TO DEVELOP A TEST FOR INDEX OUT OF RANGE ERROR
 
 		// test if currentIndex inside search domain
 		if searchDomain.Vals[output] == false {
