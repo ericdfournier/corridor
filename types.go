@@ -4,13 +4,18 @@
 
 package corridor
 
+import (
+	"github.com/gonum/matrix/mat64"
+	"github.com/nu7hatch/gouuid"
+)
+
 // parameters are comprised of fixed input avlues that are
 // unique to the problem specification that are referenced
 // by the algorithm at various stage of the solution process
 type Parameters struct {
-	srcInd  int
-	dstInd  int
-	popSize int
+	SrcInd  int
+	DstInd  int
+	PopSize int
 }
 
 // new problem parameters function
@@ -18,19 +23,19 @@ func NewParameters(sourceIndex, destinationIndex, populationSize int) *Parameter
 
 	// return output
 	return &Parameters{
-		srcInd:  sourceIndex,
-		dstInd:  destinationIndex,
-		popSize: populationSize,
+		SrcInd:  sourceIndex,
+		DstInd:  destinationIndex,
+		PopSize: populationSize,
 	}
 }
 
 // domains are comprised of boolean arrays which indicate the
 // feasible locations for the search algorithm
 type Domain struct {
-	id     int
-	size   int
-	stride int
-	vals   []bool
+	Id     int
+	Size   int
+	Stride int
+	Vals   []bool
 }
 
 // new domain initialization function
@@ -38,10 +43,10 @@ func NewDomain(identifier, domainSize, domainStride int, domainValues []bool) *D
 
 	//return output
 	return &Domain{
-		id:     identifier,
-		size:   domainSize,
-		stride: domainStride,
-		vals:   domainValues,
+		Id:     identifier,
+		Size:   domainSize,
+		Stride: domainStride,
+		Vals:   domainValues,
 	}
 }
 
@@ -49,9 +54,8 @@ func NewDomain(identifier, domainSize, domainStride int, domainValues []bool) *D
 // to key to floating point fitness values within the search
 // domain
 type Objective struct {
-	id      int
-	size    int
-	fitness []float64
+	Id      int
+	Fitness []float64
 }
 
 // new objective initialization function
@@ -59,33 +63,86 @@ func NewObjective(identifier int, fitnessValues []float64) *Objective {
 
 	// return output
 	return &Objective{
-		id:      identifier,
-		fitness: fitnessValues,
+		Id:      identifier,
+		Fitness: fitnessValues,
 	}
 }
 
 // individuals are comprised of row column indices to some
 // spatially reference search domain.
 type Individual struct {
-	id          int
-	subscripts  [][]int
-	indices     []int
-	fitness     []float64
-	meanFitness float64
+	Id          *uuid.UUID
+	Indices     []int
+	Fitness     []float64
+	MeanFitness float64
+}
+
+// new individual initialization function
+
+func NewIndividual(searchDomain *Domain, problemParameters *Parameters) *Individual {
+
+	// initialize iterator and output variables
+	i := 1
+	ind := make([]int, 1, 100)
+	ind[0] = problemParameters.SrcInd
+
+	// initialize mu and sigma
+	muVec := make([]float64, 2)
+	sigmaVec := make([]float64, 4)
+
+	// set mu elements
+	muVec[0] = 1
+	muVec[1] = 1
+
+	// set sigma elements
+	sigmaVec[0] = 1
+	sigmaVec[1] = 0
+	sigmaVec[2] = 0
+	sigmaVec[3] = 1
+
+	// generate dense matrices
+	mu := mat64.NewDense(1, 2, muVec)
+	sigma := mat64.NewDense(2, 2, sigmaVec)
+	var try int
+
+	for {
+		try = Newind(ind[len(ind)-1], mu, sigma, searchDomain)
+		if i == 100 {
+			break
+		} else if try == problemParameters.DstInd {
+			ind = append(ind, try)
+			break
+		} else {
+			ind = append(ind, try)
+			i += 1
+		}
+	}
+
+	uuid, _ := uuid.NewV4()
+	fit := make([]float64, len(ind))
+	var meanfit float64
+	meanfit = 0.0
+
+	return &Individual{
+		Id:          uuid,
+		Indices:     ind,
+		Fitness:     fit,
+		MeanFitness: meanfit,
+	}
 }
 
 // populations are comprised of a fixed number of individuals.
 // this number corresponds to the populationSize.
 type Population struct {
-	id          int
-	individuals *[]Individual
-	meanFitness float64
+	Id          int
+	Individuals *[]Individual
+	MeanFitness float64
 }
 
 // evolutions are comprised of a stochastic number of populations.
 // this number is determined by the convergence rate of the
 // algorithm.
 type Evolution struct {
-	id          int
-	populations *[]Population
+	Id          int
+	Populations *[]Population
 }

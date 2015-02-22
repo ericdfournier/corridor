@@ -79,45 +79,51 @@ func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 // domain
 func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (newIndex int) {
 
-	// initialize rndsmp and fixsmp variables
+	// initialize rndsmp and fixsmp and output variables
 	rndsmp := mat64.NewDense(1, 2, nil)
 	fixsmp := mat64.NewDense(1, 2, nil)
-
-	// NEED TO IMPLEMENT A ROUTINE TO REGENERATE A NEW SAMPLE IF THE THE
-	// PROPOSED NEW MOVE IS OUTSIDE THE BOUNDARY OF THE SEARCH DOMAIN
+	var output int
 
 	// generate and fix a bivariate normally distributed random vector
-	// prohibit all zero cases
+	// prohibit all zero cases and validate using the search domain
 	for {
-		rndsmp = Mvnrnd(mu, sigma)
-		fixsmp = Fixrnd(rndsmp)
-		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
+
+		// generate fixed random bivariate normally distributed numbers
+		for {
+			rndsmp = Mvnrnd(mu, sigma)
+			fixsmp = Fixrnd(rndsmp)
+			if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
+				continue
+			} else {
+				break
+			}
+		}
+
+		// check cases and assign values
+		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == -1 {
+			output = currentIndex - 1
+		} else if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 1 {
+			output = currentIndex + 1
+		} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == -1 {
+			output = currentIndex - searchDomain.Stride - 1
+		} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == 1 {
+			output = currentIndex - searchDomain.Stride + 1
+		} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == 1 {
+			output = currentIndex + searchDomain.Stride + 1
+		} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == -1 {
+			output = currentIndex + searchDomain.Stride - 1
+		} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == 0 {
+			output = currentIndex - searchDomain.Stride
+		} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == 0 {
+			output = currentIndex + searchDomain.Stride
+		}
+
+		// test if currentIndex inside search domain
+		if searchDomain.Vals[output] == false {
 			continue
 		} else {
 			break
 		}
-	}
-
-	// initialize new index variable
-	var output int
-
-	// check cases and assign values
-	if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == -1 {
-		output = currentIndex - 1
-	} else if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 1 {
-		output = currentIndex + 1
-	} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == -1 {
-		output = currentIndex - searchDomain.stride - 1
-	} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == 1 {
-		output = currentIndex - searchDomain.stride + 1
-	} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == 1 {
-		output = currentIndex + searchDomain.stride + 1
-	} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == -1 {
-		output = currentIndex + searchDomain.stride - 1
-	} else if fixsmp.At(0, 0) == -1 && fixsmp.At(0, 1) == 0 {
-		output = currentIndex - searchDomain.stride
-	} else if fixsmp.At(0, 0) == 1 && fixsmp.At(0, 1) == 0 {
-		output = currentIndex + searchDomain.stride
 	}
 
 	// return final output

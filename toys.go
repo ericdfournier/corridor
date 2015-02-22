@@ -29,10 +29,10 @@ func NewToyDomain(identifier, domainSize, domainStride int) *Domain {
 
 	// return output
 	return &Domain{
-		id:     identifier,
-		size:   domainSize,
-		stride: domainStride,
-		vals:   domainValues,
+		Id:     identifier,
+		Size:   domainSize,
+		Stride: domainStride,
+		Vals:   domainValues,
 	}
 }
 
