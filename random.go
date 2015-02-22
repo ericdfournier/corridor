@@ -83,9 +83,8 @@ func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (new
 	rndsmp := mat64.NewDense(1, 2, nil)
 	fixsmp := mat64.NewDense(1, 2, nil)
 
-	// NEED TO INSERT SWITCH CASE HERE TO ELEMINATE CASES WHERE YOU ARE
-	// GENERATING NEW MOVES THAT TAKE YOU OUTSIDE THE BOUNDS OF THE SEARCH
-	// DOMAIN
+	// NEED TO IMPLEMENT A ROUTINE TO REGENERATE A NEW SAMPLE IF THE THE
+	// PROPOSED NEW MOVE IS OUTSIDE THE BOUNDARY OF THE SEARCH DOMAIN
 
 	// generate and fix a bivariate normally distributed random vector
 	// prohibit all zero cases

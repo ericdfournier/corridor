@@ -10,8 +10,6 @@ package corridor
 type Parameters struct {
 	srcInd  int
 	dstInd  int
-	srcSub  [2]int
-	dstSub  [2]int
 	popSize int
 }
 
