@@ -15,16 +15,18 @@ import (
 type Parameters struct {
 	SrcSub  []int
 	DstSub  []int
+	RndCoef int
 	PopSize int
 }
 
 // new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize int) *Parameters {
+func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient, populationSize int) *Parameters {
 
 	// return output
 	return &Parameters{
 		SrcSub:  sourceSubscripts,
 		DstSub:  destinationSubscripts,
+		RndCoef: randomnessCoefficient,
 		PopSize: populationSize,
 	}
 }
@@ -76,56 +78,16 @@ type Individual struct {
 // new individual initialization function
 func NewIndividual(searchDomain *Domain, searchParameters *Parameters) *Individual {
 
-	// initialize iterator and output variables
-	i := 1
-	maxLen := 100
-	sub := make([][]int, 1, maxLen)
-	sub[0] = make([]int, 2)
-	sub[0][0] = searchParameters.SrcSub[0]
-	sub[0][1] = searchParameters.SrcSub[1]
+	// generate subscripts from directed walk procedure
+	sub := Dirwlk(searchParameters, searchDomain)
 
-	// initialize mu and sigma
-	muVec := make([]float64, 2)
-	sigmaVec := make([]float64, 4)
-
-	// set mu elements
-	muVec[0] = 1
-	muVec[1] = 1
-
-	// set sigma elements
-	sigmaVec[0] = 1
-	sigmaVec[1] = 0
-	sigmaVec[2] = 0
-	sigmaVec[3] = 1
-
-	// NEED TO MAKE MU VECTOR AND SIGMA RESPOND TO RELATIVE ORIENTATION OF
-	// THE DESTINATION NODE
-
-	// generate dense matrices
-	mu := mat64.NewDense(1, 2, muVec)
-	sigma := mat64.NewDense(2, 2, sigmaVec)
-	var try []int
-
-	// enter unbounded for loop
-	for {
-		cS := sub[len(sub)-1]
-		try = Newind(cS, mu, sigma, searchDomain)
-		if i == maxLen-1 {
-			break
-		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
-			sub = append(sub, try)
-			break
-		} else {
-			sub = append(sub, try)
-			i += 1
-		}
-	}
-
+	// generate placeholder variables
 	uuid, _ := uuid.NewV4()
 	fit := make([]float64, len(sub))
 	var meanfit float64
 	meanfit = 0.0
 
+	// return output
 	return &Individual{
 		Id:          uuid,
 		Subs:        sub,

@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"math"
 	"math/rand"
 	"time"
 
@@ -105,9 +106,71 @@ func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 	return output
 }
 
+// newmu generates a matrix representation of mu that reflects the
+// spatial orentiation between the input current subscript and the
+// destination subscript
+func Newmu(currentSubscripts, destinationSubscripts []int) (mu *mat64.Dense) {
+
+	// initialize vector slice
+	muVec := make([]float64, 2)
+
+	// assign row based parameter
+	if currentSubscripts[0]-destinationSubscripts[0] < 0 {
+		muVec[0] = 1
+	} else if currentSubscripts[0]-destinationSubscripts[0] == 0 {
+		muVec[0] = 0
+	} else if currentSubscripts[0]-destinationSubscripts[0] > 0 {
+		muVec[0] = -1
+	}
+
+	// assign column based parameter
+	if currentSubscripts[1]-destinationSubscripts[1] < 0 {
+		muVec[1] = 1
+	} else if currentSubscripts[1]-destinationSubscripts[1] == 0 {
+		muVec[1] = 0
+	} else if currentSubscripts[1]-destinationSubscripts[1] > 0 {
+		muVec[0] = -1
+	}
+
+	// initialize matrix output
+	output := mat64.NewDense(1, 2, muVec)
+
+	// return final output
+	return output
+}
+
+// newsig generates a matrix representation of sigma that reflects the
+// number of iterations in the sampling process as well as the distance
+// from the basis euclidean solution
+func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
+
+	// compute covariance
+	cov := math.Pow(distance, (1.0/float64(randomness))) / math.Pow(float64(iterations), (1.0/float64(randomness)))
+
+	// initialize vector slice
+	sigmaVec := make([]float64, 4)
+
+	// write values to vector slice
+	sigmaVec[0] = cov
+	sigmaVec[3] = cov
+
+	// initialize matrix output
+	output := mat64.NewDense(2, 2, sigmaVec)
+
+	// return final output
+	return output
+}
+
 // newind generates a feasible new index value within the input search
 // domain
-func Newind(currentSubscripts []int, mu, sigma *mat64.Dense, searchDomain *Domain) (newSubscripts []int) {
+func Newind(currentSubscripts []int, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+
+	// initialize iteration counter
+	iterations := 1
+
+	// initialize distance
+	var distance float64
+	distance = 1.0
 
 	// initialize output
 	output := make([]int, 2)
@@ -119,6 +182,10 @@ func Newind(currentSubscripts []int, mu, sigma *mat64.Dense, searchDomain *Domai
 	// prohibit all zero cases and validate using the search domain
 	for {
 
+		//
+		mu := Newmu(currentSubscripts, searchParameters.DstSub)
+		sigma := Newsig(iterations, searchParameters.RndCoef, distance)
+
 		// generate fixed random bivariate normally distributed numbers
 		try := Newrnd(mu, sigma)
 
@@ -128,8 +195,10 @@ func Newind(currentSubscripts []int, mu, sigma *mat64.Dense, searchDomain *Domai
 
 		// test if currentIndex inside search domain
 		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
+			iterations += 1
 			continue
 		} else if output[0] > maxRows-1 || output[1] > maxCols-1 || output[0] < 0 || output[1] < 0 {
+			iterations += 1
 			continue
 		} else {
 			break
@@ -137,5 +206,46 @@ func Newind(currentSubscripts []int, mu, sigma *mat64.Dense, searchDomain *Domai
 	}
 
 	// return final output
+	return output
+}
+
+// dirwlk generates a new directed walk connecting a source subscript to a
+// destination subscript within the context of an input search domain
+func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]int) {
+
+	// initialize iterator and output variables
+	i := 1
+	rows, cols := searchDomain.Matrix.Dims()
+
+	// set maximum individual length based upon search domain dimensions
+	var p float64 = 2
+	var s float64 = 5
+	maxLen := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
+
+	// initialize individual 2D slice with source subscript as first
+	// element
+	output := make([][]int, 1, maxLen)
+	output[0] = make([]int, 2)
+	output[0][0] = searchParameters.SrcSub[0]
+	output[0][1] = searchParameters.SrcSub[1]
+
+	// initialize new subscript try slice
+	var try []int
+
+	// enter unbounded for loop
+	for {
+		cS := output[len(output)-1]
+		try = Newind(cS, searchParameters, searchDomain)
+		if i == maxLen-1 {
+			break
+		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
+			output = append(output, try)
+			break
+		} else {
+			output = append(output, try)
+			i += 1
+		}
+	}
+
 	return output
 }
