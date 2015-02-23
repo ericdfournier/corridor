@@ -52,8 +52,8 @@ func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 // to key to floating point fitness values within the search
 // domain
 type Objective struct {
-	Id      int
-	Fitness *mat64.Dense
+	Id     int
+	Matrix *mat64.Dense
 }
 
 // new objective initialization function
@@ -61,38 +61,38 @@ func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
 
 	// return output
 	return &Objective{
-		Id:      identifier,
-		Fitness: fitnessMatrix,
+		Id:     identifier,
+		Matrix: fitnessMatrix,
 	}
 }
 
 // individuals are comprised of row column indices to some
 // spatially reference search domain.
 type Individual struct {
-	Id          *uuid.UUID
-	Subs        [][]int
-	Fitness     []float64
-	MeanFitness float64
+	Id           *uuid.UUID
+	Subs         [][]int
+	Fitness      []float64
+	TotalFitness float64
 }
 
 // new individual initialization function
-func NewIndividual(searchDomain *Domain, searchParameters *Parameters) *Individual {
+func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective) *Individual {
 
 	// generate subscripts from directed walk procedure
 	sub := Dirwlk(searchParameters, searchDomain)
 
+	// evaluate fitness for subscripts
+	fitVal, totFit := Fitness(sub, searchObjective.Matrix)
+
 	// generate placeholder variables
 	uuid, _ := uuid.NewV4()
-	fit := make([]float64, len(sub))
-	var meanfit float64
-	meanfit = 0.0
 
 	// return output
 	return &Individual{
-		Id:          uuid,
-		Subs:        sub,
-		Fitness:     fit,
-		MeanFitness: meanfit,
+		Id:           uuid,
+		Subs:         sub,
+		Fitness:      fitVal,
+		TotalFitness: totFit,
 	}
 }
 

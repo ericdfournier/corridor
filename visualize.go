@@ -47,4 +47,6 @@ func ViewIndividual(searchDomain *Domain, searchParameters *Parameters, newIndiv
 		rawRowVals := blankMat.RawRowView(i)
 		fmt.Println(rawRowVals)
 	}
+	fmt.Printf("Individual Length = %d\n", len(newIndividual.Subs))
+	fmt.Printf("Individual Total Fitness = %1.5f\n", newIndividual.TotalFitness)
 }

@@ -236,6 +236,9 @@ func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]
 	// initialize new subscript try slice
 	var try []int
 
+	// initialize new tabu matrix
+	tabu := mat64.NewDense(rows, cols, nil)
+
 	// enter unbounded for loop
 	for {
 		cS := output[len(output)-1]
@@ -245,8 +248,10 @@ func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]
 		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
 			output = append(output, try)
 			break
+		} else if tabu.At(try[0], try[1]) == 1 {
 		} else {
 			output = append(output, try)
+			tabu.Set(try[0], try[1], 1.0)
 			i += 1
 		}
 	}
