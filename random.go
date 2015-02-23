@@ -107,41 +107,29 @@ func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 
 // newind generates a feasible new index value within the input search
 // domain
-func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (newIndex int) {
+func Newind(currentSubscripts []int, mu, sigma *mat64.Dense, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize output
-	var output int
+	output := make([]int, 2)
+
+	// get search domain matrix dimensions
+	maxRows, maxCols := searchDomain.Matrix.Dims()
 
 	// generate and fix a bivariate normally distributed random vector
 	// prohibit all zero cases and validate using the search domain
 	for {
 
 		// generate fixed random bivariate normally distributed numbers
-		nR := Newrnd(mu, sigma)
+		try := Newrnd(mu, sigma)
 
-		// check cases and assign values
-		if nR[0] == 0 && nR[1] == -1 {
-			output = currentIndex - 1
-		} else if nR[0] == 0 && nR[1] == 1 {
-			output = currentIndex + 1
-		} else if nR[0] == -1 && nR[1] == -1 {
-			output = currentIndex - searchDomain.Stride - 1
-		} else if nR[0] == -1 && nR[1] == 1 {
-			output = currentIndex - searchDomain.Stride + 1
-		} else if nR[0] == 1 && nR[1] == 1 {
-			output = currentIndex + searchDomain.Stride + 1
-		} else if nR[0] == 1 && nR[1] == -1 {
-			output = currentIndex + searchDomain.Stride - 1
-		} else if nR[0] == -1 && nR[1] == 0 {
-			output = currentIndex - searchDomain.Stride
-		} else if nR[0] == 1 && nR[1] == 0 {
-			output = currentIndex + searchDomain.Stride
+		for i := 0; i < 2; i++ {
+			output[i] = currentSubscripts[i] + try[i]
 		}
 
-		// NEED TO DEVELOP A TEST FOR INDEX OUT OF RANGE ERROR
-
 		// test if currentIndex inside search domain
-		if searchDomain.Vals[output] == false {
+		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
+			continue
+		} else if output[0] > maxRows-1 || output[1] > maxCols-1 || output[0] < 0 || output[1] < 0 {
 			continue
 		} else {
 			break
@@ -150,5 +138,4 @@ func Newind(currentIndex int, mu, sigma *mat64.Dense, searchDomain *Domain) (new
 
 	// return final output
 	return output
-
 }

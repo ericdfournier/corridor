@@ -4,36 +4,38 @@
 
 package corridor
 
-// new test domain initialization function
-func NewToyDomain(identifier, domainSize, domainStride int) *Domain {
+import (
+	"github.com/gonum/matrix/mat64"
+)
 
-	// initialize value slice
-	domainValues := make([]bool, domainSize)
+// new test domain initialization function
+func NewToyDomain(identifier, rows, cols int) *Domain {
+
+	// initialize empty matrix
+	domainSize := rows * cols
+	mat := make([]float64, domainSize)
+	domainMatrix := mat64.NewDense(rows, cols, mat)
 
 	// loop through index values togo define domain
-	for i := 0; i < domainSize; i++ {
-		if i >= 0 && i < domainStride {
-			domainValues[i] = false
-		} else if i > (domainSize - domainStride) {
-			domainValues[i] = false
-		} else {
-			domainValues[i] = true
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			if i == 0 {
+				domainMatrix.Set(i, j, 0.0)
+			} else if i == rows-1 {
+				domainMatrix.Set(i, j, 0.0)
+			} else if j == 0 {
+				domainMatrix.Set(i, j, 0.0)
+			} else if j == cols-1 {
+				domainMatrix.Set(i, j, 0.0)
+			} else {
+				domainMatrix.Set(i, j, 1.0)
+			}
 		}
-	}
-	for i := 0; i < domainSize; i = (i + domainStride) {
-		domainValues[i] = false
-	}
-	for i := 1; i < domainSize; i = (i + domainStride) {
-		domainValues[i] = false
 	}
 
 	// return output
 	return &Domain{
 		Id:     identifier,
-		Size:   domainSize,
-		Stride: domainStride,
-		Vals:   domainValues,
+		Matrix: domainMatrix,
 	}
 }
-
-// func NewToyObjective(identifier Int, problemParameters Parameters, problemDomain, )
