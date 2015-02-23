@@ -68,67 +68,68 @@ func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
 // spatially reference search domain.
 type Individual struct {
 	Id          *uuid.UUID
-	Indices     [][]int
+	Subs        [][]int
 	Fitness     []float64
 	MeanFitness float64
 }
 
 // new individual initialization function
-//func NewIndividual(searchDomain *Domain, searchParameters *Parameters) *Individual {
+func NewIndividual(searchDomain *Domain, searchParameters *Parameters) *Individual {
 
-//	// initialize iterator and output variables
-//	i := 1
-//	maxLen := 100
-//	ind := make([][]int, 1, maxLen)
-//	ind[0][0] = searchParameters.SrcSub[0]
-//	ind[0][1] = searchParameters.SrcSub[1]
+	// initialize iterator and output variables
+	i := 1
+	maxLen := 100
+	sub := make([][]int, 1, maxLen)
+	sub[0] = make([]int, 2)
+	sub[0][0] = searchParameters.SrcSub[0]
+	sub[0][1] = searchParameters.SrcSub[1]
 
-//	// initialize mu and sigma
-//	muVec := make([]float64, 2)
-//	sigmaVec := make([]float64, 4)
+	// initialize mu and sigma
+	muVec := make([]float64, 2)
+	sigmaVec := make([]float64, 4)
 
-//	// set mu elements
-//	muVec[0] = 1
-//	muVec[1] = 1
+	// set mu elements
+	muVec[0] = 1
+	muVec[1] = 1
 
-//	// set sigma elements
-//	sigmaVec[0] = 1
-//	sigmaVec[1] = 0
-//	sigmaVec[2] = 0
-//	sigmaVec[3] = 1
+	// set sigma elements
+	sigmaVec[0] = 1
+	sigmaVec[1] = 0
+	sigmaVec[2] = 0
+	sigmaVec[3] = 1
 
-//	// generate dense matrices
-//	mu := mat64.NewDense(1, 2, muVec)
-//	sigma := mat64.NewDense(2, 2, sigmaVec)
-//	var try []int
+	// generate dense matrices
+	mu := mat64.NewDense(1, 2, muVec)
+	sigma := mat64.NewDense(2, 2, sigmaVec)
+	var try []int
 
-//	for {
-//		try = Newind(ind[len(ind)-1][0:1], mu, sigma, searchDomain)
-//		if i == maxLen-1 {
-//			break
-//		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
-//			ind = append(ind[len(ind)], try)
-//			break
-//		} else {
-//			ind = append(ind[len(ind)], try)
-//			i += 1
-//		}
-//	}
+	// enter unbounded for loop
+	for {
+		cS := sub[len(sub)-1]
+		try = Newind(cS, mu, sigma, searchDomain)
+		if i == maxLen-1 {
+			break
+		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
+			sub = append(sub, try)
+			break
+		} else {
+			sub = append(sub, try)
+			i += 1
+		}
+	}
 
-//	// FOR NOW I AM JUST WRITING SOME PLACE HOLDER VALUES HERE BUT THESE
-//	// WILL BE REPLACED BY FITNESS EVALUATIONS IN THE FUTURE
-//	uuid, _ := uuid.NewV4()
-//	fit := make([]float64, len(ind))
-//	var meanfit float64
-//	meanfit = 0.0
+	uuid, _ := uuid.NewV4()
+	fit := make([]float64, len(sub))
+	var meanfit float64
+	meanfit = 0.0
 
-//	return &Individual{
-//		Id:          uuid,
-//		Indices:     ind,
-//		Fitness:     fit,
-//		MeanFitness: meanfit,
-//	}
-//}
+	return &Individual{
+		Id:          uuid,
+		Subs:        sub,
+		Fitness:     fit,
+		MeanFitness: meanfit,
+	}
+}
 
 // populations are comprised of a fixed number of individuals.
 // this number corresponds to the populationSize.

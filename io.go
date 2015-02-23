@@ -4,11 +4,15 @@
 
 package corridor
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/gonum/matrix/mat64"
+)
 
 func ViewSearchDomain(searchDomain *Domain) {
 
-	// get search domain matrix size
+	// get search domain matrix dimensions
 	rows, _ := searchDomain.Matrix.Dims()
 
 	// print domain id
@@ -18,6 +22,29 @@ func ViewSearchDomain(searchDomain *Domain) {
 	fmt.Printf("Search Domain Values = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := searchDomain.Matrix.RawRowView(i)
+		fmt.Println(rawRowVals)
+	}
+}
+
+func ViewIndividual(searchDomain *Domain, searchParameters *Parameters, newIndividual *Individual) {
+
+	// get search domain matrix dimensions and empty value slice
+	rows, cols := searchDomain.Matrix.Dims()
+	domainSize := rows * cols
+	v := make([]float64, domainSize)
+
+	// allocate new empty matrix
+	blankMat := mat64.NewDense(rows, cols, v)
+
+	// assign individual values to the empty matrix
+	for i := 0; i < len(newIndividual.Subs); i++ {
+		blankMat.Set(newIndividual.Subs[i][0], newIndividual.Subs[i][1], 1.0)
+	}
+
+	// print individual values to command line
+	fmt.Printf("Individual = \n")
+	for i := 0; i < rows; i++ {
+		rawRowVals := blankMat.RawRowView(i)
 		fmt.Println(rawRowVals)
 	}
 }
