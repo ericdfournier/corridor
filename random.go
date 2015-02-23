@@ -129,7 +129,7 @@ func Newmu(currentSubscripts, destinationSubscripts []int) (mu *mat64.Dense) {
 	} else if currentSubscripts[1]-destinationSubscripts[1] == 0 {
 		muVec[1] = 0
 	} else if currentSubscripts[1]-destinationSubscripts[1] > 0 {
-		muVec[0] = -1
+		muVec[1] = -1
 	}
 
 	// initialize matrix output
@@ -144,8 +144,12 @@ func Newmu(currentSubscripts, destinationSubscripts []int) (mu *mat64.Dense) {
 // from the basis euclidean solution
 func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
 
+	// set numerator
+	var num float64
+	num = 1.0
+
 	// compute covariance
-	cov := math.Pow(distance, (1.0/float64(randomness))) / math.Pow(float64(iterations), (1.0/float64(randomness)))
+	cov := math.Pow(distance, (num/float64(randomness))) / math.Pow(float64(iterations), (num/float64(randomness)))
 
 	// initialize vector slice
 	sigmaVec := make([]float64, 4)
