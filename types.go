@@ -98,6 +98,9 @@ func NewIndividual(searchDomain *Domain, searchParameters *Parameters) *Individu
 	sigmaVec[2] = 0
 	sigmaVec[3] = 1
 
+	// NEED TO MAKE MU VECTOR AND SIGMA RESPOND TO RELATIVE ORIENTATION OF
+	// THE DESTINATION NODE
+
 	// generate dense matrices
 	mu := mat64.NewDense(1, 2, muVec)
 	sigma := mat64.NewDense(2, 2, sigmaVec)
