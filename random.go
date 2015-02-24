@@ -28,15 +28,15 @@ func Mvnrnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 	}
 
 	// convert to matrix type
-	rnd := mat64.NewDense(1, 2, n)
-	output := mat64.NewDense(1, 2, o)
+	rnd := mat64.NewDense(2, 1, n)
+	output := mat64.NewDense(2, 1, o)
 
 	// perform cholesky decomposition on covariance matrix
 	cholFactor := mat64.Cholesky(sigma)
 	lower := cholFactor.L
 
 	// compute output
-	output.Mul(rnd, lower)
+	output.Mul(lower, rnd)
 	output.Add(output, mu)
 
 	//return final output
@@ -52,20 +52,20 @@ func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	o := make([]float64, 2)
 
 	// write up down movement direction
-	if rndsmp.At(0, 0) > 1 {
+	if rndsmp.At(0, 0) > 0.5 {
 		o[0] = 1
-	} else if rndsmp.At(0, 0) >= -1 && rndsmp.At(0, 0) <= 1 {
+	} else if rndsmp.At(0, 0) >= -0.5 && rndsmp.At(0, 0) <= 0.5 {
 		o[0] = 0
-	} else if rndsmp.At(0, 0) < -1 {
+	} else if rndsmp.At(0, 0) < -0.5 {
 		o[0] = -1
 	}
 
 	// write left right movement direction
-	if rndsmp.At(0, 1) > 1 {
+	if rndsmp.At(1, 0) > 0.5 {
 		o[1] = 1
-	} else if rndsmp.At(0, 1) >= -1 && rndsmp.At(0, 0) <= 1 {
+	} else if rndsmp.At(1, 0) >= -0.5 && rndsmp.At(1, 0) <= 0.5 {
 		o[1] = 0
-	} else if rndsmp.At(0, 1) < -1 {
+	} else if rndsmp.At(1, 0) < -0.5 {
 		o[1] = -1
 	}
 
@@ -81,7 +81,7 @@ func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
-	rndsmp := mat64.NewDense(1, 2, nil)
+	rndsmp := mat64.NewDense(2, 1, nil)
 	fixsmp := mat64.NewDense(1, 2, nil)
 
 	// generate random vectors prohibiting zero-zero cases
@@ -133,7 +133,7 @@ func Newmu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 	}
 
 	// initialize matrix output
-	output := mat64.NewDense(1, 2, muVec)
+	output := mat64.NewDense(2, 1, muVec)
 
 	// return final output
 	return output
@@ -150,21 +150,26 @@ func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
 	}
 
 	// set numerator
-	var num float64
-	num = 1.0
+	var num float64 = 1.0
+
+	// initialize covariance
+	var cov float64
 
 	// compute covariance
-	cov := math.Pow(distance, (num/float64(randomness))) / math.Pow(float64(iterations), (num/float64(randomness)))
-
-	// initialize vector slice
-	sigmaVec := make([]float64, 4)
-
-	// write values to vector slice
-	sigmaVec[0] = cov
-	sigmaVec[3] = cov
+	if distance == 1.0 {
+		cov = 1.0
+	} else {
+		cov = math.Pow(distance, (num/float64(randomness))) / math.Pow(float64(iterations), (num/float64(randomness)))
+	}
 
 	// initialize matrix output
-	output := mat64.NewDense(2, 2, sigmaVec)
+	output := mat64.NewDense(2, 2, nil)
+
+	// set values
+	output.Set(0, 0, cov)
+	output.Set(0, 1, 0.0)
+	output.Set(1, 0, 0.0)
+	output.Set(1, 1, cov)
 
 	// return final output
 	return output
@@ -175,8 +180,7 @@ func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
 func Newind(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize iteration counter
-	var iterations int
-	iterations = 1
+	var iterations int = 1
 
 	// initialize output
 	output := make([]int, 2)
@@ -195,9 +199,9 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 		// generate fixed random bivariate normally distributed numbers
 		try := Newrnd(mu, sigma)
 
-		for i := 0; i < 2; i++ {
-			output[i] = curSubs[i] + try[i]
-		}
+		// write output
+		output[0] = curSubs[0] + try[0]
+		output[1] = curSubs[1] + try[1]
 
 		// test if currentIndex inside search domain
 		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
@@ -217,7 +221,10 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 
 // dirwlk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
-func Dirwlk(searchParameters *Parameters, searchDomain *Domain, basisSolution *Basis) (subscripts [][]int) {
+func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int) {
+
+	// NEED TO CREATE A SECOND OUTER UNBOUNDED FOR LOOP HERE TO CATCH
+	// STATES WHERE THE SEARCH PROCESS HAS STAGNATED
 
 	// initialize iterator and output variables
 	i := 1
@@ -235,22 +242,23 @@ func Dirwlk(searchParameters *Parameters, searchDomain *Domain, basisSolution *B
 	output[0][0] = searchParameters.SrcSubs[0]
 	output[0][1] = searchParameters.SrcSubs[1]
 
-	// initialize new subscript try slice
-	var try []int
-
 	// initialize new tabu matrix
-	tabu := mat64.NewDense(rows, cols, nil)
+	tabuVec := make([]float64, rows*cols)
+	tabu := mat64.NewDense(rows, cols, tabuVec)
+	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 1.0)
+
+	// initialize current subscripts, distance, try, and iteration counter
 	curSubs := make([]int, 2)
 	var curDist float64
-
-	// NEED TO PULL THIS SECTION OUT SO THAT YOU CAN TERMINATE AND RESTART
-	// IT IF IT CATCHES ON AN INFINITE LOOP
+	var try []int
 
 	// enter unbounded for loop
 	for {
 		curSubs = output[len(output)-1]
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 		try = Newind(curSubs, curDist, searchParameters, searchDomain)
+
+		// apply control conditions
 		if i == maxLen-1 {
 			break
 		} else if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {

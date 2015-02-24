@@ -108,7 +108,7 @@ type Individual struct {
 func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Individual {
 
 	// generate subscripts from directed walk procedure
-	subs := Dirwlk(searchParameters, searchDomain, basisSolution)
+	subs := Dirwlk(searchDomain, searchParameters, basisSolution)
 
 	// evaluate fitness for subscripts
 	fitVal, totFit := Fitness(subs, searchObjective.Matrix)

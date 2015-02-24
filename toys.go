@@ -21,8 +21,8 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts := make([]int, 2)
 	destinationSubscripts[0] = rows - 3
 	destinationSubscripts[1] = cols - 3
-	randomnessCoefficient := 1
-	populationSize := 5
+	randomnessCoefficient := 2
+	populationSize := 1000
 
 	// return output
 	return &Parameters{
