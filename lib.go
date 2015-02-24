@@ -6,7 +6,6 @@ package corridor
 
 import (
 	"math"
-	"sort"
 
 	"github.com/gonum/matrix/mat64"
 )
@@ -30,23 +29,45 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 	return output
 }
 
-func MinDistance(aSubs []int, lineSubs [][]int) (minDist float64) {
+func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 
-	// initialize variables
-	maxLen := len(lineSubs)
-	distVec := make([]float64, maxLen)
+	var x float64 = float64(pSubs[0])
+	var y float64 = float64(pSubs[0])
+	var x0 float64 = float64(aSubs[0])
+	var x1 float64 = float64(bSubs[0])
+	var y0 float64 = float64(aSubs[1])
+	var y1 float64 = float64(bSubs[1])
 
-	// loop through and compute distances
-	for i := 0; i < maxLen; i++ {
-		distVec[i] = Distance(aSubs, lineSubs[i])
+	a := x - x0
+	b := y - y0
+	c := x1 - x0
+	d := y1 - y0
+
+	dot := a*c + b*d
+	lenSq := c*c + d*d
+
+	var param float64 = -1.0
+	var xx, yy float64
+
+	if lenSq != 0 {
+		param = dot / lenSq
 	}
 
-	// sort distances
-	sort.Float64s(distVec)
+	if param < 0 {
+		xx = x0
+		yy = y0
+	} else if param > 1 {
+		xx = x1
+		yy = y1
+	} else {
+		xx = x1 + param*c
+		yy = y1 + param*d
+	}
 
-	// get final output
-	output := distVec[0]
+	var dx float64 = x - xx
+	var dy float64 = y - yy
 
+	output := math.Sqrt(dx*dx + dy*dy)
 	// return final output
 	return output
 }
