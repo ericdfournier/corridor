@@ -27,6 +27,7 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 	return output
 }
 
+// THIS CODE IS UNFINISHED AND NOT WORKING PROPERLY...NEEDS WORK...
 func Bresenham(aSubs, bSubs []int, searchDomain *mat64.Dense) (lineSubs [][]int) {
 
 	var x0 = aSubs[0]
