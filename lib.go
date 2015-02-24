@@ -32,10 +32,10 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 
 	var x float64 = float64(pSubs[0])
-	var y float64 = float64(pSubs[0])
+	var y float64 = float64(pSubs[1])
 	var x0 float64 = float64(aSubs[0])
-	var x1 float64 = float64(bSubs[0])
 	var y0 float64 = float64(aSubs[1])
+	var x1 float64 = float64(bSubs[0])
 	var y1 float64 = float64(bSubs[1])
 
 	a := x - x0
@@ -47,11 +47,12 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 	lenSq := c*c + d*d
 
 	var param float64 = -1.0
-	var xx, yy float64
 
 	if lenSq != 0 {
 		param = dot / lenSq
 	}
+
+	var xx, yy float64
 
 	if param < 0 {
 		xx = x0
@@ -60,8 +61,8 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 		xx = x1
 		yy = y1
 	} else {
-		xx = x1 + param*c
-		yy = y1 + param*d
+		xx = x0 + param*c
+		yy = y0 + param*d
 	}
 
 	var dx float64 = x - xx
