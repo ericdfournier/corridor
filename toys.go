@@ -11,6 +11,28 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
+// new toy parameters initialization function
+func NewToyParameters(rows, cols int) *Parameters {
+
+	// initialize variables
+	sourceSubscripts := make([]int, 2)
+	sourceSubscripts[0] = 2
+	sourceSubscripts[1] = 2
+	destinationSubscripts := make([]int, 2)
+	destinationSubscripts[0] = rows - 3
+	destinationSubscripts[1] = cols - 3
+	randomnessCoefficient := 2
+	populationSize := 10
+
+	// return output
+	return &Parameters{
+		SrcSub:  sourceSubscripts,
+		DstSub:  destinationSubscripts,
+		RndCoef: randomnessCoefficient,
+		PopSize: populationSize,
+	}
+}
+
 // new test domain initialization function
 func NewToyDomain(identifier, rows, cols int) *Domain {
 

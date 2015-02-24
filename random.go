@@ -167,14 +167,11 @@ func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
 
 // newind generates a feasible new index value within the input search
 // domain
-func Newind(currentSubscripts []int, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+func Newind(currentSubscripts []int, currentDistance float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize iteration counter
-	iterations := 1
-
-	// initialize distance
-	var distance float64
-	distance = 1.0
+	var iterations int
+	iterations = 1
 
 	// initialize output
 	output := make([]int, 2)
@@ -186,9 +183,9 @@ func Newind(currentSubscripts []int, searchParameters *Parameters, searchDomain 
 	// prohibit all zero cases and validate using the search domain
 	for {
 
-		//
+		// generate mu and sigma values
 		mu := Newmu(currentSubscripts, searchParameters.DstSub)
-		sigma := Newsig(iterations, searchParameters.RndCoef, distance)
+		sigma := Newsig(iterations, searchParameters.RndCoef, currentDistance)
 
 		// generate fixed random bivariate normally distributed numbers
 		try := Newrnd(mu, sigma)
@@ -239,10 +236,13 @@ func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]
 	// initialize new tabu matrix
 	tabu := mat64.NewDense(rows, cols, nil)
 
+	// TEMPORARY FIXED DISTANCE INITIALIZATION
+	cD := 1.0 //Distance(cS, searchParameters.DstSub)
+
 	// enter unbounded for loop
 	for {
 		cS := output[len(output)-1]
-		try = Newind(cS, searchParameters, searchDomain)
+		try = Newind(cS, cD, searchParameters, searchDomain)
 		if i == maxLen-1 {
 			break
 		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
