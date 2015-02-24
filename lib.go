@@ -6,6 +6,7 @@ package corridor
 
 import (
 	"math"
+	"sort"
 
 	"github.com/gonum/matrix/mat64"
 )
@@ -13,62 +14,95 @@ import (
 // compute euclidean distance for a pair of subscript indices
 func Distance(aSubs, bSubs []int) (dist float64) {
 
-	// initialize power variable
+	// initialize variables
+	var x0 float64 = float64(aSubs[0])
+	var x1 float64 = float64(bSubs[0])
+	var y0 float64 = float64(aSubs[1])
+	var y1 float64 = float64(bSubs[1])
 	var pow float64 = 2.0
-
-	// initialize output variable
-	var output float64
+	var dx float64 = x1 - x0
+	var dy float64 = y1 - y0
 
 	// compute distance
-	output = math.Sqrt(math.Pow(float64(aSubs[1]-aSubs[0]), pow) + math.Pow(float64(bSubs[0]-bSubs[1]), pow))
+	var output float64 = math.Sqrt(math.Pow(dx, pow) + math.Pow(dy, pow))
 
 	// return final output
-
 	return output
 }
 
-// THIS CODE IS UNFINISHED AND NOT WORKING PROPERLY...NEEDS WORK...
-func Bresenham(aSubs, bSubs []int, searchDomain *mat64.Dense) (lineSubs [][]int) {
+func MinDistance(aSubs []int, lineSubs [][]int) (minDist float64) {
 
-	var x0 = aSubs[0]
-	var x1 = bSubs[0]
-	var y0 = aSubs[1]
-	var y1 = bSubs[1]
+	// initialize variables
+	maxLen := len(lineSubs)
+	distVec := make([]float64, maxLen)
 
+	// loop through and compute distances
+	for i := 0; i < maxLen; i++ {
+		distVec[i] = Distance(aSubs, lineSubs[i])
+	}
+
+	// sort distances
+	sort.Float64s(distVec)
+
+	// get final output
+	output := distVec[0]
+
+	// return final output
+	return output
+}
+
+// bresenham generates the list of subscript indices corresponding to the
+// euclidean shortest paths connecting two subscript pairs in discrete space
+func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
+
+	// initialize variables
+	var x0 int = aSubs[0]
+	var x1 int = bSubs[0]
+	var y0 int = aSubs[1]
+	var y1 int = bSubs[1]
+
+	// check row differential
 	dx := x1 - x0
-
 	if dx < 0 {
 		dx = -dx
 	}
 
+	// check column differential
 	dy := y1 - y0
 
 	if dy < 0 {
 		dy = -dy
 	}
 
+	// initialize stride variables
 	var sx, sy int
 
+	// set row stride direction
 	if x0 < x1 {
 		sx = 1
 	} else {
 		sx = -1
 	}
 
+	// set column stride direction
 	if y0 < y1 {
 		sy = 1
 	} else {
 		sy = -1
 	}
 
+	// calculate error component
 	err := dx - dy
-	rows, cols := searchDomain.Dims()
-	maxLen := rows * cols
-	output := make([][]int, 1, maxLen)
-	output[0] = make([]int, 2)
-	val := make([]int, 2)
 
+	// initialize output 2D slice vector
+	dist := math.Ceil(Distance(aSubs, bSubs))
+	maxLen := int(dist)
+	output := make([][]int, 0, maxLen)
+
+	// loop through and generate subscripts
 	for {
+		var val = []int{x0, y0}
+		output = append(output, val)
 		if x0 == x1 && y0 == y1 {
 			break
 		}
@@ -81,11 +115,9 @@ func Bresenham(aSubs, bSubs []int, searchDomain *mat64.Dense) (lineSubs [][]int)
 			err += dx
 			y0 += sy
 		}
-		val[0] = x0
-		val[1] = y0
-		output = append(output, val)
 	}
 
+	// return final output
 	return output
 }
 
