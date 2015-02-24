@@ -109,26 +109,26 @@ func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 // newmu generates a matrix representation of mu that reflects the
 // spatial orentiation between the input current subscript and the
 // destination subscript
-func Newmu(currentSubscripts, destinationSubscripts []int) (mu *mat64.Dense) {
+func Newmu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 
 	// initialize vector slice
 	muVec := make([]float64, 2)
 
 	// assign row based parameter
-	if currentSubscripts[0]-destinationSubscripts[0] < 0 {
+	if curSubs[0]-dstSubs[0] < 0 {
 		muVec[0] = 1
-	} else if currentSubscripts[0]-destinationSubscripts[0] == 0 {
+	} else if curSubs[0]-dstSubs[0] == 0 {
 		muVec[0] = 0
-	} else if currentSubscripts[0]-destinationSubscripts[0] > 0 {
+	} else if curSubs[0]-dstSubs[0] > 0 {
 		muVec[0] = -1
 	}
 
 	// assign column based parameter
-	if currentSubscripts[1]-destinationSubscripts[1] < 0 {
+	if curSubs[1]-dstSubs[1] < 0 {
 		muVec[1] = 1
-	} else if currentSubscripts[1]-destinationSubscripts[1] == 0 {
+	} else if curSubs[1]-dstSubs[1] == 0 {
 		muVec[1] = 0
-	} else if currentSubscripts[1]-destinationSubscripts[1] > 0 {
+	} else if curSubs[1]-dstSubs[1] > 0 {
 		muVec[1] = -1
 	}
 
@@ -143,6 +143,11 @@ func Newmu(currentSubscripts, destinationSubscripts []int) (mu *mat64.Dense) {
 // number of iterations in the sampling process as well as the distance
 // from the basis euclidean solution
 func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
+
+	// impose lower bound on distance
+	if distance < 1 {
+		distance = 1.0
+	}
 
 	// set numerator
 	var num float64
@@ -167,7 +172,7 @@ func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
 
 // newind generates a feasible new index value within the input search
 // domain
-func Newind(currentSubscripts []int, currentDistance float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+func Newind(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize iteration counter
 	var iterations int
@@ -184,14 +189,14 @@ func Newind(currentSubscripts []int, currentDistance float64, searchParameters *
 	for {
 
 		// generate mu and sigma values
-		mu := Newmu(currentSubscripts, searchParameters.DstSub)
-		sigma := Newsig(iterations, searchParameters.RndCoef, currentDistance)
+		mu := Newmu(curSubs, searchParameters.DstSubs)
+		sigma := Newsig(iterations, searchParameters.RndCoef, curDist)
 
 		// generate fixed random bivariate normally distributed numbers
 		try := Newrnd(mu, sigma)
 
 		for i := 0; i < 2; i++ {
-			output[i] = currentSubscripts[i] + try[i]
+			output[i] = curSubs[i] + try[i]
 		}
 
 		// test if currentIndex inside search domain
@@ -212,7 +217,7 @@ func Newind(currentSubscripts []int, currentDistance float64, searchParameters *
 
 // dirwlk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
-func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]int) {
+func Dirwlk(searchParameters *Parameters, searchDomain *Domain, basisSolution *Basis) (subscripts [][]int) {
 
 	// initialize iterator and output variables
 	i := 1
@@ -227,28 +232,32 @@ func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]
 	// element
 	output := make([][]int, 1, maxLen)
 	output[0] = make([]int, 2)
-	output[0][0] = searchParameters.SrcSub[0]
-	output[0][1] = searchParameters.SrcSub[1]
+	output[0][0] = searchParameters.SrcSubs[0]
+	output[0][1] = searchParameters.SrcSubs[1]
 
 	// initialize new subscript try slice
 	var try []int
 
 	// initialize new tabu matrix
 	tabu := mat64.NewDense(rows, cols, nil)
+	curSubs := make([]int, 2)
+	var curDist float64
 
-	// TEMPORARY FIXED DISTANCE INITIALIZATION
-	cD := 1.0 //Distance(cS, searchParameters.DstSub)
+	// NEED TO PULL THIS SECTION OUT SO THAT YOU CAN TERMINATE AND RESTART
+	// IT IF IT CATCHES ON AN INFINITE LOOP
 
 	// enter unbounded for loop
 	for {
-		cS := output[len(output)-1]
-		try = Newind(cS, cD, searchParameters, searchDomain)
+		curSubs = output[len(output)-1]
+		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
+		try = Newind(curSubs, curDist, searchParameters, searchDomain)
 		if i == maxLen-1 {
 			break
-		} else if try[0] == searchParameters.DstSub[0] && try[1] == searchParameters.DstSub[1] {
+		} else if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
 			output = append(output, try)
 			break
 		} else if tabu.At(try[0], try[1]) == 1 {
+			continue
 		} else {
 			output = append(output, try)
 			tabu.Set(try[0], try[1], 1.0)
@@ -256,5 +265,6 @@ func Dirwlk(searchParameters *Parameters, searchDomain *Domain) (subscripts [][]
 		}
 	}
 
+	// return final output
 	return output
 }

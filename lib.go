@@ -29,8 +29,12 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 	return output
 }
 
+// compute the minimum distance between a given input point and
+// the subscripts comprised of a line segement joining two other
+// input points
 func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 
+	// initialize variables
 	var x float64 = float64(pSubs[0])
 	var y float64 = float64(pSubs[1])
 	var x0 float64 = float64(aSubs[0])
@@ -38,22 +42,28 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 	var x1 float64 = float64(bSubs[0])
 	var y1 float64 = float64(bSubs[1])
 
+	// compute difference components
 	a := x - x0
 	b := y - y0
 	c := x1 - x0
 	d := y1 - y0
 
+	// compute dot product of difference components
 	dot := a*c + b*d
 	lenSq := c*c + d*d
 
+	// initialize parameter
 	var param float64 = -1.0
 
+	// if zero length condition
 	if lenSq != 0 {
 		param = dot / lenSq
 	}
 
+	// initialize transform variables
 	var xx, yy float64
 
+	// switch transform mechanism on orientation
 	if param < 0 {
 		xx = x0
 		yy = y0
@@ -65,10 +75,39 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 		yy = y0 + param*d
 	}
 
+	// execute transform
 	var dx float64 = x - xx
 	var dy float64 = y - yy
 
+	// generate output
 	output := math.Sqrt(dx*dx + dy*dy)
+
+	// return final output
+	return output
+}
+
+// allmindistance computes the distance from each location within the
+// input search domain and to the nearest subscript located along the
+// line formed by the two input subscripts
+func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allDistMatrix *mat64.Dense) {
+
+	// get matrix dimensions
+	rows, cols := searchDomain.Dims()
+
+	// initialize new output matrix
+	output := mat64.NewDense(rows, cols, nil)
+
+	// loop through all values and compute minimum distances
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			pSubs := make([]int, 2)
+			pSubs[0] = i
+			pSubs[1] = j
+			curMinDist := MinDistance(pSubs, aSubs, bSubs)
+			output.Set(pSubs[0], pSubs[1], curMinDist)
+		}
+	}
+
 	// return final output
 	return output
 }
@@ -92,6 +131,7 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	// check column differential
 	dy := y1 - y0
 
+	// if differential is negative flip
 	if dy < 0 {
 		dy = -dy
 	}

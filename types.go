@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"github.com/cheggaaa/pb"
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
 )
@@ -13,8 +14,8 @@ import (
 // unique to the problem specification that are referenced
 // by the algorithm at various stage of the solution process
 type Parameters struct {
-	SrcSub  []int
-	DstSub  []int
+	SrcSubs []int
+	DstSubs []int
 	RndCoef int
 	PopSize int
 }
@@ -24,8 +25,8 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoef
 
 	// return output
 	return &Parameters{
-		SrcSub:  sourceSubscripts,
-		DstSub:  destinationSubscripts,
+		SrcSubs: sourceSubscripts,
+		DstSubs: destinationSubscripts,
 		RndCoef: randomnessCoefficient,
 		PopSize: populationSize,
 	}
@@ -66,6 +67,34 @@ func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
 	}
 }
 
+// a basis solution is comprised of the subscript indices forming
+// the euclidean shortest path connecting the source subscript
+// to the destination subscript as well as information regarding
+// the minimum euclidean distances of all locations within the
+// search domain to the nearest point on this euclidean shortest
+// path
+type Basis struct {
+	Id     int
+	Matrix *mat64.Dense
+	Subs   [][]int
+}
+
+func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
+
+	// compute all minimum euclidean distances for search domain
+	allMinimumDistances := AllMinDistance(searchParameters.SrcSubs, searchParameters.DstSubs, searchDomain.Matrix)
+
+	// generate subscripts from bresenham's algorithm
+	subs := Bresenham(searchParameters.SrcSubs, searchParameters.DstSubs)
+
+	// return output
+	return &Basis{
+		Id:     searchDomain.Id,
+		Matrix: allMinimumDistances,
+		Subs:   subs,
+	}
+}
+
 // individuals are comprised of row column indices to some
 // spatially reference search domain.
 type Individual struct {
@@ -76,13 +105,13 @@ type Individual struct {
 }
 
 // new individual initialization function
-func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective) *Individual {
+func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Individual {
 
 	// generate subscripts from directed walk procedure
-	sub := Dirwlk(searchParameters, searchDomain)
+	subs := Dirwlk(searchParameters, searchDomain, basisSolution)
 
 	// evaluate fitness for subscripts
-	fitVal, totFit := Fitness(sub, searchObjective.Matrix)
+	fitVal, totFit := Fitness(subs, searchObjective.Matrix)
 
 	// generate placeholder variables
 	uuid, _ := uuid.NewV4()
@@ -90,7 +119,7 @@ func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObj
 	// return output
 	return &Individual{
 		Id:           uuid,
-		Subs:         sub,
+		Subs:         subs,
 		Fitness:      fitVal,
 		TotalFitness: totFit,
 	}
@@ -102,6 +131,42 @@ type Population struct {
 	Id          int
 	Individuals *[]Individual
 	MeanFitness float64
+}
+
+// new population initialization function
+func NewPopulation(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
+
+	// initialize slice of structs
+	indiv := make([]Individual, searchParameters.PopSize)
+	var cumFit float64 = 0.0
+
+	// initialize progress bar
+	bar := pb.StartNew(searchParameters.PopSize)
+
+	// generate individuals
+	for i := 0; i < searchParameters.PopSize; i++ {
+		bar.Increment()
+		ind := NewIndividual(searchDomain, searchParameters, searchObjective, basisSolution)
+		indiv[i] = *ind
+		cumFit = cumFit + indiv[i].TotalFitness
+	}
+
+	// close progress bar
+	bar.FinishPrint("Finished")
+
+	// generate mean fitness
+	meanFit := cumFit / float64(searchParameters.PopSize)
+
+	// generate placeholder variables
+	var identifier int = 1
+
+	// return output
+	return &Population{
+		Id:          identifier,
+		Individuals: &indiv,
+		MeanFitness: meanFit,
+	}
+
 }
 
 // evolutions are comprised of a stochastic number of populations.

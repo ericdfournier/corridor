@@ -50,3 +50,39 @@ func ViewIndividual(searchDomain *Domain, searchParameters *Parameters, newIndiv
 	fmt.Printf("Individual Length = %d\n", len(newIndividual.Subs))
 	fmt.Printf("Individual Total Fitness = %1.5f\n", newIndividual.TotalFitness)
 }
+
+func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopulation *Population) {
+
+	// get search domain matrix dimensions and empty value slice
+	popSize := searchParameters.PopSize
+
+	// get search domain dimensions
+	rows, cols := searchDomain.Matrix.Dims()
+
+	// allocate new empty matrix
+	mat := mat64.NewDense(rows, cols, nil)
+
+	// extract all individuals
+	allIndiv := *newPopulation.Individuals
+
+	// accumulated visited subscripts in new empty matrix
+	for i := 0; i < popSize; i++ {
+		curInd := allIndiv[i].Subs
+		lenCurInd := len(curInd)
+		for j := 0; j < lenCurInd; j++ {
+			curSubs := curInd[j]
+			curVal := mat.At(curSubs[0], curSubs[1])
+			newVal := curVal + 1
+			mat.Set(curSubs[0], curSubs[1], newVal)
+		}
+	}
+
+	// print matrix values to command line
+	fmt.Printf("Population Frequency = \n")
+	for q := 0; q < rows; q++ {
+		rawRowVals := mat.RawRowView(q)
+		fmt.Println(rawRowVals)
+	}
+	fmt.Printf("Population Size = %d\n", searchParameters.PopSize)
+
+}
