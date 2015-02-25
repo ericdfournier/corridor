@@ -183,26 +183,26 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	return output
 }
 
-// fitness function to generate the total fitness and individual
+// fitness function to generate the total fitness and chromosome
 // fitness values for a given input set of subscripts
-// corresponding to a single individual
+// corresponding to a single chromosome
 func Fitness(subs [][]int, obj *mat64.Dense) (fitnessValues []float64, totalFitness float64) {
 
-	// get individual length
+	// get chromosome length
 	indSize := len(subs)
 
 	// initialize fitness values and total fitness
-	fitVal := make([]float64, indSize)
-	var totFit float64 = 0.0
+	output1 := make([]float64, indSize)
+	var output2 float64 = 0.0
 
-	// evaluate individual fitness according to input objective
+	// evaluate chromosome fitness according to input objective
 	for i := 0; i < indSize; i++ {
 		curFit := obj.At(subs[i][0], subs[i][1])
-		fitVal[i] = curFit
-		totFit = totFit + curFit
+		output1[i] = curFit
+		output2 = output2 + curFit
 	}
 
 	// return outputs
-	return fitVal, totFit
+	return output1, output2
 
 }

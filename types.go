@@ -5,6 +5,8 @@
 package corridor
 
 import (
+	"fmt"
+
 	"github.com/cheggaaa/pb"
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
@@ -95,17 +97,17 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 	}
 }
 
-// individuals are comprised of row column indices to some
-// spatially reference search domain.
-type Individual struct {
+// chromosomess are comprised of genes which are distinct row column
+// indices to some spatially reference search domain.
+type Chromosome struct {
 	Id           *uuid.UUID
 	Subs         [][]int
 	Fitness      []float64
 	TotalFitness float64
 }
 
-// new individual initialization function
-func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Individual {
+// new chromosome initialization function
+func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Chromosome {
 
 	// generate subscripts from directed walk procedure
 	subs := Dirwlk(searchDomain, searchParameters, basisSolution)
@@ -117,7 +119,7 @@ func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObj
 	uuid, _ := uuid.NewV4()
 
 	// return output
-	return &Individual{
+	return &Chromosome{
 		Id:           uuid,
 		Subs:         subs,
 		Fitness:      fitVal,
@@ -125,30 +127,48 @@ func NewIndividual(searchDomain *Domain, searchParameters *Parameters, searchObj
 	}
 }
 
-// populations are comprised of a fixed number of individuals.
+// populations are comprised of a fixed number of chromosomes.
 // this number corresponds to the populationSize.
 type Population struct {
 	Id          int
-	Individuals *[]Individual
+	Chromosomes *[]Chromosome
 	MeanFitness float64
 }
 
 // new population initialization function
 func NewPopulation(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
 
+	// print start
+	fmt.Println("Initializing Population")
+
 	// initialize slice of structs
-	indiv := make([]Individual, searchParameters.PopSize)
+	ch := make(chan Chromosome)
+	chroms := make([]Chromosome, searchParameters.PopSize)
+	emptyChrom := NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
+	//newChrom := NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
 	var cumFit float64 = 0.0
 
-	// initialize progress bar
+	//// initialize progress bar
 	bar := pb.StartNew(searchParameters.PopSize)
 
-	// generate individuals
+	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.PopSize; i++ {
+
+		//increment bar
 		bar.Increment()
-		ind := NewIndividual(searchDomain, searchParameters, searchObjective, basisSolution)
-		indiv[i] = *ind
-		cumFit = cumFit + indiv[i].TotalFitness
+
+		// get new emptyChrom
+		emptyChrom = &chroms[i]
+
+		// launch go routines
+		go func(emptyChrom *Chromosome) {
+			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
+			ch <- *emptyChrom
+		}(emptyChrom)
+
+		// read from channel
+		newChrom := <-ch
+		chroms[i] = newChrom
 	}
 
 	// close progress bar
@@ -163,7 +183,7 @@ func NewPopulation(searchDomain *Domain, searchParameters *Parameters, searchObj
 	// return output
 	return &Population{
 		Id:          identifier,
-		Individuals: &indiv,
+		Chromosomes: &chroms,
 		MeanFitness: meanFit,
 	}
 

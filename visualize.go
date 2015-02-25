@@ -22,11 +22,11 @@ func ViewSearchDomain(searchDomain *Domain) {
 	fmt.Printf("Search Domain Values = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := searchDomain.Matrix.RawRowView(i)
-		fmt.Println(rawRowVals)
+		fmt.Printf("%4.0f\n", rawRowVals)
 	}
 }
 
-func ViewIndividual(searchDomain *Domain, searchParameters *Parameters, newIndividual *Individual) {
+func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, newChromosome *Chromosome) {
 
 	// get search domain matrix dimensions and empty value slice
 	rows, cols := searchDomain.Matrix.Dims()
@@ -36,19 +36,19 @@ func ViewIndividual(searchDomain *Domain, searchParameters *Parameters, newIndiv
 	// allocate new empty matrix
 	blankMat := mat64.NewDense(rows, cols, v)
 
-	// assign individual values to the empty matrix
-	for i := 0; i < len(newIndividual.Subs); i++ {
-		blankMat.Set(newIndividual.Subs[i][0], newIndividual.Subs[i][1], 1.0)
+	// assign chromosome values to the empty matrix
+	for i := 0; i < len(newChromosome.Subs); i++ {
+		blankMat.Set(newChromosome.Subs[i][0], newChromosome.Subs[i][1], 1.0)
 	}
 
-	// print individual values to command line
-	fmt.Printf("Individual = \n")
+	// print chromosome values to command line
+	fmt.Printf("Chromosome = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := blankMat.RawRowView(i)
-		fmt.Println(rawRowVals)
+		fmt.Printf("%4.0f\n", rawRowVals)
 	}
-	fmt.Printf("Individual Length = %d\n", len(newIndividual.Subs))
-	fmt.Printf("Individual Total Fitness = %1.5f\n", newIndividual.TotalFitness)
+	fmt.Printf("Chromosome Length = %d\n", len(newChromosome.Subs))
+	fmt.Printf("Chromosome Total Fitness = %1.5f\n", newChromosome.TotalFitness)
 }
 
 func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopulation *Population) {
@@ -62,8 +62,8 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopul
 	// allocate new empty matrix
 	mat := mat64.NewDense(rows, cols, nil)
 
-	// extract all individuals
-	allIndiv := *newPopulation.Individuals
+	// extract all chromosomes
+	allIndiv := *newPopulation.Chromosomes
 
 	// accumulated visited subscripts in new empty matrix
 	for i := 0; i < popSize; i++ {
@@ -78,12 +78,12 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopul
 	}
 
 	// print matrix values to command line
+	fmt.Printf("Population Size = %d\n", searchParameters.PopSize)
 	fmt.Printf("Population Frequency = \n")
 	for q := 0; q < rows; q++ {
 		rawRowVals := mat.RawRowView(q)
-		fmt.Println(rawRowVals)
+		fmt.Printf("%4.0f\n", rawRowVals)
 	}
-	fmt.Printf("Population Size = %d\n", searchParameters.PopSize)
 
 }
 
@@ -99,6 +99,6 @@ func ViewBasis(basisSolution *Basis) {
 	fmt.Printf("Basis Solution Values = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := basisSolution.Matrix.RawRowView(i)
-		fmt.Println(rawRowVals)
+		fmt.Printf("%4.0f\n", rawRowVals)
 	}
 }
