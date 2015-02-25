@@ -223,11 +223,7 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 // destination subscript within the context of an input search domain
 func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int) {
 
-	// NEED TO CREATE A SECOND OUTER UNBOUNDED FOR LOOP HERE TO CATCH
-	// STATES WHERE THE SEARCH PROCESS HAS STAGNATED
-
 	// initialize iterator and output variables
-	i := 1
 	rows, cols := searchDomain.Matrix.Dims()
 
 	// set maximum individual length based upon search domain dimensions
@@ -243,9 +239,9 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	output[0][1] = searchParameters.SrcSubs[1]
 
 	// initialize new tabu matrix
-	tabuVec := make([]float64, rows*cols)
-	tabu := mat64.NewDense(rows, cols, tabuVec)
-	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 1.0)
+	tabu := mat64.NewDense(rows, cols, nil)
+	tabu.Clone(searchDomain.Matrix)
+	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
 
 	// initialize current subscripts, distance, try, and iteration counter
 	curSubs := make([]int, 2)
@@ -253,23 +249,21 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	var try []int
 
 	// enter unbounded for loop
-	for {
+	for i := 0; i < maxLen; i++ {
+
 		curSubs = output[len(output)-1]
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 		try = Newind(curSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
-		if i == maxLen-1 {
-			break
-		} else if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
+		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
 			output = append(output, try)
 			break
-		} else if tabu.At(try[0], try[1]) == 1 {
+		} else if tabu.At(try[0], try[1]) == 0.0 {
 			continue
 		} else {
 			output = append(output, try)
-			tabu.Set(try[0], try[1], 1.0)
-			i += 1
+			tabu.Set(try[0], try[1], 0.0)
 		}
 	}
 
