@@ -5,9 +5,6 @@
 package corridor
 
 import (
-	"fmt"
-
-	"github.com/cheggaaa/pb"
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
 )
@@ -22,33 +19,11 @@ type Parameters struct {
 	PopSize int
 }
 
-// new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient, populationSize int) *Parameters {
-
-	// return output
-	return &Parameters{
-		SrcSubs: sourceSubscripts,
-		DstSubs: destinationSubscripts,
-		RndCoef: randomnessCoefficient,
-		PopSize: populationSize,
-	}
-}
-
 // domains are comprised of boolean arrays which indicate the
 // feasible locations for the search algorithm
 type Domain struct {
 	Id     int
 	Matrix *mat64.Dense
-}
-
-// new domain initialization function
-func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
-
-	//return output
-	return &Domain{
-		Id:     identifier,
-		Matrix: domainMatrix,
-	}
 }
 
 // objectives are comprised of maps which use location indices
@@ -57,16 +32,6 @@ func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 type Objective struct {
 	Id     int
 	Matrix *mat64.Dense
-}
-
-// new objective initialization function
-func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
-
-	// return output
-	return &Objective{
-		Id:     identifier,
-		Matrix: fitnessMatrix,
-	}
 }
 
 // a basis solution is comprised of the subscript indices forming
@@ -81,22 +46,6 @@ type Basis struct {
 	Subs   [][]int
 }
 
-func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
-
-	// compute all minimum euclidean distances for search domain
-	allMinimumDistances := AllMinDistance(searchParameters.SrcSubs, searchParameters.DstSubs, searchDomain.Matrix)
-
-	// generate subscripts from bresenham's algorithm
-	subs := Bresenham(searchParameters.SrcSubs, searchParameters.DstSubs)
-
-	// return output
-	return &Basis{
-		Id:     searchDomain.Id,
-		Matrix: allMinimumDistances,
-		Subs:   subs,
-	}
-}
-
 // chromosomess are comprised of genes which are distinct row column
 // indices to some spatially reference search domain.
 type Chromosome struct {
@@ -106,87 +55,12 @@ type Chromosome struct {
 	TotalFitness float64
 }
 
-// new chromosome initialization function
-func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Chromosome {
-
-	// generate subscripts from directed walk procedure
-	subs := Dirwlk(searchDomain, searchParameters, basisSolution)
-
-	// evaluate fitness for subscripts
-	fitVal, totFit := Fitness(subs, searchObjective.Matrix)
-
-	// generate placeholder variables
-	uuid, _ := uuid.NewV4()
-
-	// return output
-	return &Chromosome{
-		Id:           uuid,
-		Subs:         subs,
-		Fitness:      fitVal,
-		TotalFitness: totFit,
-	}
-}
-
 // populations are comprised of a fixed number of chromosomes.
 // this number corresponds to the populationSize.
 type Population struct {
 	Id          int
 	Chromosomes *[]Chromosome
 	MeanFitness float64
-}
-
-// new population initialization function
-func NewPopulation(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
-
-	// print start
-	fmt.Println("Initializing Population")
-
-	// initialize slice of structs
-	ch := make(chan Chromosome)
-	chroms := make([]Chromosome, searchParameters.PopSize)
-	emptyChrom := NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
-	//newChrom := NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
-	var cumFit float64 = 0.0
-
-	//// initialize progress bar
-	bar := pb.StartNew(searchParameters.PopSize)
-
-	// generate chromosomes via go routines
-	for i := 0; i < searchParameters.PopSize; i++ {
-
-		//increment bar
-		bar.Increment()
-
-		// get new emptyChrom
-		emptyChrom = &chroms[i]
-
-		// launch go routines
-		go func(emptyChrom *Chromosome) {
-			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
-			ch <- *emptyChrom
-		}(emptyChrom)
-
-		// read from channel
-		newChrom := <-ch
-		chroms[i] = newChrom
-	}
-
-	// close progress bar
-	bar.FinishPrint("Finished")
-
-	// generate mean fitness
-	meanFit := cumFit / float64(searchParameters.PopSize)
-
-	// generate placeholder variables
-	var identifier int = 1
-
-	// return output
-	return &Population{
-		Id:          identifier,
-		Chromosomes: &chroms,
-		MeanFitness: meanFit,
-	}
-
 }
 
 // evolutions are comprised of a stochastic number of populations.
