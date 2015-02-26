@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"math"
 	"math/rand"
 	"time"
 
@@ -21,8 +22,8 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts := make([]int, 2)
 	destinationSubscripts[0] = rows - 3
 	destinationSubscripts[1] = cols - 3
-	randomnessCoefficient := 2
-	populationSize := 5000
+	randomnessCoefficient := 2.0
+	populationSize := 500
 
 	// return output
 	return &Parameters{
@@ -78,7 +79,7 @@ func NewToyObjective(identifier, rows, cols int) *Objective {
 	// loop through matrix indices and assign random objective values
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
-			objectiveMatrix.Set(i, j, rand.Float64())
+			objectiveMatrix.Set(i, j, math.Abs(rand.Float64()))
 		}
 	}
 

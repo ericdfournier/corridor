@@ -184,25 +184,54 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 }
 
 // fitness function to generate the total fitness and chromosome
-// fitness values for a given input set of subscripts
-// corresponding to a single chromosome
-func Fitness(subs [][]int, obj *mat64.Dense) (fitnessValues []float64, totalFitness float64) {
+// fitness values for a given input chromosome
+func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (outputChromosome *Chromosome) {
 
 	// get chromosome length
-	indSize := len(subs)
-
-	// initialize fitness values and total fitness
-	output1 := make([]float64, indSize)
-	var output2 float64 = 0.0
+	chromLen := len(inputChromosome.Subs)
 
 	// evaluate chromosome fitness according to input objective
-	for i := 0; i < indSize; i++ {
-		curFit := obj.At(subs[i][0], subs[i][1])
-		output1[i] = curFit
-		output2 = output2 + curFit
+	for i := 0; i < chromLen; i++ {
+		curFit := inputObjective.Matrix.At(inputChromosome.Subs[i][0], inputChromosome.Subs[i][1])
+		inputChromosome.Fitness[i] = curFit
+		inputChromosome.TotalFitness = inputChromosome.TotalFitness + curFit
 	}
 
 	// return outputs
-	return output1, output2
+	return inputChromosome
+}
 
+// THERE IS SOMETHING WRONG HERE...THE CHANNEL SEEMS TO NOT
+// BE OUTPUTTING CHROMOSOME VALUES PROPERLY....
+
+func AccumFitness(chromosomes chan *Chromosome) (cumulativeFitness float64) {
+
+	// initialize output
+	var output float64
+
+	// drain channel to accumulate fitness values
+	for i := 0; i < cap(chromosomes); i++ {
+		curChrom := <-chromosomes
+		output = output + curChrom.TotalFitness
+	}
+
+	// return output
+	return output
+}
+
+// fitness function generate the mean and standard deviation of
+// fitness values for all of the chromosomes in a given population
+func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (outputPopulation *Population) {
+
+	// generate cumulative fitness
+	cumFit := AccumFitness(inputPopulation.Chromosomes)
+
+	// initialize pop size
+	popSize := cap(inputPopulation.Chromosomes)
+
+	// compute mean from cumulative
+	inputPopulation.MeanFitness = cumFit / float64(popSize)
+
+	// return output
+	return inputPopulation
 }

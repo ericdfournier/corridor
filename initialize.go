@@ -5,15 +5,12 @@
 package corridor
 
 import (
-	"fmt"
-
-	"github.com/cheggaaa/pb"
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
 )
 
 // new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient, populationSize int) *Parameters {
+func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient float64, populationSize int) *Parameters {
 
 	// return output
 	return &Parameters{
@@ -61,13 +58,14 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 }
 
 // new chromosome initialization function
-func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Chromosome {
+func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) *Chromosome {
 
 	// generate subscripts from directed walk procedure
 	subs := Dirwlk(searchDomain, searchParameters, basisSolution)
 
-	// evaluate fitness for subscripts
-	fitVal, totFit := Fitness(subs, searchObjective.Matrix)
+	// initialize empty fitness place holders
+	fitVal := make([]float64, len(subs))
+	var totFit float64 = 0.0
 
 	// generate placeholder variables
 	uuid, _ := uuid.NewV4()
@@ -82,58 +80,40 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 }
 
 // new population initialization function
-func NewPopulation(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
-
-	// print start
-	fmt.Println("Initializing Population")
-
-	// initialize slice of structs
-	chroms := make([]Chromosome, searchParameters.PopSize)
+func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
 
 	// initialize communication channel
-	chr := make(chan Chromosome)
+	chr := make(chan *Chromosome, searchParameters.PopSize)
 
 	// initialize new empty chromosome before entering loop
-	emptyChrom := NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
-	var cumFit float64 = 0.0
-
-	//// initialize progress bar
-	bar := pb.StartNew(searchParameters.PopSize)
+	emptyChrom := NewChromosome(searchDomain, searchParameters, basisSolution)
 
 	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.PopSize; i++ {
 
-		//increment bar
-		bar.Increment()
-
-		// get new emptyChrom
-		emptyChrom = &chroms[i]
-
-		// launch go routines
-		go func(emptyChrom *Chromosome) {
-			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjective, basisSolution)
-			chr <- *emptyChrom
-		}(emptyChrom)
-
-		// read from channel
-		newChrom := <-chr
-		chroms[i] = newChrom
+		// launch chromosome initialization go routines
+		go func() {
+			emptyChrom = NewChromosome(searchDomain, searchParameters, basisSolution)
+			emptyChrom = ChromosomeFitness(emptyChrom, searchObjective)
+			chr <- emptyChrom
+		}()
 	}
 
-	// close progress bar
-	bar.FinishPrint("Finished")
+	// initialize mean fitness
+	var cumFit float64 = 0.0
 
 	// generate mean fitness
 	meanFit := cumFit / float64(searchParameters.PopSize)
 
 	// generate placeholder variables
-	var identifier int = 1
+	var stdFit float64 = 0.0
 
 	// return output
 	return &Population{
 		Id:          identifier,
-		Chromosomes: &chroms,
+		Chromosomes: chr,
 		MeanFitness: meanFit,
+		StdFitness:  stdFit,
 	}
 
 }

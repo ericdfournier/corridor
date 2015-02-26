@@ -142,7 +142,7 @@ func Newmu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 // newsig generates a matrix representation of sigma that reflects the
 // number of iterations in the sampling process as well as the distance
 // from the basis euclidean solution
-func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
+func Newsig(iterations int, randomness, distance float64) (sigma *mat64.Dense) {
 
 	// impose lower bound on distance
 	if distance < 1 {
@@ -159,7 +159,7 @@ func Newsig(iterations, randomness int, distance float64) (sigma *mat64.Dense) {
 	if distance == 1.0 {
 		cov = 1.0
 	} else {
-		cov = math.Pow(distance, (num/float64(randomness))) / math.Pow(float64(iterations), (num/float64(randomness)))
+		cov = math.Pow(distance, (num/randomness)) / math.Pow(float64(iterations), (num/randomness))
 	}
 
 	// initialize matrix output

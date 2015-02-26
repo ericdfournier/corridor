@@ -62,12 +62,10 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopul
 	// allocate new empty matrix
 	mat := mat64.NewDense(rows, cols, nil)
 
-	// extract all chromosomes
-	allIndiv := *newPopulation.Chromosomes
-
 	// accumulated visited subscripts in new empty matrix
 	for i := 0; i < popSize; i++ {
-		curInd := allIndiv[i].Subs
+		curChrom := <-newPopulation.Chromosomes
+		curInd := curChrom.Subs
 		lenCurInd := len(curInd)
 		for j := 0; j < lenCurInd; j++ {
 			curSubs := curInd[j]

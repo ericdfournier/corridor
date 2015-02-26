@@ -15,7 +15,7 @@ import (
 type Parameters struct {
 	SrcSubs []int
 	DstSubs []int
-	RndCoef int
+	RndCoef float64
 	PopSize int
 }
 
@@ -35,11 +35,7 @@ type Objective struct {
 }
 
 // a basis solution is comprised of the subscript indices forming
-// the euclidean shortest path connecting the source subscript
-// to the destination subscript as well as information regarding
-// the minimum euclidean distances of all locations within the
-// search domain to the nearest point on this euclidean shortest
-// path
+// the euclidean shortest path connecting the source to the dest
 type Basis struct {
 	Id     int
 	Matrix *mat64.Dense
@@ -59,14 +55,16 @@ type Chromosome struct {
 // this number corresponds to the populationSize.
 type Population struct {
 	Id          int
-	Chromosomes *[]Chromosome
+	Chromosomes chan *Chromosome
 	MeanFitness float64
+	StdFitness  float64
 }
 
 // evolutions are comprised of a stochastic number of populations.
 // this number is determined by the convergence rate of the
 // algorithm.
 type Evolution struct {
-	Id          int
-	Populations *[]Population
+	Id              int
+	Populations     chan *Population
+	FitnessGradient float64
 }
