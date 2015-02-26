@@ -201,36 +201,24 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (
 	return inputChromosome
 }
 
-// THERE IS SOMETHING WRONG HERE...THE CHANNEL SEEMS TO NOT
-// BE OUTPUTTING CHROMOSOME VALUES PROPERLY....
-
-func AccumFitness(chromosomes chan *Chromosome) (cumulativeFitness float64) {
-
-	// initialize output
-	var output float64
-
-	// drain channel to accumulate fitness values
-	for i := 0; i < cap(chromosomes); i++ {
-		curChrom := <-chromosomes
-		output = output + curChrom.TotalFitness
-	}
-
-	// return output
-	return output
-}
-
 // fitness function generate the mean and standard deviation of
 // fitness values for all of the chromosomes in a given population
 func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (outputPopulation *Population) {
 
-	// generate cumulative fitness
-	cumFit := AccumFitness(inputPopulation.Chromosomes)
+	// initialize output
+	var output float64
 
 	// initialize pop size
 	popSize := cap(inputPopulation.Chromosomes)
 
+	// drain channel to accumulate fitness values
+	for i := 0; i < cap(inputPopulation.Chromosomes); i++ {
+		curChrom := <-inputPopulation.Chromosomes
+		output = output + curChrom.TotalFitness
+	}
+
 	// compute mean from cumulative
-	inputPopulation.MeanFitness = cumFit / float64(popSize)
+	inputPopulation.MeanFitness = output / float64(popSize)
 
 	// return output
 	return inputPopulation
