@@ -10,7 +10,7 @@ import (
 )
 
 // new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient float64, populationSize int) *Parameters {
+func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient float64, populationSize int, selectionFraction, selectionProbability float64) *Parameters {
 
 	// return output
 	return &Parameters{
@@ -18,6 +18,8 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoef
 		DstSubs: destinationSubscripts,
 		RndCoef: randomnessCoefficient,
 		PopSize: populationSize,
+		SelProb: selectionProbability,
+		SelFrac: selectionFraction,
 	}
 }
 
@@ -104,15 +106,11 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	// generate mean fitness
 	meanFit := cumFit / float64(searchParameters.PopSize)
 
-	// generate placeholder variables
-	var stdFit float64 = 0.0
-
 	// return output
 	return &Population{
 		Id:          identifier,
 		Chromosomes: chr,
 		MeanFitness: meanFit,
-		StdFitness:  stdFit,
 	}
 
 }

@@ -17,6 +17,8 @@ type Parameters struct {
 	DstSubs []int
 	RndCoef float64
 	PopSize int
+	SelFrac float64
+	SelProb float64
 }
 
 // domains are comprised of boolean arrays which indicate the
@@ -57,7 +59,6 @@ type Population struct {
 	Id          int
 	Chromosomes chan *Chromosome
 	MeanFitness float64
-	StdFitness  float64
 }
 
 // evolutions are comprised of a stochastic number of populations.
