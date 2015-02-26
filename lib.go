@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/gonum/matrix/mat64"
@@ -216,7 +215,6 @@ func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (
 	for i := 0; i < cap(inputPopulation.Chromosomes); i++ {
 		curChrom := <-inputPopulation.Chromosomes
 		output = output + curChrom.TotalFitness
-		fmt.Println(output)
 		inputPopulation.Chromosomes <- curChrom
 	}
 
