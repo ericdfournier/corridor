@@ -92,11 +92,10 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	for i := 0; i < searchParameters.PopSize; i++ {
 
 		// launch chromosome initialization go routines
-		go func() {
+		go func(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) {
 			emptyChrom = NewChromosome(searchDomain, searchParameters, basisSolution)
-			emptyChrom = ChromosomeFitness(emptyChrom, searchObjective)
-			chr <- emptyChrom
-		}()
+			chr <- ChromosomeFitness(emptyChrom, searchObjective)
+		}(searchDomain, searchParameters, searchObjective, basisSolution)
 	}
 
 	// initialize mean fitness
