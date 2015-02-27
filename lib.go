@@ -205,16 +205,24 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (
 // fitness values for all of the chromosomes in a given population
 func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (outputPopulation *Population) {
 
-	// initialize output
-	var output float64
-
 	// initialize pop size
 	popSize := cap(inputPopulation.Chromosomes)
 
+	// initialize output
+	var output float64
+
 	// drain channel to accumulate fitness values
-	for i := 0; i < cap(inputPopulation.Chromosomes); i++ {
+	for i := 0; i < popSize; i++ {
+
+		// read current chromosome from channel
 		curChrom := <-inputPopulation.Chromosomes
-		output = output + curChrom.TotalFitness
+
+		// launch go thread to compute cumulative fitness
+		go func(curChrom *Chromosome) {
+			output = curChrom.TotalFitness + output
+		}(curChrom)
+
+		// recieve from channel
 		inputPopulation.Chromosomes <- curChrom
 	}
 
