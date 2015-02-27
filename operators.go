@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -14,6 +13,56 @@ import (
 // NEED TO CHECK IN SELECTION ROUTINE THAT THE INITIAL
 // ALLOCATION FOR THE OUTPUT DOES, IN SOME CASES, GET
 // OVERWRITTEN...OTHERWISE CHROM1 WILL ALWAYS BE SELECTED
+
+// fitness function to generate the total fitness and chromosome
+// fitness values for a given input chromosome
+func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (outputChromosome *Chromosome) {
+
+	// get chromosome length
+	chromLen := len(inputChromosome.Subs)
+
+	// evaluate chromosome fitness according to input objective
+	for i := 0; i < chromLen; i++ {
+		curFit := inputObjective.Matrix.At(inputChromosome.Subs[i][0], inputChromosome.Subs[i][1])
+		inputChromosome.Fitness[i] = curFit
+		inputChromosome.TotalFitness = inputChromosome.TotalFitness + curFit
+	}
+
+	// return outputs
+	return inputChromosome
+}
+
+// fitness function generate the mean and standard deviation of
+// fitness values for all of the chromosomes in a given population
+func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (outputPopulation *Population) {
+
+	// initialize pop size
+	popSize := cap(inputPopulation.Chromosomes)
+
+	// initialize output
+	var output float64
+
+	// drain channel to accumulate fitness values
+	for i := 0; i < popSize; i++ {
+
+		// read current chromosome from channel
+		curChrom := <-inputPopulation.Chromosomes
+
+		// launch go thread to compute cumulative fitness
+		go func(curChrom *Chromosome) {
+			output = curChrom.TotalFitness + output
+		}(curChrom)
+
+		// recieve from channel
+		inputPopulation.Chromosomes <- curChrom
+	}
+
+	// compute mean from cumulative
+	inputPopulation.MeanFitness = output / float64(popSize)
+
+	// return output
+	return inputPopulation
+}
 
 // selection operator selects between two chromosomes with a
 // probability of the most fit chromosome being selected
@@ -135,9 +184,6 @@ func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (cros
 		}
 	}
 
-	fmt.Println(len(chrom1Ind))
-	fmt.Println(r)
-
 	for i := 0; i < (chrom1Ind[r] + 1); i++ {
 		output = append(output, chrom1Subs[i])
 	}
@@ -151,50 +197,51 @@ func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (cros
 
 }
 
-//// selection crossover operator performs a single part
-//// crossover on each of the individuals provided in an
-//// input selection channel of chromosomes
-//func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters) (crossover chan *Chromosome) {
+// selection crossover operator performs a single part
+// crossover on each of the individuals provided in an
+// input selection channel of chromosomes
+func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters) (crossover chan *Chromosome) {
 
-//	// initialize crossover channel size
-//	croSize := int(inputParameters.PopSize)
+	// initialize crossover channel size
+	popSize := int(inputParameters.PopSize)
 
-//	// initialize crossover channel
-//	output := make(chan *Chromosome, croSize)
+	// initialize crossover channel
+	output := make(chan *Chromosome, popSize)
 
-//	// initialize crossover loop
-//	for i := 0; i < croSize; i++ {
+	// initialize crossover loop
+	for i := 0; i < popSize; i++ {
 
-//		for {
+		for {
 
-//			// extract chromosomes
-//			chrom1 := <-inputSelection
-//			chrom2 := <-inputSelection
+			// extract chromosomes
+			chrom1 := <-inputSelection
+			chrom2 := <-inputSelection
 
-//			// check for valid crossover point
-//			chrom1Ind, chrom2Ind := Intersection(chrom1, chrom2)
+			var chrom1Ind []int
+			var chrom2Ind []int
 
-//			// resample chromosomes if no intersection
-//			if len(chrom1Ind) > 0 {
-//				break
-//			}
-//			else {
-//				inputSelection <- chrom1
-//				inputSelction <- chrom2
-//				continue
-//			}
-//		}
+			empChrom := NewEmptyChromosome()
 
-//		// launch crossover routines
-//		go func(chrom1Ind, chrom2Ind []int, chrom1, chrom2 *Chromosome) {
-//			output <- Crossover(chrom1Ind, chrom2Ind, chrom1, chrom2)
-//		}(chrom1Ind, chrom2Ind, chrom1, chrom2)
+			// check for valid crossover point
+			chrom1Ind, chrom2Ind = Intersection(chrom1.Subs, chrom2.Subs)
 
-//		// repopulate selection channel
-//		inputSelection <- chrom1
-//		inputSelection <- chrom2
-//	}
+			// resample chromosomes if no intersection
+			if len(chrom1Ind) > 1 {
 
-//	// return output
-//	return output
-//}
+				empChrom.Subs = Crossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
+				output <- empChrom
+				inputSelection <- chrom1
+				inputSelection <- chrom2
+				break
+			} else {
+				inputSelection <- chrom1
+				inputSelection <- chrom2
+				continue
+			}
+
+		}
+	}
+
+	// return output
+	return output
+}

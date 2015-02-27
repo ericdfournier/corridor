@@ -81,6 +81,28 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolu
 	}
 }
 
+// new empty chromosome initialization function
+func NewEmptyChromosome() *Chromosome {
+
+	// initialize subscripts
+	subs := make([][]int, 0)
+
+	// generate placeholder id
+	uuid, _ := uuid.NewV4()
+
+	// initialize empty fitness place holders
+	fitVal := make([]float64, len(subs))
+	var totFit float64 = 0.0
+
+	// return output
+	return &Chromosome{
+		Id:           uuid,
+		Subs:         subs,
+		Fitness:      fitVal,
+		TotalFitness: totFit,
+	}
+}
+
 // new population initialization function
 func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
 
