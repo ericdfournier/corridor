@@ -122,6 +122,9 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 		go func(chrom1, chrom2 *Chromosome, selProb float64) {
 			output <- Selection(chrom1, chrom2, selProb)
 		}(chrom1, chrom2, selProb)
+
+		inputPopulation.Chromosomes <- chrom1
+		inputPopulation.Chromosomes <- chrom2
 	}
 
 	// return selection channel
