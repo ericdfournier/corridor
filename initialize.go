@@ -120,6 +120,7 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 			emptyChrom = NewChromosome(searchDomain, searchParameters, basisSolution)
 			chr <- ChromosomeFitness(emptyChrom, searchObjective)
 		}(searchDomain, searchParameters, searchObjective, basisSolution)
+
 	}
 
 	// initialize mean fitness
@@ -135,4 +136,24 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 		MeanFitness: meanFit,
 	}
 
+}
+
+// new empty population initialization function
+func NewEmptyPopulation() *Population {
+
+	// initialize identifier
+	var identifier int = 0
+
+	// initialize empty chromosomes channel
+	chr := make(chan *Chromosome)
+
+	// initialize mean fitness value
+	var meanFit float64 = 0.0
+
+	// return output
+	return &Population{
+		Id:          identifier,
+		Chromosomes: chr,
+		MeanFitness: meanFit,
+	}
 }

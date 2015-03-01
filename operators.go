@@ -114,17 +114,8 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 	// initialize selection loop
 	for i := 0; i < selSize; i++ {
 
-		// drain chromosome input channel
-		chrom1 := <-inputPopulation.Chromosomes
-		chrom2 := <-inputPopulation.Chromosomes
-
-		// launch selection go routines
-		go func(chrom1, chrom2 *Chromosome, selProb float64) {
-			output <- Selection(chrom1, chrom2, selProb)
-		}(chrom1, chrom2, selProb)
-
-		inputPopulation.Chromosomes <- chrom1
-		inputPopulation.Chromosomes <- chrom2
+		// write selection to output channel
+		output <- Selection(<-inputPopulation.Chromosomes, <-inputPopulation.Chromosomes, selProb)
 	}
 
 	// return selection channel
@@ -200,6 +191,12 @@ func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (cros
 
 }
 
+// NEED TO BREAK THIS UP INTO TWO FUNCTIONS WHERE THE
+// REPEATED RESAMPLING FOR CHROMOSOME INTERSECTION
+// OCCURS AS A SUBROUTINE...THIS WILL ALLOW THE INPUTS
+// TO THE TOP LEVEL FUNCTION TO BE DIRECT DUMPS FROM
+// THE INPUT CHANNELS
+
 // selection crossover operator performs a single part
 // crossover on each of the individuals provided in an
 // input selection channel of chromosomes
@@ -230,7 +227,6 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 
 			// resample chromosomes if no intersection
 			if len(chrom1Ind) > 1 {
-
 				empChrom.Subs = Crossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
 				output <- empChrom
 				inputSelection <- chrom1
@@ -241,7 +237,6 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 				inputSelection <- chrom2
 				continue
 			}
-
 		}
 	}
 

@@ -51,7 +51,7 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, newChrom
 	fmt.Printf("Chromosome Total Fitness = %1.5f\n", newChromosome.TotalFitness)
 }
 
-func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopulation *Population) {
+func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPopulation *Population) {
 
 	// get search domain matrix dimensions and empty value slice
 	popSize := searchParameters.PopSize
@@ -64,7 +64,7 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, newPopul
 
 	// accumulated visited subscripts in new empty matrix
 	for i := 0; i < popSize; i++ {
-		curChrom := <-newPopulation.Chromosomes
+		curChrom := <-inputPopulation.Chromosomes
 		curInd := curChrom.Subs
 		lenCurInd := len(curInd)
 		for j := 0; j < lenCurInd; j++ {
