@@ -73,6 +73,9 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 			newVal := curVal + 1
 			mat.Set(curSubs[0], curSubs[1], newVal)
 		}
+
+		// repopulate channel
+		//inputPopulation.Chromosomes <- curChrom
 	}
 
 	// print matrix values to command line

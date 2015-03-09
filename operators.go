@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-// NEED TO CHECK IN SELECTION ROUTINE THAT THE INITIAL
-// ALLOCATION FOR THE OUTPUT DOES, IN SOME CASES, GET
-// OVERWRITTEN...OTHERWISE CHROM1 WILL ALWAYS BE SELECTED
-
 // fitness function to generate the total fitness and chromosome
 // fitness values for a given input chromosome
 func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (outputChromosome *Chromosome) {
@@ -178,10 +174,12 @@ func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (cros
 		}
 	}
 
+	// generate subscript slice 1
 	for i := 0; i < (chrom1Ind[r] + 1); i++ {
 		output = append(output, chrom1Subs[i])
 	}
 
+	// generate subscript slice 2
 	for j := (chrom2Ind[r] + 1); j < len(chrom2Subs); j++ {
 		output = append(output, chrom2Subs[j])
 	}
@@ -190,12 +188,6 @@ func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (cros
 	return output
 
 }
-
-// NEED TO BREAK THIS UP INTO TWO FUNCTIONS WHERE THE
-// REPEATED RESAMPLING FOR CHROMOSOME INTERSECTION
-// OCCURS AS A SUBROUTINE...THIS WILL ALLOW THE INPUTS
-// TO THE TOP LEVEL FUNCTION TO BE DIRECT DUMPS FROM
-// THE INPUT CHANNELS
 
 // selection crossover operator performs a single part
 // crossover on each of the individuals provided in an
@@ -217,16 +209,18 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 			chrom1 := <-inputSelection
 			chrom2 := <-inputSelection
 
+			// initialize empty index slices
 			var chrom1Ind []int
 			var chrom2Ind []int
 
+			// initialize empty chromosome
 			empChrom := NewEmptyChromosome()
 
 			// check for valid crossover point
 			chrom1Ind, chrom2Ind = Intersection(chrom1.Subs, chrom2.Subs)
 
 			// resample chromosomes if no intersection
-			if len(chrom1Ind) > 1 {
+			if len(chrom1Ind) > 2 {
 				empChrom.Subs = Crossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
 				output <- empChrom
 				inputSelection <- chrom1
