@@ -239,8 +239,30 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 	return output
 }
 
+// NEED TO DECIDE ON THE BEST WAY TO EVALUATE THE FITNESS OF THE CHROMOSOMES
+// IN THE POPULATION...SHOULD THIS BE DONE WHILE THEY ARE GENERAWTED??? AS
+// COMMENTED OUT ABOVE....OR SHOULD THIS BE DONE EN-MASSE AFTER THEY ARE
+// GENERATED AS COMMENTED OUT BELOW??? THIS IS NOT WORKING AT PRESENT
+
 // population evolution operator generates a new population
 // from an input population using the selection and crossover operators
-func PopulationEvolution() {
+func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
 
+	// initialize new empty population
+	empPop := NewEmptyPopulation()
+
+	// perform population selection
+	popSel := PopulationSelection(inputPopulation, inputParameters)
+
+	// perform selection crossover
+	selCrs := SelectionCrossover(popSel, inputParameters, inputObjective)
+
+	// fill empty population
+	empPop.Chromosomes = selCrs
+
+	// evaluate population fitness
+	output := PopulationFitness(inputPopulation, inputObjective)
+
+	// return output
+	return output
 }
