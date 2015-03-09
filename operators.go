@@ -63,7 +63,7 @@ func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (
 // selection operator selects between two chromosomes with a
 // probability of the most fit chromosome being selected
 // determined by the input selection probability ratio
-func Selection(chrom1, chrom2 *Chromosome, selectionProb float64) (selectedChrom *Chromosome) {
+func ChromosomeSelection(chrom1, chrom2 *Chromosome, selectionProb float64) (selectedChrom *Chromosome) {
 
 	// initialize output
 	output := chrom1
@@ -111,7 +111,7 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 	for i := 0; i < selSize; i++ {
 
 		// write selection to output channel
-		output <- Selection(<-inputPopulation.Chromosomes, <-inputPopulation.Chromosomes, selProb)
+		output <- ChromosomeSelection(<-inputPopulation.Chromosomes, <-inputPopulation.Chromosomes, selProb)
 	}
 
 	// return selection channel
@@ -121,7 +121,7 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 // intersection determines whether or not the subscripts
 // associated with two input chromosomes share any in
 // values in common and reports their relative indices
-func Intersection(subs1, subs2 [][]int) (subs1Indices, subs2Indices []int) {
+func ChromosomeIntersection(subs1, subs2 [][]int) (subs1Indices, subs2Indices []int) {
 
 	// initialize output index slice
 	output1 := make([]int, 0)
@@ -150,7 +150,7 @@ func Intersection(subs1, subs2 [][]int) (subs1Indices, subs2Indices []int) {
 // crossover operator performs the single point crossover
 // operation for two input chromosomes that have
 // previously been selected from a source population
-func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (crossoverChrom [][]int) {
+func ChromosomeCrossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (crossoverChrom [][]int) {
 
 	// initialize maximum length
 	maxLen := len(chrom1Subs) + len(chrom2Subs)
@@ -192,7 +192,7 @@ func Crossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (cros
 // selection crossover operator performs a single part
 // crossover on each of the individuals provided in an
 // input selection channel of chromosomes
-func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters) (crossover chan *Chromosome) {
+func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjective *Objective) (crossover chan *Chromosome) {
 
 	// initialize crossover channel size
 	popSize := int(inputParameters.PopSize)
@@ -217,11 +217,12 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 			empChrom := NewEmptyChromosome()
 
 			// check for valid crossover point
-			chrom1Ind, chrom2Ind = Intersection(chrom1.Subs, chrom2.Subs)
+			chrom1Ind, chrom2Ind = ChromosomeIntersection(chrom1.Subs, chrom2.Subs)
 
 			// resample chromosomes if no intersection
 			if len(chrom1Ind) > 2 {
-				empChrom.Subs = Crossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
+				empChrom.Subs = ChromosomeCrossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
+				//empChrom = ChromosomeFitness(empChrom, inputObjective)
 				output <- empChrom
 				inputSelection <- chrom1
 				inputSelection <- chrom2
@@ -236,4 +237,10 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 
 	// return output
 	return output
+}
+
+// population evolution operator generates a new population
+// from an input population using the selection and crossover operators
+func PopulationEvolution() {
+
 }

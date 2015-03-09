@@ -227,13 +227,13 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	rows, cols := searchDomain.Matrix.Dims()
 
 	// set maximum chromosome length based upon search domain dimensions
-	var p float64 = 2
-	var s float64 = 5
-	maxLen := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
+	//var p float64 = 2
+	//var s float64 = 5
+	//maxLen := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
-	output := make([][]int, 1, maxLen)
+	output := make([][]int, 1, searchDomain.MaxLen)
 	output[0] = make([]int, 2)
 	output[0][0] = searchParameters.SrcSubs[0]
 	output[0][1] = searchParameters.SrcSubs[1]
@@ -249,7 +249,7 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	var try []int
 
 	// enter unbounded for loop
-	for i := 0; i < maxLen; i++ {
+	for i := 0; i < searchDomain.MaxLen; i++ {
 
 		curSubs = output[len(output)-1]
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])

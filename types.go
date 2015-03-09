@@ -26,6 +26,7 @@ type Parameters struct {
 type Domain struct {
 	Id     int
 	Matrix *mat64.Dense
+	MaxLen int
 }
 
 // objectives are comprised of maps which use location indices

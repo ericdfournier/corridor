@@ -23,7 +23,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts[0] = rows - 4
 	destinationSubscripts[1] = cols - 4
 	randomnessCoefficient := 0.5
-	populationSize := 1000
+	populationSize := 100
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 
@@ -63,10 +63,18 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 		}
 	}
 
+	// initialize fixed parameters
+	var p float64 = 2
+	var s float64 = 5
+
+	// compute maximum permitted chromosome length
+	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
+
 	// return output
 	return &Domain{
 		Id:     identifier,
 		Matrix: domainMatrix,
+		MaxLen: maximumLength,
 	}
 }
 

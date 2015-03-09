@@ -5,6 +5,8 @@
 package corridor
 
 import (
+	"math"
+
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
 )
@@ -26,10 +28,21 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoef
 // new domain initialization function
 func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 
+	// get domain size
+	rows, cols := domainMatrix.Dims()
+
+	// initialize fixed parameters
+	var p float64 = 2
+	var s float64 = 5
+
+	// compute maximum permitted chromosome length
+	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
+
 	//return output
 	return &Domain{
 		Id:     identifier,
 		Matrix: domainMatrix,
+		MaxLen: maximumLength,
 	}
 }
 
