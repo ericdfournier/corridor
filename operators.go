@@ -192,7 +192,7 @@ func ChromosomeCrossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]
 // selection crossover operator performs a single part
 // crossover on each of the individuals provided in an
 // input selection channel of chromosomes
-func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjective *Objective) (crossover chan *Chromosome) {
+func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjective *Objective, inputDomain *Domain) (crossover chan *Chromosome) {
 
 	// initialize crossover channel size
 	popSize := int(inputParameters.PopSize)
@@ -214,7 +214,7 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 			var chrom2Ind []int
 
 			// initialize empty chromosome
-			empChrom := NewEmptyChromosome()
+			empChrom := NewEmptyChromosome(inputDomain)
 
 			// check for valid crossover point
 			chrom1Ind, chrom2Ind = ChromosomeIntersection(chrom1.Subs, chrom2.Subs)
@@ -222,14 +222,14 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 			// resample chromosomes if no intersection
 			if len(chrom1Ind) > 2 {
 				empChrom.Subs = ChromosomeCrossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
-				//empChrom = ChromosomeFitness(empChrom, inputObjective)
+				empChrom = ChromosomeFitness(empChrom, inputObjective)
 				output <- empChrom
 				inputSelection <- chrom1
 				inputSelection <- chrom2
 				break
 			} else {
-				inputSelection <- chrom1
 				inputSelection <- chrom2
+				inputSelection <- chrom1
 				continue
 			}
 		}
@@ -239,29 +239,21 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 	return output
 }
 
-// NEED TO DECIDE ON THE BEST WAY TO EVALUATE THE FITNESS OF THE CHROMOSOMES
-// IN THE POPULATION...SHOULD THIS BE DONE WHILE THEY ARE GENERAWTED??? AS
-// COMMENTED OUT ABOVE....OR SHOULD THIS BE DONE EN-MASSE AFTER THEY ARE
-// GENERATED AS COMMENTED OUT BELOW??? THIS IS NOT WORKING AT PRESENT
-
 // population evolution operator generates a new population
 // from an input population using the selection and crossover operators
 func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
 
 	// initialize new empty population
-	empPop := NewEmptyPopulation()
+	output := NewEmptyPopulation()
 
 	// perform population selection
 	popSel := PopulationSelection(inputPopulation, inputParameters)
 
 	// perform selection crossover
-	selCrs := SelectionCrossover(popSel, inputParameters, inputObjective)
+	selCrs := SelectionCrossover(popSel, inputParameters, inputObjective, inputDomain)
 
 	// fill empty population
-	empPop.Chromosomes = selCrs
-
-	// evaluate population fitness
-	output := PopulationFitness(inputPopulation, inputObjective)
+	output.Chromosomes = selCrs
 
 	// return output
 	return output

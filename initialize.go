@@ -95,16 +95,16 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolu
 }
 
 // new empty chromosome initialization function
-func NewEmptyChromosome() *Chromosome {
+func NewEmptyChromosome(searchDomain *Domain) *Chromosome {
 
 	// initialize subscripts
-	subs := make([][]int, 0)
+	subs := make([][]int, searchDomain.MaxLen)
 
 	// generate placeholder id
 	uuid, _ := uuid.NewV4()
 
 	// initialize empty fitness place holders
-	fitVal := make([]float64, len(subs))
+	fitVal := make([]float64, searchDomain.MaxLen)
 	var totFit float64 = 0.0
 
 	// return output
@@ -117,10 +117,13 @@ func NewEmptyChromosome() *Chromosome {
 }
 
 // new population initialization function
-func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) *Population {
+func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective) *Population {
 
 	// initialize communication channel
 	chr := make(chan *Chromosome, searchParameters.PopSize)
+
+	// generate basis solution
+	basisSolution := NewBasis(searchDomain, searchParameters)
 
 	// initialize new empty chromosome before entering loop
 	emptyChrom := NewChromosome(searchDomain, searchParameters, basisSolution)
@@ -170,3 +173,8 @@ func NewEmptyPopulation() *Population {
 		MeanFitness: meanFit,
 	}
 }
+
+// new evolution initialization function
+//func NewEvolution(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective) (outputEvolution *Evolution) {
+
+//}

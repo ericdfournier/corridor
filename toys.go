@@ -23,7 +23,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts[0] = rows - 4
 	destinationSubscripts[1] = cols - 4
 	randomnessCoefficient := 0.5
-	populationSize := 1000
+	populationSize := 10
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 
