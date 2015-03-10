@@ -19,6 +19,7 @@ type Parameters struct {
 	PopSize int
 	SelFrac float64
 	SelProb float64
+	EvoSize int
 }
 
 // domains are comprised of boolean arrays which indicate the
@@ -66,7 +67,7 @@ type Population struct {
 // this number is determined by the convergence rate of the
 // algorithm.
 type Evolution struct {
-	Id              int
+	Id              *uuid.UUID
 	Populations     chan *Population
 	FitnessGradient float64
 }

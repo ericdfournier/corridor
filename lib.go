@@ -182,15 +182,3 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	// return final output
 	return output
 }
-
-// evolution fitness gradient computes the first order derivative of the
-// mean fitness values computed for a set of populations
-//func FitnessGradient(inputEvolution *Evolution) (outputEvolution *Evolution) {
-
-//	smpSize := len(inputEvolution.Populations)
-
-//	curGrd := inputEvolution.FitnessGradient
-
-//	fd.Derivative()
-
-//}

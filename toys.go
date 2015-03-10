@@ -26,6 +26,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	populationSize := 10
 	selectionFraction := 0.5
 	selectionProbability := 0.8
+	evolutionSize := 20
 
 	// return output
 	return &Parameters{
@@ -35,6 +36,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 		PopSize: populationSize,
 		SelFrac: selectionFraction,
 		SelProb: selectionProbability,
+		EvoSize: evolutionSize,
 	}
 }
 

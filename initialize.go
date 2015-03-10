@@ -12,7 +12,7 @@ import (
 )
 
 // new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient float64, populationSize int, selectionFraction, selectionProbability float64) *Parameters {
+func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient float64, populationSize, evolutionSize int, selectionFraction, selectionProbability float64) *Parameters {
 
 	// return output
 	return &Parameters{
@@ -22,6 +22,7 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoef
 		PopSize: populationSize,
 		SelProb: selectionProbability,
 		SelFrac: selectionFraction,
+		EvoSize: evolutionSize,
 	}
 }
 
@@ -175,6 +176,21 @@ func NewEmptyPopulation() *Population {
 }
 
 // new evolution initialization function
-//func NewEvolution(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective) (outputEvolution *Evolution) {
+func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 
-//}
+	// generate evolution id
+	uuid, _ := uuid.NewV4()
+
+	// initialize empty population channel
+	popChan := make(chan *Population, searchParameters.EvoSize)
+
+	// initialize empty fitness gradient
+	var gradFit float64 = 0.0
+
+	// return output
+	return &Evolution{
+		Id:              uuid,
+		Populations:     popChan,
+		FitnessGradient: gradFit,
+	}
+}
