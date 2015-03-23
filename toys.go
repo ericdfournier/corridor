@@ -23,9 +23,11 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts[0] = rows - 4
 	destinationSubscripts[1] = cols - 4
 	randomnessCoefficient := 0.5
-	populationSize := 10
+	populationSize := 100
 	selectionFraction := 0.5
 	selectionProbability := 0.8
+	mutationCount := 1
+	mutationFraction := 0.8
 	evolutionSize := 20
 
 	// return output
@@ -36,6 +38,8 @@ func NewToyParameters(rows, cols int) *Parameters {
 		PopSize: populationSize,
 		SelFrac: selectionFraction,
 		SelProb: selectionProbability,
+		MutaCnt: mutationCount,
+		MutaFrc: mutationFraction,
 		EvoSize: evolutionSize,
 	}
 }

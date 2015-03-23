@@ -258,3 +258,33 @@ func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, input
 	// return output
 	return output
 }
+
+// function to generate a mutation within a given chromosome at a specified
+// number of mutation loci
+func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (mutationLocus []int) {
+
+	// seed random number generator
+	rand.Seed(time.Now().UnixNano())
+
+	// get chromosome length
+	chromSize := len(inputChromosome.Subs)
+
+	// initialize mutation locus
+	var mutLocus []int
+
+	// iterate through desired mutation count
+	for i := 0; i < inputParameters.MutaCnt; i++ {
+		mutLocus = inputChromosome.Subs[rand.Intn(chromSize-2)+1]
+	}
+
+	// return output
+	return mutLocus
+}
+
+// function generate mutations within a specified fraction of an input
+// population with those chromosomes being selected at random
+func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
+
+	// return output
+	return
+}

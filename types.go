@@ -19,6 +19,8 @@ type Parameters struct {
 	PopSize int
 	SelFrac float64
 	SelProb float64
+	MutaCnt int
+	MutaFrc float64
 	EvoSize int
 }
 
