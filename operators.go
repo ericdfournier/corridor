@@ -5,9 +5,12 @@
 package corridor
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/gonum/matrix/mat64"
 )
 
 // fitness function to generate the total fitness and chromosome
@@ -239,6 +242,118 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 	return output
 }
 
+// function to generate a mutation within a given chromosome at a specified
+// number of mutation loci
+func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (outputChromosome *Chromosome) {
+
+	// seed random number generator
+	rand.Seed(time.Now().UnixNano())
+
+	// get chromosome length
+	chromSize := len(inputChromosome.Subs)
+
+	// initialize subdomain slice
+	subSlice := make([]float64, 25)
+
+	// initialize subdomain
+	subMat := mat64.NewDense(5, 5, subSlice)
+
+	// set valid locations
+	for i := 1; i < 4; i++ {
+		for j := 1; j < 4; j++ {
+			subMat.Set(i, j, 1.0)
+		}
+	}
+
+	// initialize output chromosome
+	output := inputChromosome
+
+	// iterate through desired mutation count
+	//for i := 0; i < inputParameters.MutaCnt; i++ {
+
+	// randomly generate mutation index
+	mutIndex := rand.Intn(chromSize-2) + 1
+
+	// extract mutation loci
+	mutLocus := inputChromosome.Subs[mutIndex]
+	prvLocus := inputChromosome.Subs[mutIndex-1]
+	nxtLocus := inputChromosome.Subs[mutIndex+1]
+
+	// initialize subdomain subscripts
+	subPrvLoc := make([]int, 2)
+	subNxtLoc := make([]int, 2)
+	subSource := make([]int, 2)
+	subDestin := make([]int, 2)
+
+	// generate subdomain subscripts
+	subPrvLoc[0] = mutLocus[0] - prvLocus[0]
+	subPrvLoc[1] = mutLocus[1] - prvLocus[1]
+	subNxtLoc[0] = mutLocus[0] - nxtLocus[0]
+	subNxtLoc[1] = mutLocus[1] - nxtLocus[1]
+
+	// write subsource and subdestination values
+	subSource[0] = 2 + subPrvLoc[0]
+	subSource[1] = 2 + subPrvLoc[1]
+	subDestin[0] = 2 + subNxtLoc[0]
+	subDestin[1] = 2 + subNxtLoc[1]
+
+	// eliminate loci from subdomain
+	subMat.Set(2, 2, 0.0)
+	//subMat.Set(subSource[0], subSource[1], 0.0)
+	//subMat.Set(subDestin[0], subDestin[1], 0.0)
+
+	// generate new domain object
+	subDomain := NewDomain(1, subMat)
+
+	for i := 0; i < 5; i++ {
+		fmt.Println(subDomain.Matrix.RawRowView(i))
+	}
+
+	// generate new parameters object
+	subParams := NewParameters(subSource, subDestin, inputParameters.RndCoef, 1, 1, 1.0, 1.0)
+
+	// generate new basis solution
+	subBasis := NewBasis(subDomain, subParams)
+
+	// use subdomain, subsource, and subdestination as inputs to dirwalk
+	subWlk := Dirwlk(subDomain, subParams, subBasis)
+
+	fmt.Println(mutLocus)
+	fmt.Println(subWlk)
+
+	rowShft := mutLocus[0] - 2
+	colShft := mutLocus[1] - 2
+
+	// convert subdomain subscripts back to input basis dimensions
+	for i := 0; i < len(subWlk); i++ {
+		sub := subWlk[i]
+		sub[0] = sub[0] + rowShft
+		sub[1] = sub[1] + colShft
+		subWlk[i] = sub
+	}
+
+	fmt.Println(subWlk)
+
+	// delete mutation index
+	output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
+
+	// insert sub walk section into original chromosome
+	output.Subs = append(output.Subs[:(mutIndex)], append(subWlk, output.Subs[mutIndex:]...)...)
+
+	//}
+
+	// return output
+	return output
+}
+
+// function generate mutations within a specified fraction of an input
+// population with those chromosomes being selected at random
+func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
+
+	// return output
+	return
+}
+
 // population evolution operator generates a new population
 // from an input population using the selection and crossover operators
 func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
@@ -257,48 +372,4 @@ func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, input
 
 	// return output
 	return output
-}
-
-// function to generate a mutation within a given chromosome at a specified
-// number of mutation loci
-func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (outputChromosome *Chromosome) {
-
-	// seed random number generator
-	rand.Seed(time.Now().UnixNano())
-
-	// get chromosome length
-	chromSize := len(inputChromosome.Subs)
-
-	// initialize mutation locus
-	var mutLocus []int
-
-	// initialize outpu chromosome
-	output := inputChromosome
-
-	// iterate through desired mutation count
-	for i := 0; i < inputParameters.MutaCnt; i++ {
-
-		// generate random mutation locus
-		mutLocus = inputChromosome.Subs[rand.Intn(chromSize-2)+1]
-
-		// extract raw subdomain from input domain
-
-		// overwrite subdomain values with current chromsome subs
-
-		// get adjacent loci to mutation loci as subsource and subdestination
-
-		// use subdomain, subsource, and subdestination as inputs to dirwalk
-
-	}
-
-	// return output
-	return output
-}
-
-// function generate mutations within a specified fraction of an input
-// population with those chromosomes being selected at random
-func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
-
-	// return output
-	return
 }
