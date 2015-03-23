@@ -246,99 +246,96 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 // number of mutation loci
 func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (outputChromosome *Chromosome) {
 
-	// seed random number generator
-	rand.Seed(time.Now().UnixNano())
-
-	// get chromosome length
-	chromSize := len(inputChromosome.Subs)
-
-	// initialize subdomain slice
-	subSlice := make([]float64, 25)
-
-	// initialize subdomain
-	subMat := mat64.NewDense(5, 5, subSlice)
-
-	// set valid locations
-	for i := 1; i < 4; i++ {
-		for j := 1; j < 4; j++ {
-			subMat.Set(i, j, 1.0)
-		}
-	}
-
 	// initialize output chromosome
 	output := inputChromosome
 
-	// iterate through desired mutation count
-	//for i := 0; i < inputParameters.MutaCnt; i++ {
+	// compute chromosome length
+	lenChrom := len(inputChromosome.Subs)
 
-	// randomly generate mutation index
-	mutIndex := rand.Intn(chromSize-2) + 1
+	// seed random number generator
+	rand.Seed(time.Now().UnixNano())
 
-	// extract mutation loci
+	// copy input domain matrix
+	refDomain := inputDomain.Matrix
+
+	// block out cells on current chromosome
+	for k := 0; k < lenChrom; k++ {
+		refDomain.Set(inputChromosome.Subs[k][0], inputChromosome.Subs[k][1], 0.0)
+	}
+
+	// randomly select mutation index
+	mutIndex := rand.Intn(lenChrom-2) + 1
+
+	// get mutation locui subscripts from mutIndex
 	mutLocus := inputChromosome.Subs[mutIndex]
 	prvLocus := inputChromosome.Subs[mutIndex-1]
 	nxtLocus := inputChromosome.Subs[mutIndex+1]
 
-	// initialize subdomain subscripts
-	subPrvLoc := make([]int, 2)
-	subNxtLoc := make([]int, 2)
-	subSource := make([]int, 2)
-	subDestin := make([]int, 2)
+	fmt.Println("Mutation Locus")
+	fmt.Println(mutLocus)
 
-	// generate subdomain subscripts
-	subPrvLoc[0] = mutLocus[0] - prvLocus[0]
-	subPrvLoc[1] = mutLocus[1] - prvLocus[1]
-	subNxtLoc[0] = mutLocus[0] - nxtLocus[0]
-	subNxtLoc[1] = mutLocus[1] - nxtLocus[1]
+	// generate mutation locus neighborhood indices
+	nInd := NeighborhoodSubs(mutLocus[0], mutLocus[1])
 
-	// write subsource and subdestination values
-	subSource[0] = 2 + subPrvLoc[0]
-	subSource[1] = 2 + subPrvLoc[1]
-	subDestin[0] = 2 + subNxtLoc[0]
-	subDestin[1] = 2 + subNxtLoc[1]
+	// initialize iterator
+	var n int = 0
 
-	// eliminate loci from subdomain
-	subMat.Set(2, 2, 0.0)
-	//subMat.Set(subSource[0], subSource[1], 0.0)
-	//subMat.Set(subDestin[0], subDestin[1], 0.0)
+	// initialize sub domain matrix
+	subMat := mat64.NewDense(5, 5, nil)
 
-	// generate new domain object
-	subDomain := NewDomain(1, subMat)
-
+	// clean sub domain
 	for i := 0; i < 5; i++ {
-		fmt.Println(subDomain.Matrix.RawRowView(i))
+		for j := 0; j < 5; j++ {
+
+			if i == 0 {
+				subMat.Set(i, j, 0.0)
+			} else if i == 4 {
+				subMat.Set(i, j, 0.0)
+			} else if j == 0 {
+				subMat.Set(i, j, 0.0)
+			} else if j == 4 {
+				subMat.Set(i, j, 0.0)
+			} else if nInd[n][0] == prvLocus[0] && nInd[n][1] == prvLocus[1] {
+				subMat.Set(i, j, 1.0)
+				// iterate counter
+				n += 1
+			} else if nInd[n][0] == nxtLocus[0] && nInd[n][1] == nxtLocus[1] {
+				subMat.Set(i, j, 1.0)
+				// iterate counter
+				n += 1
+			} else {
+				subMat.Set(i, j, refDomain.At(nInd[n][0], nInd[n][1]))
+				// iterate counter
+				n += 1
+			}
+		}
 	}
 
-	// generate new parameters object
-	subParams := NewParameters(subSource, subDestin, inputParameters.RndCoef, 1, 1, 1.0, 1.0)
+	fmt.Println("Sub Matrix")
+	for r := 0; r < 5; r++ {
+		fmt.Println(subMat.RawRowView(r))
+	}
 
-	// generate new basis solution
+	// generate subdomain from sub matrix and generate sub basis
+	subDomain := NewDomain(1, subMat)
+	subParams := NewParameters(prvLocus, nxtLocus, inputParameters.RndCoef, 1, 1.0, 1.0, 1)
 	subBasis := NewBasis(subDomain, subParams)
+	fmt.Println(subBasis)
 
-	// use subdomain, subsource, and subdestination as inputs to dirwalk
+	// generate directed walk based mutation
 	subWlk := Dirwlk(subDomain, subParams, subBasis)
 
-	fmt.Println(mutLocus)
+	fmt.Println("Sub Walk Subscripts")
 	fmt.Println(subWlk)
 
-	rowShft := mutLocus[0] - 2
-	colShft := mutLocus[1] - 2
+	//// iterate through desired mutation count
+	//for i := 0; i < inputParameters.MutaCnt; i++ {
 
-	// convert subdomain subscripts back to input basis dimensions
-	for i := 0; i < len(subWlk); i++ {
-		sub := subWlk[i]
-		sub[0] = sub[0] + rowShft
-		sub[1] = sub[1] + colShft
-		subWlk[i] = sub
-	}
+	//	// delete mutation index
+	//	output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
 
-	fmt.Println(subWlk)
-
-	// delete mutation index
-	output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
-
-	// insert sub walk section into original chromosome
-	output.Subs = append(output.Subs[:(mutIndex)], append(subWlk, output.Subs[mutIndex:]...)...)
+	//	// insert sub walk section into original chromosome
+	//	output.Subs = append(output.Subs[:mutIndex-1], append(subWlk, output.Subs[mutIndex+1:]...)...)
 
 	//}
 

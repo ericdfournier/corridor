@@ -28,6 +28,8 @@ type Parameters struct {
 // feasible locations for the search algorithm
 type Domain struct {
 	Id     int
+	Rows   int
+	Cols   int
 	Matrix *mat64.Dense
 	MaxLen int
 }

@@ -22,7 +22,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts := make([]int, 2)
 	destinationSubscripts[0] = rows - 4
 	destinationSubscripts[1] = cols - 4
-	randomnessCoefficient := 0.5
+	randomnessCoefficient := 1.0
 	populationSize := 1
 	selectionFraction := 0.5
 	selectionProbability := 0.8
@@ -79,6 +79,8 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 	// return output
 	return &Domain{
 		Id:     identifier,
+		Rows:   rows,
+		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
 	}

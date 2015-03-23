@@ -182,3 +182,35 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	// return final output
 	return output
 }
+
+// NEED TO WRITE FUNCTION TO RETURN THE SUBSCRIPT VALUES FOR ALL OF THE
+// CELLS IN THE QUEENS NEIGHBORHOOD TO A GIVEN ROW COLUMN PAIR
+
+func NeighborhoodSubs(row, col int) (subs [9][2]int) {
+
+	// initialize output slice
+	var output [9][2]int
+
+	// write neighborhood subscript values
+	output[0][0] = row - 1
+	output[0][1] = col - 1
+	output[1][0] = row - 1
+	output[1][1] = col
+	output[2][0] = row - 1
+	output[2][1] = col + 1
+	output[3][0] = row
+	output[3][1] = col - 1
+	output[4][0] = row
+	output[4][1] = col
+	output[5][0] = row
+	output[5][1] = col + 1
+	output[6][0] = row + 1
+	output[6][1] = col - 1
+	output[7][0] = row + 1
+	output[7][1] = col
+	output[8][0] = row + 1
+	output[8][1] = col + 1
+
+	return output
+
+}

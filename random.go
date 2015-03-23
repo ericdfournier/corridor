@@ -185,9 +185,6 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 	// initialize output
 	output := make([]int, 2)
 
-	// get search domain matrix dimensions
-	maxRows, maxCols := searchDomain.Matrix.Dims()
-
 	// generate and fix a bivariate normally distributed random vector
 	// prohibit all zero cases and validate using the search domain
 	for {
@@ -207,7 +204,7 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
 			iterations += 1
 			continue
-		} else if output[0] > maxRows-1 || output[1] > maxCols-1 || output[0] < 0 || output[1] < 0 {
+		} else if output[0] > searchDomain.Rows-1 || output[1] > searchDomain.Cols-1 || output[0] < 0 || output[1] < 0 {
 			iterations += 1
 			continue
 		} else {
@@ -223,9 +220,6 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 // destination subscript within the context of an input search domain
 func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int) {
 
-	// initialize iterator and output variables
-	rows, cols := searchDomain.Matrix.Dims()
-
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
 	output := make([][]int, 1, searchDomain.MaxLen)
@@ -234,7 +228,7 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	output[0][1] = searchParameters.SrcSubs[1]
 
 	// initialize new tabu matrix
-	tabu := mat64.NewDense(rows, cols, nil)
+	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
 	tabu.Clone(searchDomain.Matrix)
 	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
 
@@ -243,7 +237,7 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	var curDist float64
 	var try []int
 
-	// enter unbounded for loop
+	// enter for loop
 	for i := 0; i < searchDomain.MaxLen; i++ {
 
 		curSubs = output[len(output)-1]

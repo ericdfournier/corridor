@@ -42,6 +42,8 @@ func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 	//return output
 	return &Domain{
 		Id:     identifier,
+		Rows:   rows,
+		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
 	}
