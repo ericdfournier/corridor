@@ -261,7 +261,7 @@ func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, input
 
 // function to generate a mutation within a given chromosome at a specified
 // number of mutation loci
-func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (mutationLocus []int) {
+func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (outputChromosome *Chromosome) {
 
 	// seed random number generator
 	rand.Seed(time.Now().UnixNano())
@@ -272,13 +272,27 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 	// initialize mutation locus
 	var mutLocus []int
 
+	// initialize outpu chromosome
+	output := inputChromosome
+
 	// iterate through desired mutation count
 	for i := 0; i < inputParameters.MutaCnt; i++ {
+
+		// generate random mutation locus
 		mutLocus = inputChromosome.Subs[rand.Intn(chromSize-2)+1]
+
+		// extract raw subdomain from input domain
+
+		// overwrite subdomain values with current chromsome subs
+
+		// get adjacent loci to mutation loci as subsource and subdestination
+
+		// use subdomain, subsource, and subdestination as inputs to dirwalk
+
 	}
 
 	// return output
-	return mutLocus
+	return output
 }
 
 // function generate mutations within a specified fraction of an input
