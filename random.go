@@ -334,24 +334,37 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 	curSubs := make([]int, 2)
 	var try []int
 
+	// NEED TO INTRODUCE SOME KIND OF ERROR MECHANISM IF THE
+	// DESTINATION IS NOT ACCESSIBLE WITHIN THE DOMAIN
+
 	// enter for loop
-	for i := 0; i < searchDomain.MaxLen; i++ {
+	for {
 
 		// get current subscripts
 		curSubs = output[len(output)-1]
 
-		// generate new try
-		try = NewRndInd(curSubs, searchParameters, searchDomain)
+		if Distance(curSubs, searchParameters.DstSubs) == 1 {
 
-		// test if destination found
-		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
+			// if one unit away assign destination
+			try = searchParameters.DstSubs
 			output = append(output, try)
 			break
-		} else if tabu.At(try[0], try[1]) == 0.0 {
-			continue
 		} else {
-			output = append(output, try)
-			tabu.Set(try[0], try[1], 0.0)
+
+			// generate new try
+			try = NewRndInd(curSubs, searchParameters, searchDomain)
+
+			// test if destination found
+			if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
+				output = append(output, try)
+				break
+			} else if tabu.At(try[0], try[1]) == 0.0 {
+				continue
+			} else {
+				output = append(output, try)
+				tabu.Set(try[0], try[1], 0.0)
+				continue
+			}
 		}
 	}
 

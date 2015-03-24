@@ -253,7 +253,7 @@ func MutationLoci(inputChromosome *Chromosome) (previousLocus, mutationLocus, ne
 	rand.Seed(time.Now().UnixNano())
 
 	// randomly select mutation index
-	mutIndex := rand.Intn(lenChrom-2) + 1
+	mutIndex := rand.Intn(lenChrom-4) + 2
 
 	// get mutation locui subscripts from mutIndex
 	mutLocus := inputChromosome.Subs[mutIndex]
@@ -329,34 +329,61 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 	// generate mutation loci
 	prvLocus, mutLocus, nxtLocus, mutIndex := MutationLoci(inputChromosome)
 
-	// generate mutation subdomain
-	subMat := MutationSubDomain(prvLocus, mutLocus, nxtLocus, refDomain)
+	// first check if deletion is valid, else perform mutation
+	if Distance(prvLocus, nxtLocus) < 1.5 {
 
-	for i := 0; i < 5; i++ {
-		fmt.Println(subMat.RawRowView(i))
+		// perform simple deletion of mutation index
+		output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
+	} else {
+
+		fmt.Println("Mutation Locus")
+		fmt.Println(mutLocus)
+
+		// generate mutation subdomain
+		subMat := MutationSubDomain(prvLocus, mutLocus, nxtLocus, refDomain)
+
+		// generate sub source and sub destination
+		subSource := make([]int, 2)
+		subDestin := make([]int, 2)
+		subSource[0] = prvLocus[0] - mutLocus[0] + 2
+		subSource[1] = prvLocus[1] - mutLocus[1] + 2
+		subDestin[0] = nxtLocus[0] - mutLocus[0] + 2
+		subDestin[1] = nxtLocus[1] - mutLocus[1] + 2
+
+		fmt.Println("Sub Source")
+		fmt.Println(subSource)
+		fmt.Println("Sub Destination")
+		fmt.Println(subDestin)
+
+		// generate subdomain from sub matrix and generate sub basis
+		subDomain := NewDomain(1, subMat)
+		subParams := NewParameters(subSource, subDestin, 1.0, 1, 1.0, 1.0, 1)
+
+		// generate directed walk based mutation
+		subWlk := RndWlk(subDomain, subParams)
+
+		fmt.Println("Raw Sub Walk Subscripts")
+		fmt.Println(subWlk)
+
+		// THERE IS A PROBLEM HERE WITH THE TRANSLATION OF THE SUBSCRIPTS
+		// I HAVE TO FIGURE IT OUT TO MAKE THIS WORK...
+
+		// translate subscripts
+		for i := 0; i < len(subWlk); i++ {
+			subWlk[i][0] = subWlk[i][0] - 2 + mutLocus[0]
+			subWlk[i][1] = subWlk[i][1] - 2 + mutLocus[1]
+		}
+
+		fmt.Println("Translated Sub Walk Subscripts")
+		fmt.Println(subWlk)
+
+		// delete mutation locus
+		output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
+
+		// insert sub walk section into original chromosome
+		output.Subs = append(output.Subs[:mutIndex-1], append(subWlk, output.Subs[mutIndex+1:]...)...)
+
 	}
-
-	// generate subdomain from sub matrix and generate sub basis
-	subDomain := NewDomain(1, subMat)
-	subParams := NewParameters(prvLocus, nxtLocus, 1.0, 1, 1.0, 1.0, 1)
-
-	// generate directed walk based mutation
-	subWlk := RndWlk(subDomain, subParams)
-
-	fmt.Println(subWlk)
-
-	// NEED TO TRANSLATE SUB WALK BACK TO SEARCH DOMAIN COORIDINATES
-
-	//// iterate through desired mutation count
-	//for i := 0; i < inputParameters.MutaCnt; i++ {
-
-	// delete mutation index
-	output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
-
-	// insert sub walk section into original chromosome
-	output.Subs = append(output.Subs[:mutIndex-1], append(subWlk, output.Subs[mutIndex+1:]...)...)
-
-	//}
 
 	// return output
 	return output
