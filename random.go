@@ -14,7 +14,7 @@ import (
 
 // mvnrnd generates pairs of bivariate normally distributed random numbers
 // given an input mean vector and covariance matrix
-func Mvnrnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
+func MvnRnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 
 	// initialize vector slices
 	o := make([]float64, 2)
@@ -46,7 +46,7 @@ func Mvnrnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 // fixrnd converts an input vector of bivariate normally distributed random
 // numbers into a version where the values have been fixed to a [-1, 0 ,1]
 // range
-func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
+func FixRnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 
 	// initialize vector slice
 	o := make([]float64, 2)
@@ -76,9 +76,9 @@ func Fixrnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	return output
 }
 
-// newrnd repeatedly generates a new random sample from mvrnd and then fixes
+// newpsdrnd repeatedly generates a new random sample from mvrnd and then fixes
 // it using fixrnd until the sample is comprised of a non [0, 0] case
-func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
+func NewPsdRnd(mu, sigma *mat64.Dense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
 	rndsmp := mat64.NewDense(2, 1, nil)
@@ -86,8 +86,8 @@ func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 
 	// generate random vectors prohibiting zero-zero cases
 	for {
-		rndsmp = Mvnrnd(mu, sigma)
-		fixsmp = Fixrnd(rndsmp)
+		rndsmp = MvnRnd(mu, sigma)
+		fixsmp = FixRnd(rndsmp)
 		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
 			continue
 		} else {
@@ -109,7 +109,7 @@ func Newrnd(mu, sigma *mat64.Dense) (newRand []int) {
 // newmu generates a matrix representation of mu that reflects the
 // spatial orentiation between the input current subscript and the
 // destination subscript
-func Newmu(curSubs, dstSubs []int) (mu *mat64.Dense) {
+func NewMu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 
 	// initialize vector slice
 	muVec := make([]float64, 2)
@@ -142,7 +142,7 @@ func Newmu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 // newsig generates a matrix representation of sigma that reflects the
 // number of iterations in the sampling process as well as the distance
 // from the basis euclidean solution
-func Newsig(iterations int, randomness, distance float64) (sigma *mat64.Dense) {
+func NewSig(iterations int, randomness, distance float64) (sigma *mat64.Dense) {
 
 	// impose lower bound on distance
 	if distance < 1 {
@@ -175,9 +175,9 @@ func Newsig(iterations int, randomness, distance float64) (sigma *mat64.Dense) {
 	return output
 }
 
-// newind generates a feasible new index value within the input search
+// newpsdind generates a feasible new index value within the input search
 // domain
-func Newind(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+func NewPsdInd(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize iteration counter
 	var iterations int = 1
@@ -190,11 +190,11 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 	for {
 
 		// generate mu and sigma values
-		mu := Newmu(curSubs, searchParameters.DstSubs)
-		sigma := Newsig(iterations, searchParameters.RndCoef, curDist)
+		mu := NewMu(curSubs, searchParameters.DstSubs)
+		sigma := NewSig(iterations, searchParameters.RndCoef, curDist)
 
 		// generate fixed random bivariate normally distributed numbers
-		try := Newrnd(mu, sigma)
+		try := NewPsdRnd(mu, sigma)
 
 		// write output
 		output[0] = curSubs[0] + try[0]
@@ -216,9 +216,58 @@ func Newind(curSubs []int, curDist float64, searchParameters *Parameters, search
 	return output
 }
 
+func NewRndInd(curSubs []int, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+
+	// initialize output
+	output := make([]int, 2)
+
+	// seed random number generator
+	rand.Seed(time.Now().UnixNano())
+
+	// randomly generate compute sign
+	sign1 := rand.Intn(2)
+	sign2 := rand.Intn(2)
+
+	// randomnly generate values
+	value1 := rand.Intn(2)
+	value2 := rand.Intn(2)
+
+	// enter unbounded for loop
+	for i := 0; i < 10; i++ {
+
+		output[0] = curSubs[0]
+		output[1] = curSubs[1]
+
+		// assign signs to values
+		if sign1 == 0 && sign2 == 0 {
+			output[0] = output[0] - value1
+			output[1] = output[1] - value2
+		} else if sign1 == 0 && sign2 == 1 {
+			output[0] = output[0] - value1
+			output[1] = output[1] + value2
+		} else if sign1 == 1 && sign2 == 0 {
+			output[0] = output[0] + value1
+			output[1] = output[1] - value2
+		} else {
+			output[0] = output[0] + value1
+			output[1] = output[1] + value2
+		}
+
+		// test if currentIndex inside search domain
+		if searchDomain.Matrix.At(output[0], output[1]) == 1.0 && output[0] < searchDomain.Rows-1 && output[1] < searchDomain.Cols-1 && output[0] > 0 && output[1] > 0 {
+			break
+		} else {
+			continue
+		}
+	}
+
+	// return output
+	return output
+}
+
 // dirwlk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
-func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int) {
+func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int) {
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
@@ -240,9 +289,14 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	// enter for loop
 	for i := 0; i < searchDomain.MaxLen; i++ {
 
+		// get current subscripts
 		curSubs = output[len(output)-1]
+
+		// compute current distance
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
-		try = Newind(curSubs, curDist, searchParameters, searchDomain)
+
+		// generate new try
+		try = NewPsdInd(curSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
 		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
@@ -258,4 +312,50 @@ func Dirwlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 
 	// return final output
 	return output
+}
+
+// rndwlk is a purely random walk procedure that connects a source subscript
+// to a destination subscript with a uniformly randomly generated
+// non-reversing walk
+func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]int) {
+
+	// initialize chromosome as empty 2D slice with source subs as lead
+	output := make([][]int, 1, searchDomain.MaxLen)
+	output[0] = make([]int, 2)
+	output[0][0] = searchParameters.SrcSubs[0]
+	output[0][1] = searchParameters.SrcSubs[0]
+
+	// initialize new tabu matrix
+	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+	tabu.Clone(searchDomain.Matrix)
+	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+
+	// initialize current subscripts
+	curSubs := make([]int, 2)
+	var try []int
+
+	// enter for loop
+	for i := 0; i < searchDomain.MaxLen; i++ {
+
+		// get current subscripts
+		curSubs = output[len(output)-1]
+
+		// generate new try
+		try = NewRndInd(curSubs, searchParameters, searchDomain)
+
+		// test if destination found
+		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
+			output = append(output, try)
+			break
+		} else if tabu.At(try[0], try[1]) == 0.0 {
+			continue
+		} else {
+			output = append(output, try)
+			tabu.Set(try[0], try[1], 0.0)
+		}
+	}
+
+	// return output
+	return output
+
 }

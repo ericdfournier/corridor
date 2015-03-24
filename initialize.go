@@ -79,7 +79,7 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) *Chromosome {
 
 	// generate subscripts from directed walk procedure
-	subs := Dirwlk(searchDomain, searchParameters, basisSolution)
+	subs := DirWlk(searchDomain, searchParameters, basisSolution)
 
 	// initialize empty fitness place holders
 	fitVal := make([]float64, len(subs))

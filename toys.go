@@ -23,7 +23,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts[0] = rows - 4
 	destinationSubscripts[1] = cols - 4
 	randomnessCoefficient := 1.0
-	populationSize := 1
+	populationSize := 100
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 	mutationCount := 1
@@ -83,6 +83,90 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+	}
+}
+
+// new test mutation domain initialization function
+func NewToyMutationDomain() *Domain {
+
+	// set identifier
+	var identifier int = 1
+
+	// fix domain size
+	var rows int = 5
+	var cols int = 5
+
+	// initialize empty matrix
+	domainSize := rows * cols
+	mat := make([]float64, domainSize)
+	domainMatrix := mat64.NewDense(rows, cols, mat)
+
+	// loop through index values togo define domain
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			if i == 0 {
+				domainMatrix.Set(i, j, 0.0)
+			} else if i == rows-1 {
+				domainMatrix.Set(i, j, 0.0)
+			} else if j == 0 {
+				domainMatrix.Set(i, j, 0.0)
+			} else if j == cols-1 {
+				domainMatrix.Set(i, j, 0.0)
+			} else {
+				domainMatrix.Set(i, j, 1.0)
+			}
+		}
+	}
+
+	// eliminate center
+	domainMatrix.Set(2, 2, 0.0)
+
+	// initialize fixed parameters
+	var p float64 = 2
+	var s float64 = 5
+
+	// compute maximum permitted chromosome length
+	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
+
+	// return output
+	return &Domain{
+		Id:     identifier,
+		Rows:   rows,
+		Cols:   cols,
+		Matrix: domainMatrix,
+		MaxLen: maximumLength,
+	}
+}
+
+// new toy parameters initialization function
+func NewToyMutationParameters() *Parameters {
+
+	// initialize variables
+	sourceSubscripts := make([]int, 2)
+	sourceSubscripts[0] = 1
+	sourceSubscripts[1] = 1
+	destinationSubscripts := make([]int, 2)
+	destinationSubscripts[0] = 3
+	destinationSubscripts[1] = 3
+	randomnessCoefficient := 1.0
+	populationSize := 1
+	selectionFraction := 0.5
+	selectionProbability := 0.8
+	mutationCount := 1
+	mutationFraction := 0.8
+	evolutionSize := 1
+
+	// return output
+	return &Parameters{
+		SrcSubs: sourceSubscripts,
+		DstSubs: destinationSubscripts,
+		RndCoef: randomnessCoefficient,
+		PopSize: populationSize,
+		SelFrac: selectionFraction,
+		SelProb: selectionProbability,
+		MutaCnt: mutationCount,
+		MutaFrc: mutationFraction,
+		EvoSize: evolutionSize,
 	}
 }
 
