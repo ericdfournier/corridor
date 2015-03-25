@@ -146,7 +146,7 @@ func NewToyMutationParameters() *Parameters {
 	sourceSubscripts[0] = 1
 	sourceSubscripts[1] = 1
 	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = 3
+	destinationSubscripts[0] = 1
 	destinationSubscripts[1] = 3
 	randomnessCoefficient := 1.0
 	populationSize := 1

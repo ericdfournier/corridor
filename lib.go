@@ -226,7 +226,7 @@ func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 	sNeigh := NeighborhoodSubs(subSource[0], subSource[1])
 
 	// generate sub destination neighborhood
-	dNeigh := NeighborhoodSubs(subDestin[0], subDestin[0])
+	dNeigh := NeighborhoodSubs(subDestin[0], subDestin[1])
 
 	// generate center row
 	centerRow := subMat.RowView(2)
@@ -247,13 +247,13 @@ func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 	}
 
 	// enter for loop for row column sums
-	for j := 0; j < 3; j++ {
+	for j := 0; j < 5; j++ {
 		rSum = rSum + centerRow.At(j, 0)
 		cSum = cSum + centerCol.At(j, 0)
 	}
 
 	// check conditions to validate neighborhood
-	if sSum < 1.0 || dSum < 1.0 || rSum == 0.0 || cSum == 0.0 {
+	if sSum <= 1.0 || dSum <= 1.0 || rSum == 0.0 || cSum == 0.0 {
 		output = false
 	} else {
 		output = true

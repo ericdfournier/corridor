@@ -227,12 +227,12 @@ func NewRndInd(curSubs []int, searchParameters *Parameters, searchDomain *Domain
 	rand.Seed(time.Now().UnixNano())
 
 	// randomly generate compute sign
-	sign1 := rand.Intn(2)
-	sign2 := rand.Intn(2)
+	sign1 := rand.Intn(2) - 1
+	sign2 := rand.Intn(2) - 1
 
 	// randomnly generate values
-	value1 := rand.Intn(2)
-	value2 := rand.Intn(2)
+	value1 := rand.Intn(2) - 1
+	value2 := rand.Intn(2) - 1
 
 	// enter unbounded for loop
 	for i := 0; i < 10; i++ {
@@ -325,7 +325,7 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 	output := make([][]int, 1, searchDomain.MaxLen)
 	output[0] = make([]int, 2)
 	output[0][0] = searchParameters.SrcSubs[0]
-	output[0][1] = searchParameters.SrcSubs[0]
+	output[0][1] = searchParameters.SrcSubs[1]
 
 	// initialize new tabu matrix
 	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
@@ -337,12 +337,12 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 	var try []int
 
 	// enter for loop
-	for {
+	for i := 0; i < 100; i++ {
 
 		// get current subscripts
 		curSubs = output[len(output)-1]
 
-		if Distance(curSubs, searchParameters.DstSubs) == 1 {
+		if Distance(curSubs, searchParameters.DstSubs) < 1.5 {
 
 			// if one unit away assign destination
 			try = searchParameters.DstSubs
@@ -362,11 +362,29 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 			} else {
 				output = append(output, try)
 				tabu.Set(try[0], try[1], 0.0)
+			}
+
+			// validate current tabu matrix
+			test := ValidateSubDomain(try, searchParameters.DstSubs, tabu)
+
+			// if tabu matrix is invalid reset and restart
+			if test == false {
+
+				// initialize chromosome as empty 2D slice with source subs as lead
+				output := make([][]int, 1, searchDomain.MaxLen)
+				output[0] = make([]int, 2)
+				output[0][0] = searchParameters.SrcSubs[0]
+				output[0][1] = searchParameters.SrcSubs[1]
+
+				// initialize new tabu matrix
+				tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+				tabu.Clone(searchDomain.Matrix)
+				tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+				continue
+			} else {
 				continue
 			}
 
-			// NEED TO INTRODUCE SOME SORT OF CHECK TO VALIDATE THE
-			// TABU MATRIX TO ENSURE NO DEADLOCK INFINITE LOOPS
 		}
 	}
 

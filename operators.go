@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -337,20 +336,11 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 			// perform simple deletion of mutation index
 			output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
-
-			fmt.Println("Deletion Mutation")
+			break
 		} else {
-
-			fmt.Println("Mutation Locus")
-			fmt.Println(mutLocus)
 
 			// generate mutation subdomain
 			subMat := MutationSubDomain(prvLocus, mutLocus, nxtLocus, refDomain)
-
-			fmt.Println("Sub Domain")
-			for i := 0; i < 5; i++ {
-				fmt.Println(subMat.RawRowView(i))
-			}
 
 			// generate sub source and sub destination
 			subSource := make([]int, 2)
@@ -359,11 +349,6 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 			subSource[1] = prvLocus[1] - mutLocus[1] + 2
 			subDestin[0] = nxtLocus[0] - mutLocus[0] + 2
 			subDestin[1] = nxtLocus[1] - mutLocus[1] + 2
-
-			fmt.Println("Sub Source")
-			fmt.Println(subSource)
-			fmt.Println("Sub Destination")
-			fmt.Println(subDestin)
 
 			// generate subdomain from sub matrix and generate sub basis
 			subDomain := NewDomain(1, subMat)
@@ -380,20 +365,11 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 				// generate directed walk based mutation
 				subWlk := RndWlk(subDomain, subParams)
 
-				fmt.Println("Raw Sub Walk Subscripts")
-				fmt.Println(subWlk)
-
-				// THERE IS A PROBLEM HERE WITH THE TRANSLATION OF THE SUBSCRIPTS
-				// I HAVE TO FIGURE IT OUT TO MAKE THIS WORK...
-
 				// translate subscripts
 				for i := 0; i < len(subWlk); i++ {
 					subWlk[i][0] = subWlk[i][0] - 2 + mutLocus[0]
 					subWlk[i][1] = subWlk[i][1] - 2 + mutLocus[1]
 				}
-
-				fmt.Println("Translated Sub Walk Subscripts")
-				fmt.Println(subWlk)
 
 				// delete mutation locus
 				output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
