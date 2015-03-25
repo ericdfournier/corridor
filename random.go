@@ -14,7 +14,7 @@ import (
 
 // mvnrnd generates pairs of bivariate normally distributed random numbers
 // given an input mean vector and covariance matrix
-func MvnRnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
+func MvnRnd(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
 
 	// initialize vector slices
 	o := make([]float64, 2)
@@ -23,6 +23,8 @@ func MvnRnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 	// generate random numbers from normal distribution, prohibit [0,0]
 	// combinations
 	rand.Seed(time.Now().UnixNano())
+
+	// enter loop
 	for i := 0; i <= 1; i++ {
 		n[i] = rand.NormFloat64()
 	}
@@ -32,8 +34,8 @@ func MvnRnd(mu, sigma *mat64.Dense) (rndsmp *mat64.Dense) {
 	output := mat64.NewDense(2, 1, o)
 
 	// perform cholesky decomposition on covariance matrix
-	cholFactor := mat64.Cholesky(sigma)
-	lower := cholFactor.L
+	lower := mat64.NewTriangular(2, false, nil)
+	lower.Cholesky(sigma, true)
 
 	// compute output
 	output.Mul(lower, rnd)
@@ -78,7 +80,7 @@ func FixRnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 
 // newpsdrnd repeatedly generates a new random sample from mvrnd and then fixes
 // it using fixrnd until the sample is comprised of a non [0, 0] case
-func NewPsdRnd(mu, sigma *mat64.Dense) (newRand []int) {
+func NewPsdRnd(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
 	rndsmp := mat64.NewDense(2, 1, nil)
@@ -142,7 +144,7 @@ func NewMu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 // newsig generates a matrix representation of sigma that reflects the
 // number of iterations in the sampling process as well as the distance
 // from the basis euclidean solution
-func NewSig(iterations int, randomness, distance float64) (sigma *mat64.Dense) {
+func NewSig(iterations int, randomness, distance float64) (sigma *mat64.SymDense) {
 
 	// impose lower bound on distance
 	if distance < 1 {
@@ -163,13 +165,13 @@ func NewSig(iterations int, randomness, distance float64) (sigma *mat64.Dense) {
 	}
 
 	// initialize matrix output
-	output := mat64.NewDense(2, 2, nil)
+	output := mat64.NewSymDense(2, nil)
 
 	// set values
-	output.Set(0, 0, cov)
-	output.Set(0, 1, 0.0)
-	output.Set(1, 0, 0.0)
-	output.Set(1, 1, cov)
+	output.SetSym(0, 0, cov)
+	output.SetSym(0, 1, 0.0)
+	output.SetSym(1, 0, 0.0)
+	output.SetSym(1, 1, cov)
 
 	// return final output
 	return output
@@ -334,9 +336,6 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 	curSubs := make([]int, 2)
 	var try []int
 
-	// NEED TO INTRODUCE SOME KIND OF ERROR MECHANISM IF THE
-	// DESTINATION IS NOT ACCESSIBLE WITHIN THE DOMAIN
-
 	// enter for loop
 	for {
 
@@ -365,6 +364,9 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 				tabu.Set(try[0], try[1], 0.0)
 				continue
 			}
+
+			// NEED TO INTRODUCE SOME SORT OF CHECK TO VALIDATE THE
+			// TABU MATRIX TO ENSURE NO DEADLOCK INFINITE LOOPS
 		}
 	}
 

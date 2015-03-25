@@ -214,3 +214,52 @@ func NeighborhoodSubs(row, col int) (subs [9][2]int) {
 	return output
 
 }
+
+// function to validate an input sub domain for use in generating
+// a chromosomal mutation via the random walk procedure
+func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
+
+	// initialize output
+	var output bool
+
+	// generate sub source neighborhood
+	sNeigh := NeighborhoodSubs(subSource[0], subSource[1])
+
+	// generate sub destination neighborhood
+	dNeigh := NeighborhoodSubs(subDestin[0], subDestin[0])
+
+	// generate center row
+	centerRow := subMat.RowView(2)
+
+	// generate center column
+	centerCol := subMat.ColView(2)
+
+	// initialize summation variables
+	var sSum float64 = 0.0
+	var dSum float64 = 0.0
+	var rSum float64 = 0.0
+	var cSum float64 = 0.0
+
+	// enter for loop for start and destination sums
+	for i := 0; i < 9; i++ {
+		sSum = sSum + subMat.At(sNeigh[i][0], sNeigh[i][1])
+		dSum = dSum + subMat.At(dNeigh[i][0], dNeigh[i][1])
+	}
+
+	// enter for loop for row column sums
+	for j := 0; j < 3; j++ {
+		rSum = rSum + centerRow.At(j, 0)
+		cSum = cSum + centerCol.At(j, 0)
+	}
+
+	// check conditions to validate neighborhood
+	if sSum < 1.0 || dSum < 1.0 || rSum == 0.0 || cSum == 0.0 {
+		output = false
+	} else {
+		output = true
+	}
+
+	//return final output
+	return output
+
+}
