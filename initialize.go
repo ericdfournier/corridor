@@ -78,8 +78,22 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 // new chromosome initialization function
 func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) *Chromosome {
 
-	// generate subscripts from directed walk procedure
-	subs := DirWlk(searchDomain, searchParameters, basisSolution)
+	// initialize variables
+	var subs [][]int
+	var dstTest bool
+
+	// enter unbounded for loop
+	for {
+		// generate subscripts from directed walk procedure
+		subs, dstTest = DirWlk(searchDomain, searchParameters, basisSolution)
+
+		// regenerate walk if destination not met within maximum chromosome length
+		if dstTest == false {
+			continue
+		} else {
+			break
+		}
+	}
 
 	// initialize empty fitness place holders
 	fitVal := make([]float64, len(subs))

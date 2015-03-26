@@ -220,7 +220,7 @@ func NewPsdInd(curSubs []int, curDist float64, searchParameters *Parameters, sea
 
 // dirwlk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
-func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int) {
+func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, destinationTest bool) {
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
@@ -238,6 +238,7 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	curSubs := make([]int, 2)
 	var curDist float64
 	var try []int
+	var dstTest bool
 
 	// enter bounded for loop
 	for i := 0; i < searchDomain.MaxLen; i++ {
@@ -263,8 +264,14 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		}
 	}
 
+	if output[len(output)-1][0] == searchParameters.DstSubs[0] && output[len(output)-1][1] == searchParameters.DstSubs[1] {
+		dstTest = true
+	} else {
+		dstTest = false
+	}
+
 	// return final output
-	return output
+	return output, dstTest
 }
 
 // dirwlk generates a new directed walk connecting a source subscript to a
