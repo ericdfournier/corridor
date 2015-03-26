@@ -218,54 +218,54 @@ func NewPsdInd(curSubs []int, curDist float64, searchParameters *Parameters, sea
 	return output
 }
 
-func NewRndInd(curSubs []int, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+//func NewRndInd(curSubs []int, searchParameters *Parameters, searchDomain *Domain, tabuMatrix *mat64.Dense) (newSubscripts []int) {
 
-	// initialize output
-	output := make([]int, 2)
+//	// initialize output
+//	output := make([]int, 2)
 
-	// seed random number generator
-	rand.Seed(time.Now().UnixNano())
+//	// enter unbounded for loop
+//	for {
 
-	// randomly generate compute sign
-	sign1 := rand.Intn(2) - 1
-	sign2 := rand.Intn(2) - 1
+//		// seed random number generator
+//		rand.Seed(time.Now().UnixNano())
 
-	// randomnly generate values
-	value1 := rand.Intn(2) - 1
-	value2 := rand.Intn(2) - 1
+//		// randomly generate compute sign
+//		sign1 := rand.Intn(2) - 1
+//		sign2 := rand.Intn(2) - 1
 
-	// enter unbounded for loop
-	for i := 0; i < 10; i++ {
+//		// randomnly generate values
+//		value1 := rand.Intn(2) - 1
+//		value2 := rand.Intn(2) - 1
 
-		output[0] = curSubs[0]
-		output[1] = curSubs[1]
+//		output[0] = curSubs[0]
+//		output[1] = curSubs[1]
 
-		// assign signs to values
-		if sign1 == 0 && sign2 == 0 {
-			output[0] = output[0] - value1
-			output[1] = output[1] - value2
-		} else if sign1 == 0 && sign2 == 1 {
-			output[0] = output[0] - value1
-			output[1] = output[1] + value2
-		} else if sign1 == 1 && sign2 == 0 {
-			output[0] = output[0] + value1
-			output[1] = output[1] - value2
-		} else {
-			output[0] = output[0] + value1
-			output[1] = output[1] + value2
-		}
+//		// assign signs to values
+//		if sign1 == 0 && sign2 == 0 {
+//			output[0] = output[0] - value1
+//			output[1] = output[1] - value2
+//		} else if sign1 == 0 && sign2 == 1 {
+//			output[0] = output[0] - value1
+//			output[1] = output[1] + value2
+//		} else if sign1 == 1 && sign2 == 0 {
+//			output[0] = output[0] + value1
+//			output[1] = output[1] - value2
+//		} else {
+//			output[0] = output[0] + value1
+//			output[1] = output[1] + value2
+//		}
 
-		// test if currentIndex inside search domain
-		if searchDomain.Matrix.At(output[0], output[1]) == 1.0 && output[0] < searchDomain.Rows-1 && output[1] < searchDomain.Cols-1 && output[0] > 0 && output[1] > 0 {
-			break
-		} else {
-			continue
-		}
-	}
+//		// validate current index relative to the search domain
+//		if tabuMatrix.At(output[0], output[1]) == 1.0 && output[0] < searchDomain.Rows-1 && output[1] < searchDomain.Cols-1 && output[0] > 0 && output[1] > 0 {
+//			break
+//		} else {
+//			continue
+//		}
+//	}
 
-	// return output
-	return output
-}
+//	// return output
+//	return output
+//}
 
 // dirwlk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
@@ -288,7 +288,7 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	var curDist float64
 	var try []int
 
-	// enter for loop
+	// enter bounded for loop
 	for i := 0; i < searchDomain.MaxLen; i++ {
 
 		// get current subscripts
@@ -316,12 +316,12 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	return output
 }
 
-// rndwlk is a purely random walk procedure that connects a source subscript
-// to a destination subscript with a uniformly randomly generated
-// non-reversing walk
-func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]int) {
+// dirwlk generates a new directed walk connecting a source subscript to a
+// destination subscript within the context of an input search domain
+func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, tabuTest bool) {
 
-	// initialize chromosome as empty 2D slice with source subs as lead
+	// initialize chromosomal 2D slice with source subscript as first
+	// element
 	output := make([][]int, 1, searchDomain.MaxLen)
 	output[0] = make([]int, 2)
 	output[0][0] = searchParameters.SrcSubs[0]
@@ -332,63 +332,295 @@ func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]
 	tabu.Clone(searchDomain.Matrix)
 	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
 
-	// initialize current subscripts
+	// initialize current subscripts, distance, try, and iteration counter
 	curSubs := make([]int, 2)
+	var curDist float64
 	var try []int
+	var test bool
 
-	// enter for loop
-	for i := 0; i < 100; i++ {
+	// enter bounded for loop
+	for {
 
 		// get current subscripts
 		curSubs = output[len(output)-1]
 
-		if Distance(curSubs, searchParameters.DstSubs) < 1.5 {
+		// compute current distance
+		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 
-			// if one unit away assign destination
-			try = searchParameters.DstSubs
+		// generate new try
+		try = NewPsdInd(curSubs, curDist, searchParameters, searchDomain)
+
+		// apply control conditions
+		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
 			output = append(output, try)
 			break
+		} else if tabu.At(try[0], try[1]) == 0.0 {
+			continue
 		} else {
-
-			// generate new try
-			try = NewRndInd(curSubs, searchParameters, searchDomain)
-
-			// test if destination found
-			if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
-				output = append(output, try)
-				break
-			} else if tabu.At(try[0], try[1]) == 0.0 {
-				continue
-			} else {
-				output = append(output, try)
-				tabu.Set(try[0], try[1], 0.0)
-			}
-
-			// validate current tabu matrix
-			test := ValidateSubDomain(try, searchParameters.DstSubs, tabu)
-
-			// if tabu matrix is invalid reset and restart
-			if test == false {
-
-				// initialize chromosome as empty 2D slice with source subs as lead
-				output := make([][]int, 1, searchDomain.MaxLen)
-				output[0] = make([]int, 2)
-				output[0][0] = searchParameters.SrcSubs[0]
-				output[0][1] = searchParameters.SrcSubs[1]
-
-				// initialize new tabu matrix
-				tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
-				tabu.Clone(searchDomain.Matrix)
-				tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
-				continue
-			} else {
-				continue
-			}
-
+			output = append(output, try)
+			tabu.Set(try[0], try[1], 0.0)
 		}
+
+		// validate tabu matrix
+		test = ValidateSubDomain(try, searchParameters.DstSubs, tabu)
+
+		// reset if tabu is invalid
+		if test == false {
+			break
+		}
+
 	}
 
-	// return output
-	return output
-
+	// return final output
+	return output, test
 }
+
+//// rndwlk is a purely random walk procedure that connects a source subscript
+//// to a destination subscript with a uniformly randomly generated
+//// non-reversing walk
+//func RndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]int) {
+
+//	// initialize chromosome as empty 2D slice with source subs as lead
+//	output := make([][]int, 1, searchDomain.MaxLen)
+//	output[0] = make([]int, 2)
+//	output[0][0] = searchParameters.SrcSubs[0]
+//	output[0][1] = searchParameters.SrcSubs[1]
+
+//	// initialize new tabu matrix
+//	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+//	tabu.Clone(searchDomain.Matrix)
+//	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+
+//	// initialize current subscripts and current try
+//	curSubs := make([]int, 2)
+//	var try []int
+
+//	// DEBUG
+//	fmt.Println("Try")
+
+//	// enter unbounded for loop
+//	for i := 0; i < 100; i++ {
+
+//		// get current subscripts
+//		curSubs = output[len(output)-1]
+
+//		if Distance(curSubs, searchParameters.DstSubs) < 1.5 {
+
+//			// if one unit away assign destination
+//			try = searchParameters.DstSubs
+//			output = append(output, try)
+//			break
+//		} else {
+
+//			// generate new try
+//			try = NewRndInd(curSubs, searchParameters, searchDomain, tabu)
+
+//			//DEBUG
+//			fmt.Println("Current Try")
+//			fmt.Println(try)
+
+//			// test if destination found
+//			if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
+//				output = append(output, try)
+//				break
+//			} else if tabu.At(try[0], try[1]) == 0.0 {
+//				continue
+//			} else {
+//				output = append(output, try)
+//				//tabu.Set(try[0], try[1], 0.0)
+//			}
+
+//			// DEBUG
+//			fmt.Println("Tabu Matrix")
+//			for i := 0; i < 5; i++ {
+//				fmt.Println(tabu.RawRowView(i))
+//			}
+
+//			// check validity of current tabu matrix
+//			test := ValidateSubDomain(try, searchParameters.DstSubs, tabu)
+
+//			// DEBUG
+//			fmt.Println("Tabu Matrix Validity")
+//			fmt.Println(test)
+//			fmt.Println("Iteration Count")
+
+//			// if tabu matrix is invalid reset and restart
+//			if test == false {
+
+//				// DEBUG
+//				fmt.Println("Reset Tabu Matrix")
+
+//				// initialize chromosome as empty 2D slice with source subs as lead
+//				output = make([][]int, 1, searchDomain.MaxLen)
+//				output[0] = make([]int, 2)
+//				output[0][0] = searchParameters.SrcSubs[0]
+//				output[0][1] = searchParameters.SrcSubs[1]
+
+//				// initialize new tabu matrix
+//				tabu = mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+//				tabu.Clone(searchDomain.Matrix)
+//				//tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+//			} else {
+//				tabu.Set(try[0], try[1], 0.0)
+//			}
+//		}
+//	}
+
+//	// return output
+//	return output
+
+//}
+
+//func BiRndWlk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]int) {
+
+//	// initialize output
+//	output := make([][]int, 1, searchDomain.MaxLen)
+
+//	// initialize chromosome as empty 2D slice with source subs as lead
+//	sourceList := make([][]int, 1, searchDomain.MaxLen)
+//	sourceList[0] = make([]int, 2)
+//	sourceList[0][0] = searchParameters.SrcSubs[0]
+//	sourceList[0][1] = searchParameters.SrcSubs[1]
+
+//	// initialize chromosome as empty 2D slice with source subs as lead
+//	destinList := make([][]int, 1, searchDomain.MaxLen)
+//	destinList[0] = make([]int, 2)
+//	destinList[0][0] = searchParameters.DstSubs[0]
+//	destinList[0][1] = searchParameters.DstSubs[1]
+
+//	// initialize new source tabu matrix
+//	sourceTabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+//	sourceTabu.Clone(searchDomain.Matrix)
+//	sourceTabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+
+//	// initialize new destination tabu matrix
+//	destinTabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+//	destinTabu.Clone(searchDomain.Matrix)
+//	destinTabu.Set(searchParameters.DstSubs[0], searchParameters.DstSubs[1], 0.0)
+
+//	// initialize current subscripts and current try
+//	curSrcSubs := make([]int, 2)
+//	curDstSubs := make([]int, 2)
+//	var sTry []int
+//	var dTry []int
+
+//	// DEBUG
+//	fmt.Println("Try")
+
+//	// enter unbounded for loop
+//	for i := 0; i < 100; i++ {
+
+//		// get current subscripts
+//		curSrcSubs = sourceList[len(sourceList)-1]
+//		curDstSubs = destinList[0]
+
+//		if Distance(curSrcSubs, curDstSubs) < 1.5 {
+
+//			// assign initial output component
+//			output = sourceList[:len(sourceList)-1]
+
+//			// if one unit away assign destination list to output
+//			for i := 0; i < len(destinList); i++ {
+//				output = append(output, destinList[i])
+//			}
+//			break
+//		} else {
+
+//			// generate new try
+//			sTry = NewRndInd(curSrcSubs, searchParameters, searchDomain, sourceTabu)
+//			dTry = NewRndInd(curDstSubs, searchParameters, searchDomain, destinTabu)
+
+//			//DEBUG
+//			fmt.Println("Current Try")
+//			fmt.Println(sTry)
+//			fmt.Println(dTry)
+
+//			// test if destination found
+//			if sTry[0] == dTry[0] && sTry[1] == dTry[1] {
+//				// assign initial output component
+//				output = sourceList[:len(sourceList)-1]
+
+//				// assign destination list to output
+//				for i := 0; i < len(destinList); i++ {
+//					output = append(output, destinList[i])
+//				}
+//				break
+//			} else if sourceTabu.At(sTry[0], sTry[1]) == 0.0 && destinTabu.At(dTry[0], dTry[1]) == 0.0 {
+//				continue
+//			} else {
+//				// append to last element of source list
+//				sourceList = append(sourceList, sTry)
+
+//				// insert to first element of destination list
+//				destinList = append(destinList, nil)
+//				copy(destinList[0+1:], destinList[0:])
+//				destinList[0] = dTry
+//			}
+
+//			// DEBUG
+//			fmt.Println("Source & Distance Tabu Matrices")
+//			for i := 0; i < 5; i++ {
+//				fmt.Println(sourceTabu.RawRowView(i))
+//			}
+//			fmt.Println(" ")
+//			for i := 0; i < 5; i++ {
+//				fmt.Println(destinTabu.RawRowView(i))
+//			}
+
+//			// check validity of current tabu matrix
+//			testSrcTabu := ValidateSubDomain(sTry, searchParameters.DstSubs, sourceTabu)
+//			testDstTabu := ValidateSubDomain(dTry, searchParameters.SrcSubs, destinTabu)
+
+//			// DEBUG
+//			fmt.Println("Tabu Matrix Validity")
+//			fmt.Println(testSrcTabu)
+//			fmt.Println(testDstTabu)
+//			fmt.Println("Iteration Count")
+//			//fmt.Println(iter)
+
+//			// if tabu matrix is invalid reset and restart
+//			if testSrcTabu == false {
+
+//				// DEBUG
+//				fmt.Println("Reset Tabu Matrix")
+
+//				// initialize chromosome as empty 2D slice with source subs as lead
+//				sourceList = make([][]int, 1, searchDomain.MaxLen)
+//				sourceList[0] = make([]int, 2)
+//				sourceList[0][0] = searchParameters.SrcSubs[0]
+//				sourceList[0][1] = searchParameters.SrcSubs[1]
+
+//				// initialize new tabu matrix
+//				sourceTabu = mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+//				sourceTabu.Clone(searchDomain.Matrix)
+//				//tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+//			} else {
+//				sourceTabu.Set(sTry[0], sTry[1], 0.0)
+//			}
+
+//			// if tabu matrix is invalid reset and restart
+//			if testDstTabu == false {
+
+//				// DEBUG
+//				fmt.Println("Reset Tabu Matrix")
+
+//				// initialize chromosome as empty 2D slice with source subs as lead
+//				destinList = make([][]int, 1, searchDomain.MaxLen)
+//				destinList[0] = make([]int, 2)
+//				destinList[0][0] = searchParameters.DstSubs[0]
+//				destinList[0][1] = searchParameters.DstSubs[1]
+
+//				// initialize new tabu matrix
+//				destinTabu = mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+//				destinTabu.Clone(searchDomain.Matrix)
+//				//tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+//			} else {
+//				destinTabu.Set(dTry[0], dTry[1], 0.0)
+//			}
+//		}
+//	}
+
+//	// return output
+//	return output
+
+//}

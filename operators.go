@@ -352,31 +352,39 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 			// generate subdomain from sub matrix and generate sub basis
 			subDomain := NewDomain(1, subMat)
-			subParams := NewParameters(subSource, subDestin, 1.0, 1, 1.0, 1.0, 1)
+			subParams := NewParameters(subSource, subDestin, inputParameters.RndCoef, 1, 1.0, 1.0, 1)
+			subBasis := NewBasis(subDomain, subParams)
 
 			// check validity of sub domain
-			test := ValidateSubDomain(subSource, subDestin, subMat)
+			subDomainTest := ValidateSubDomain(subSource, subDestin, subMat)
 
 			// resample if subdomain is invalid
-			if test == false {
+			if subDomainTest == false {
 				continue
 			} else {
 
 				// generate directed walk based mutation
-				subWlk := RndWlk(subDomain, subParams)
+				subWlk, tabuTest := MutWlk(subDomain, subParams, subBasis)
 
-				// translate subscripts
-				for i := 0; i < len(subWlk); i++ {
-					subWlk[i][0] = subWlk[i][0] - 2 + mutLocus[0]
-					subWlk[i][1] = subWlk[i][1] - 2 + mutLocus[1]
+				// if tabu test fails abort mutation and restart
+				if tabuTest == false {
+					subWlk = make([][]int, 1)
+					continue
+				} else {
+
+					// translate subscripts
+					for i := 0; i < len(subWlk); i++ {
+						subWlk[i][0] = subWlk[i][0] - 2 + mutLocus[0]
+						subWlk[i][1] = subWlk[i][1] - 2 + mutLocus[1]
+					}
+
+					// delete mutation locus
+					output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
+
+					// insert sub walk section into original chromosome
+					output.Subs = append(output.Subs[:mutIndex-1], append(subWlk, output.Subs[mutIndex+1:]...)...)
+					break
 				}
-
-				// delete mutation locus
-				output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
-
-				// insert sub walk section into original chromosome
-				output.Subs = append(output.Subs[:mutIndex-1], append(subWlk, output.Subs[mutIndex+1:]...)...)
-				break
 			}
 		}
 
