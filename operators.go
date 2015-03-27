@@ -32,16 +32,13 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (
 
 // fitness function generate the mean and standard deviation of
 // fitness values for all of the chromosomes in a given population
-func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (outputPopulation *Population) {
-
-	// initialize pop size
-	popSize := cap(inputPopulation.Chromosomes)
+func PopulationFitness(inputPopulation *Population, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
 
 	// initialize output
 	var output float64
 
 	// drain channel to accumulate fitness values
-	for i := 0; i < popSize; i++ {
+	for i := 0; i < inputParameters.PopSize; i++ {
 
 		// read current chromosome from channel
 		curChrom := <-inputPopulation.Chromosomes
@@ -56,7 +53,7 @@ func PopulationFitness(inputPopulation *Population, inputObjective *Objective) (
 	}
 
 	// compute mean from cumulative
-	inputPopulation.MeanFitness = output / float64(popSize)
+	inputPopulation.MeanFitness = output / float64(inputParameters.PopSize)
 
 	// return output
 	return inputPopulation
@@ -196,14 +193,11 @@ func ChromosomeCrossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]
 // input selection channel of chromosomes
 func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjective *Objective, inputDomain *Domain) (crossover chan *Chromosome) {
 
-	// initialize crossover channel size
-	popSize := int(inputParameters.PopSize)
-
 	// initialize crossover channel
-	output := make(chan *Chromosome, popSize)
+	output := make(chan *Chromosome, inputParameters.PopSize)
 
 	// initialize crossover loop
-	for i := 0; i < popSize; i++ {
+	for i := 0; i < inputParameters.PopSize; i++ {
 
 		for {
 
@@ -317,8 +311,11 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 	// initialize output chromosome
 	output := inputChromosome
 
-	// copy input domain matrix
-	refDomain := inputDomain.Matrix
+	// initialize reference domain matrix
+	refDomain := mat64.NewDense(inputDomain.Rows, inputDomain.Cols, nil)
+
+	// clone input domain matrix
+	refDomain.Clone(inputDomain.Matrix)
 
 	// block out cells on current chromosome
 	for k := 0; k < lenChrom; k++ {
@@ -394,13 +391,33 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 	return output
 }
 
-// function generate mutations within a specified fraction of an input
-// population with those chromosomes being selected at random
-func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
+// function to generate multiple mutations on multiple separate loci on the same
+// input chromosome
+func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters) (outputChromosome *Chromosome) {
+
+	// loop through mutation count
+	for i := 0; i < inputParameters.MutaCnt; i++ {
+		inputChromosome = ChromosomeMutation(inputChromosome, inputDomain, inputParameters)
+	}
 
 	// return output
-	return
+	return inputChromosome
 }
+
+//// function generate mutations within a specified fraction of an input
+//// population with those chromosomes being selected at random
+//func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
+
+//	// initialize selection loop
+//	for i := 0; i < ; i++ {
+
+//		// write selection to output channel
+//		output <- ChromosomeSelection(<-inputPopulation.Chromosomes, <-inputPopulation.Chromosomes, selProb)
+//	}
+
+//	// return selection channel
+//	return output
+//}
 
 // population evolution operator generates a new population
 // from an input population using the selection and crossover operators
