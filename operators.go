@@ -5,8 +5,10 @@
 package corridor
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/gonum/matrix/mat64"
@@ -404,20 +406,67 @@ func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, i
 	return inputChromosome
 }
 
-//// function generate mutations within a specified fraction of an input
-//// population with those chromosomes being selected at random
-//func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
+// function generate mutations within a specified fraction of an input
+// population with those chromosomes being selected at random
+func PopulationMutation(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters) (outputPopulation *Population) {
 
-//	// initialize selection loop
-//	for i := 0; i < ; i++ {
+	// calculate the total number of chromosomes that are to receive mutations
+	mutations := int(math.Floor(float64(inputParameters.PopSize) * float64(inputParameters.MutaFrc)))
 
-//		// write selection to output channel
-//		output <- ChromosomeSelection(<-inputPopulation.Chromosomes, <-inputPopulation.Chromosomes, selProb)
-//	}
+	// initialize mutation indices
+	mutInd := make([]int, mutations)
 
-//	// return selection channel
-//	return output
-//}
+	// randomly generate indexes for chromosomes to be mutated
+	rand.Seed(time.Now().UnixNano())
+
+	// NEED TO FIGURE OUT A WAY TO GENERATE INDICES RANDOMLY WITHOUT REPLACEMENT
+
+	// enter selection loop
+	for i := 0; i < mutations; i++ {
+		mutInd[i] = rand.Intn(cap(inputPopulation.Chromosomes))
+	}
+
+	// sort the mutation indices
+	sort.Ints(mutInd)
+
+	fmt.Println(mutInd)
+
+	//// initialize iterator
+	//var iter int = 0
+
+	//// initialize selection loop
+	//for j := 0; j < inputParameters.PopSize; j++ {
+
+	//	// get current chromosome from channel
+	//	curChrom := <-inputPopulation.Chromosomes
+
+	//	// screen on mutation indices
+	//	if j == sortInd[iter] {
+
+	//		// launch go routines
+	//		go func(curChrom *Chromosome) {
+	//			curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters)
+	//		}(curChrom)
+
+	//		// update iterator
+	//		iter += 1
+
+	//		// DEBUG
+	//		fmt.Println("Chromosome Mutated!")
+
+	//		// return current chromosome back to channel
+	//		inputPopulation.Chromosomes <- curChrom
+	//	} else {
+
+	//		// return current chromosome back to channel
+	//		inputPopulation.Chromosomes <- curChrom
+	//	}
+
+	//}
+
+	// return selection channel
+	return inputPopulation
+}
 
 // population evolution operator generates a new population
 // from an input population using the selection and crossover operators

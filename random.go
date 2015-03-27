@@ -25,7 +25,7 @@ func MvnRnd(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
 	rand.Seed(time.Now().UnixNano())
 
 	// enter loop
-	for i := 0; i <= 1; i++ {
+	for i := 0; i < 2; i++ {
 		n[i] = rand.NormFloat64()
 	}
 
