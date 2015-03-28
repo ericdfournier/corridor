@@ -472,7 +472,7 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
 
 	// initialize new empty population
-	output := NewEmptyPopulation()
+	output := NewEmptyPopulation(inputPopulation.Id + 1)
 
 	// perform population selection
 	popSel := PopulationSelection(inputPopulation, inputParameters)

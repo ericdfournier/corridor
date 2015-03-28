@@ -73,5 +73,5 @@ type Population struct {
 type Evolution struct {
 	Id              *uuid.UUID
 	Populations     chan *Population
-	FitnessGradient float64
+	FitnessGradient []float64
 }

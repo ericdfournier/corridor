@@ -172,10 +172,7 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 }
 
 // new empty population initialization function
-func NewEmptyPopulation() *Population {
-
-	// initialize identifier
-	var identifier int = 0
+func NewEmptyPopulation(identifier int) *Population {
 
 	// initialize empty chromosomes channel
 	chr := make(chan *Chromosome)
@@ -201,7 +198,7 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 	popChan := make(chan *Population, searchParameters.EvoSize)
 
 	// initialize empty fitness gradient
-	var gradFit float64 = 0.0
+	gradFit := make([]float64, searchParameters.EvoSize)
 
 	// return output
 	return &Evolution{
@@ -211,13 +208,38 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 	}
 }
 
-//// new evolution initialization function
-//func NewEvolution(searchParameters, searchDomain, searchObjective) *Evolution {
+// new evolution initialization function
+func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObjective *Objective) *Evolution {
 
-//	// return output
-//	return &Evolution{
-//		Id:              uuid,
-//		Populations:     popChan,
-//		FitnessGradient: gradFit,
-//	}
-//}
+	// generate evolution id
+	uuid, _ := uuid.NewV4()
+
+	// initialize seed population identifier
+	var popID int = 0
+
+	// initialize seed population
+	popChan := make(chan *Population, searchParameters.EvoSize)
+
+	// initiali
+	curPop := NewPopulation(popID, searchDomain, searchParameters, searchObjective)
+	curPop = PopulationFitness(curPop, searchParameters, searchObjective)
+
+	// enter loop
+	for i := 0; i < searchParameters.EvoSize; i++ {
+		newPop := PopulationEvolution(curPop, searchDomain, searchParameters, searchObjective)
+		newPop = PopulationFitness(newPop, searchParameters, searchObjective)
+		curPop = newPop
+		popChan <- newPop
+	}
+
+	// PLACEHOLDER FITNESS GRADIENT
+	gradFit := make([]float64, searchParameters.EvoSize)
+
+	// evaluate seed population
+	// return output
+	return &Evolution{
+		Id:              uuid,
+		Populations:     popChan,
+		FitnessGradient: gradFit,
+	}
+}
