@@ -191,7 +191,7 @@ func NewEmptyPopulation() *Population {
 	}
 }
 
-// new evolution initialization function
+// new empty evolution initialization function
 func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 
 	// generate evolution id
@@ -210,3 +210,14 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 		FitnessGradient: gradFit,
 	}
 }
+
+//// new evolution initialization function
+//func NewEvolution(searchParameters, searchDomain, searchObjective) *Evolution {
+
+//	// return output
+//	return &Evolution{
+//		Id:              uuid,
+//		Populations:     popChan,
+//		FitnessGradient: gradFit,
+//	}
+//}
