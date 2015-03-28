@@ -27,7 +27,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 	mutationCount := 2
-	mutationFraction := 0.8
+	mutationFraction := 0.1
 	evolutionSize := 20
 
 	// return output
