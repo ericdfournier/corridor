@@ -8,6 +8,7 @@ import (
 	"math"
 
 	"github.com/cheggaaa/pb"
+	"github.com/gonum/diff/fd"
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
 )
@@ -235,24 +236,58 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 	// initialize seed population
 	popChan := make(chan *Population, searchParameters.EvoSize)
 
-	// initiali
+	// initialize seed population
 	curPop := NewPopulation(popID, searchDomain, searchParameters, searchObjectives)
 	curPop = PopulationFitness(curPop, searchParameters, searchObjectives)
 
+	// initialize raw fitness data slice
+	rawAggMeanFit := make([]float64, searchParameters.EvoSize)
+
+	// initialize fitness gradient variable
+	gradFit := make([]float64, searchParameters.EvoSize)
+
 	// enter loop
 	for i := 0; i < searchParameters.EvoSize; i++ {
+
+		// perform population evolution
 		newPop := PopulationEvolution(curPop, searchDomain, searchParameters, searchObjectives)
+
+		// compute population fitness
 		newPop = PopulationFitness(newPop, searchParameters, searchObjectives)
+
+		// update current population
 		curPop = newPop
-		popChan <- newPop
-		bar.Increment()
+
+		// write aggregate mean fitness value to vector
+		rawAggMeanFit[i] = newPop.AggregateMeanFitness
+
+		// generate inline fitness gradient function
+		var fitnessGradFnc = func(n float64) float64 { return rawAggMeanFit[int(n)] }
+
+		// compute fitness gradient
+		gradFit[i] = fd.Derivative(fitnessGradFnc, float64(i), nil)
+
+		// skip gradient check on first iteration
+		if i <= 1 || gradFit[i] < 0 {
+
+			// return population to channel
+			popChan <- newPop
+
+			// increment progress bar
+			bar.Increment()
+
+		} else if i > 1 && gradFit[i] > 0 {
+
+			// break loop
+			break
+		}
+
 	}
 
 	// print success message
 	bar.FinishPrint("Evolution Commplete!")
 
-	// PLACEHOLDER FITNESS GRADIENT
-	gradFit := make([]float64, searchParameters.EvoSize)
+	// compute derivative
 
 	// evaluate seed population
 	// return output

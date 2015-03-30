@@ -28,7 +28,7 @@ func NewToyParameters(rows, cols int) *Parameters {
 	selectionProbability := 0.8
 	mutationCount := 1
 	mutationFraction := 0.5
-	evolutionSize := 1 //int(math.Floor(math.Sqrt(float64(populationSize))))
+	evolutionSize := 50 //int(math.Floor(math.Sqrt(float64(populationSize))))
 
 	// return output
 	return &Parameters{
@@ -160,7 +160,11 @@ func NewToyObjectives(identifier, rows, cols, objectiveCount int) *MultiObjectiv
 		// write random objective values
 		for i := 0; i < rows; i++ {
 			for j := 0; j < cols; j++ {
-				objMat.Set(i, j, math.Abs(rand.Float64()))
+				if i > (rows/4) && i < 3*(rows/4) && j > (cols/4) && j < 3*(cols/4) {
+					objMat.Set(i, j, 100.0)
+				} else {
+					objMat.Set(i, j, math.Abs(rand.Float64()))
+				}
 			}
 		}
 
