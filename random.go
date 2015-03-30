@@ -78,9 +78,9 @@ func FixRnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	return output
 }
 
-// newpsdrnd repeatedly generates a new random sample from mvrnd and then fixes
+// newrnd repeatedly generates a new random sample from mvrnd and then fixes
 // it using fixrnd until the sample is comprised of a non [0, 0] case
-func NewPsdRnd(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
+func NewRnd(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
 	rndsmp := mat64.NewDense(2, 1, nil)
@@ -177,9 +177,9 @@ func NewSig(iterations int, randomness, distance float64) (sigma *mat64.SymDense
 	return output
 }
 
-// newpsdind generates a feasible new index value within the input search
+// newind generates a feasible new index value within the input search
 // domain
-func NewPsdInd(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+func NewInd(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize iteration counter
 	var iterations int = 1
@@ -196,7 +196,7 @@ func NewPsdInd(curSubs []int, curDist float64, searchParameters *Parameters, sea
 		sigma := NewSig(iterations, searchParameters.RndCoef, curDist)
 
 		// generate fixed random bivariate normally distributed numbers
-		try := NewPsdRnd(mu, sigma)
+		try := NewRnd(mu, sigma)
 
 		// write output
 		output[0] = curSubs[0] + try[0]
@@ -250,7 +250,7 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 
 		// generate new try
-		try = NewPsdInd(curSubs, curDist, searchParameters, searchDomain)
+		try = NewInd(curSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
 		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
@@ -306,7 +306,7 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 
 		// generate new try
-		try = NewPsdInd(curSubs, curDist, searchParameters, searchDomain)
+		try = NewInd(curSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
 		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
@@ -326,7 +326,6 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		if test == false {
 			break
 		}
-
 	}
 
 	// return final output

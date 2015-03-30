@@ -22,6 +22,7 @@ type Parameters struct {
 	MutaCnt int
 	MutaFrc float64
 	EvoSize int
+	ObjeCnt int
 }
 
 // domains are comprised of boolean arrays which indicate the
@@ -34,12 +35,21 @@ type Domain struct {
 	MaxLen int
 }
 
-// objectives are comprised of maps which use location indices
-// to key to floating point fitness values within the search
-// domain
+// objectives are comprised of matrices which use location
+// indices to key to floating point fitness values within the
+// search domain
 type Objective struct {
 	Id     int
 	Matrix *mat64.Dense
+}
+
+// multiObjective objects are comprised of a channel of individual
+// independent objectives that are used for the evaluation of
+// chromosome and population level fitness values
+type MultiObjective struct {
+	Id             int
+	ObjectiveCount int
+	Objectives     []*Objective
 }
 
 // a basis solution is comprised of the subscript indices forming
@@ -53,18 +63,20 @@ type Basis struct {
 // chromosomess are comprised of genes which are distinct row column
 // indices to some spatially reference search domain.
 type Chromosome struct {
-	Id           *uuid.UUID
-	Subs         [][]int
-	Fitness      []float64
-	TotalFitness float64
+	Id               *uuid.UUID
+	Subs             [][]int
+	Fitness          [][]float64
+	TotalFitness     []float64
+	AggregateFitness float64
 }
 
 // populations are comprised of a fixed number of chromosomes.
 // this number corresponds to the populationSize.
 type Population struct {
-	Id          int
-	Chromosomes chan *Chromosome
-	MeanFitness float64
+	Id                   int
+	Chromosomes          chan *Chromosome
+	MeanFitness          []float64
+	AggregateMeanFitness float64
 }
 
 // evolutions are comprised of a stochastic number of populations.

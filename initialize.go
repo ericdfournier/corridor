@@ -7,6 +7,7 @@ package corridor
 import (
 	"math"
 
+	"github.com/cheggaaa/pb"
 	"github.com/gonum/matrix/mat64"
 	"github.com/nu7hatch/gouuid"
 )
@@ -76,7 +77,7 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 }
 
 // new chromosome initialization function
-func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) *Chromosome {
+func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) *Chromosome {
 
 	// initialize variables
 	var subs [][]int
@@ -96,23 +97,28 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, basisSolu
 	}
 
 	// initialize empty fitness place holders
-	fitVal := make([]float64, len(subs))
-	var totFit float64 = 0.0
+	fitVal := make([][]float64, searchObjectives.ObjectiveCount)
+	for i := 0; i < searchObjectives.ObjectiveCount; i++ {
+		fitVal[i] = make([]float64, len(subs))
+	}
+	totFit := make([]float64, searchObjectives.ObjectiveCount)
+	var aggFit float64 = 0.0
 
 	// generate placeholder variables
 	uuid, _ := uuid.NewV4()
 
 	// return output
 	return &Chromosome{
-		Id:           uuid,
-		Subs:         subs,
-		Fitness:      fitVal,
-		TotalFitness: totFit,
+		Id:               uuid,
+		Subs:             subs,
+		Fitness:          fitVal,
+		TotalFitness:     totFit,
+		AggregateFitness: aggFit,
 	}
 }
 
 // new empty chromosome initialization function
-func NewEmptyChromosome(searchDomain *Domain) *Chromosome {
+func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) *Chromosome {
 
 	// initialize subscripts
 	subs := make([][]int, searchDomain.MaxLen)
@@ -121,20 +127,25 @@ func NewEmptyChromosome(searchDomain *Domain) *Chromosome {
 	uuid, _ := uuid.NewV4()
 
 	// initialize empty fitness place holders
-	fitVal := make([]float64, searchDomain.MaxLen)
-	var totFit float64 = 0.0
+	fitVal := make([][]float64, searchObjectives.ObjectiveCount)
+	for i := 0; i < searchObjectives.ObjectiveCount; i++ {
+		fitVal[i] = make([]float64, len(subs))
+	}
+	totFit := make([]float64, searchObjectives.ObjectiveCount)
+	var aggFit float64 = 0.0
 
 	// return output
 	return &Chromosome{
-		Id:           uuid,
-		Subs:         subs,
-		Fitness:      fitVal,
-		TotalFitness: totFit,
+		Id:               uuid,
+		Subs:             subs,
+		Fitness:          fitVal,
+		TotalFitness:     totFit,
+		AggregateFitness: aggFit,
 	}
 }
 
 // new population initialization function
-func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective) *Population {
+func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) *Population {
 
 	// initialize communication channel
 	chr := make(chan *Chromosome, searchParameters.PopSize)
@@ -143,48 +154,49 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	basisSolution := NewBasis(searchDomain, searchParameters)
 
 	// initialize new empty chromosome before entering loop
-	emptyChrom := NewChromosome(searchDomain, searchParameters, basisSolution)
+	emptyChrom := NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
 
 	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.PopSize; i++ {
 
 		// launch chromosome initialization go routines
-		go func(searchDomain *Domain, searchParameters *Parameters, searchObjective *Objective, basisSolution *Basis) {
-			emptyChrom = NewChromosome(searchDomain, searchParameters, basisSolution)
-			chr <- ChromosomeFitness(emptyChrom, searchObjective)
-		}(searchDomain, searchParameters, searchObjective, basisSolution)
+		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
+			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
+			chr <- ChromosomeFitness(emptyChrom, searchObjectives)
+		}(searchDomain, searchParameters, searchObjectives, basisSolution)
 
 	}
 
-	// initialize mean fitness
-	var cumFit float64 = 0.0
-
-	// generate mean fitness
-	meanFit := cumFit / float64(searchParameters.PopSize)
+	// initialize fitness placeholder
+	meanFit := make([]float64, searchObjectives.ObjectiveCount)
+	var aggMeanFit float64 = 0.0
 
 	// return output
 	return &Population{
-		Id:          identifier,
-		Chromosomes: chr,
-		MeanFitness: meanFit,
+		Id:                   identifier,
+		Chromosomes:          chr,
+		MeanFitness:          meanFit,
+		AggregateMeanFitness: aggMeanFit,
 	}
 
 }
 
 // new empty population initialization function
-func NewEmptyPopulation(identifier int) *Population {
+func NewEmptyPopulation(identifier int, searchObjectives *MultiObjective) *Population {
 
 	// initialize empty chromosomes channel
 	chr := make(chan *Chromosome)
 
-	// initialize mean fitness value
-	var meanFit float64 = 0.0
+	// initialize fitness placeholder
+	meanFit := make([]float64, searchObjectives.ObjectiveCount)
+	var aggMeanFit float64 = 0.0
 
 	// return output
 	return &Population{
-		Id:          identifier,
-		Chromosomes: chr,
-		MeanFitness: meanFit,
+		Id:                   identifier,
+		Chromosomes:          chr,
+		MeanFitness:          meanFit,
+		AggregateMeanFitness: aggMeanFit,
 	}
 }
 
@@ -209,7 +221,7 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 }
 
 // new evolution initialization function
-func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObjective *Objective) *Evolution {
+func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObjectives *MultiObjective) *Evolution {
 
 	// generate evolution id
 	uuid, _ := uuid.NewV4()
@@ -217,20 +229,27 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 	// initialize seed population identifier
 	var popID int = 0
 
+	// initialize progress bar
+	bar := pb.StartNew(searchParameters.EvoSize)
+
 	// initialize seed population
 	popChan := make(chan *Population, searchParameters.EvoSize)
 
 	// initiali
-	curPop := NewPopulation(popID, searchDomain, searchParameters, searchObjective)
-	curPop = PopulationFitness(curPop, searchParameters, searchObjective)
+	curPop := NewPopulation(popID, searchDomain, searchParameters, searchObjectives)
+	curPop = PopulationFitness(curPop, searchParameters, searchObjectives)
 
 	// enter loop
 	for i := 0; i < searchParameters.EvoSize; i++ {
-		newPop := PopulationEvolution(curPop, searchDomain, searchParameters, searchObjective)
-		newPop = PopulationFitness(newPop, searchParameters, searchObjective)
+		newPop := PopulationEvolution(curPop, searchDomain, searchParameters, searchObjectives)
+		newPop = PopulationFitness(newPop, searchParameters, searchObjectives)
 		curPop = newPop
 		popChan <- newPop
+		bar.Increment()
 	}
+
+	// print success message
+	bar.FinishPrint("Evolution Commplete!")
 
 	// PLACEHOLDER FITNESS GRADIENT
 	gradFit := make([]float64, searchParameters.EvoSize)

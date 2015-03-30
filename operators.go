@@ -14,20 +14,38 @@ import (
 
 // fitness function to generate the total fitness and chromosome
 // fitness values for a given input chromosome
-func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (outputChromosome *Chromosome) {
+func ChromosomeFitness(inputChromosome *Chromosome, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
 	// get chromosome length
 	chromLen := len(inputChromosome.Subs)
 
-	// clear existing chromosome fitness value
-	inputChromosome.Fitness = make([]float64, chromLen)
+	// clear current chromosome fitness values
+	inputChromosome.Fitness = make([][]float64, inputObjectives.ObjectiveCount)
+	for i := 0; i < inputObjectives.ObjectiveCount; i++ {
+		inputChromosome.Fitness[i] = make([]float64, len(inputChromosome.Subs))
+	}
+
+	// initialize current & aggregate fitness
+	var aggFit float64 = 0.0
+	var curFit float64 = 0.0
 
 	// evaluate chromosome fitness according to input objective
-	for i := 0; i < chromLen; i++ {
-		curFit := inputObjective.Matrix.At(inputChromosome.Subs[i][0], inputChromosome.Subs[i][1])
-		inputChromosome.Fitness[i] = curFit
-		inputChromosome.TotalFitness = inputChromosome.TotalFitness + curFit
+	for i := 0; i < inputObjectives.ObjectiveCount; i++ {
+
+		// iterate through chromosome length to compute fitness
+		for j := 0; j < chromLen; j++ {
+			curFit = inputObjectives.Objectives[i].Matrix.At(inputChromosome.Subs[j][0], inputChromosome.Subs[j][1])
+			inputChromosome.Fitness[i][j] = curFit
+			inputChromosome.TotalFitness[i] = inputChromosome.TotalFitness[i] + curFit
+		}
+
+		// compute aggregate fitness
+		aggFit = aggFit + inputChromosome.TotalFitness[i]
+
 	}
+
+	// calculate aggregate fitness
+	inputChromosome.AggregateFitness = aggFit
 
 	// return outputs
 	return inputChromosome
@@ -35,26 +53,37 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjective *Objective) (
 
 // fitness function generate the mean fitness values for all of the chromosomes
 // in a given population
-func PopulationFitness(inputPopulation *Population, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
+func PopulationFitness(inputPopulation *Population, inputParameters *Parameters, inputObjectives *MultiObjective) (outputPopulation *Population) {
 
 	// initialize output
-	var aggFit float64
+	var cumFit float64 = 0.0
+	var aggMeanFit float64 = 0.0
 
-	// drain channel to accumulate fitness values
-	for i := 0; i < inputParameters.PopSize; i++ {
+	// iterate over the different objectives
+	for i := 0; i < inputObjectives.ObjectiveCount; i++ {
 
-		// read current chromosome from channel
-		curChrom := <-inputPopulation.Chromosomes
+		// drain channel to accumulate fitness values
+		for j := 0; j < inputParameters.PopSize; j++ {
 
-		// compute cumulative fitness
-		aggFit = curChrom.TotalFitness + aggFit
+			// read current chromosome from channel
+			curChrom := <-inputPopulation.Chromosomes
 
-		// recieve from channel
-		inputPopulation.Chromosomes <- curChrom
+			// compute cumulative fitness
+			cumFit = cumFit + curChrom.TotalFitness[i]
+
+			// recieve from channel
+			inputPopulation.Chromosomes <- curChrom
+		}
+
+		// compute mean from cumulative
+		inputPopulation.MeanFitness[i] = cumFit / float64(inputParameters.PopSize)
+
+		// compute aggreage mean fitness
+		aggMeanFit = aggMeanFit + inputPopulation.MeanFitness[i]
 	}
 
-	// compute mean from cumulative
-	inputPopulation.MeanFitness = aggFit / float64(inputParameters.PopSize)
+	// write aggregate mean fitness to output
+	inputPopulation.AggregateMeanFitness = aggMeanFit
 
 	// return output
 	return inputPopulation
@@ -76,13 +105,13 @@ func ChromosomeSelection(chrom1, chrom2 *Chromosome, selectionProb float64) (sel
 
 	// perform conditional selection
 	if dec > selectionProb { // normal
-		if chrom1.TotalFitness > chrom2.TotalFitness {
+		if chrom1.AggregateFitness > chrom2.AggregateFitness {
 			output = chrom1
 		} else {
 			output = chrom2
 		}
 	} else { // inverted
-		if chrom1.TotalFitness > chrom2.TotalFitness {
+		if chrom1.AggregateFitness > chrom2.AggregateFitness {
 			output = chrom2
 		} else {
 			output = chrom1
@@ -192,7 +221,7 @@ func ChromosomeCrossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]
 // selection crossover operator performs a single part
 // crossover on each of the individuals provided in an
 // input selection channel of chromosomes
-func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjective *Objective, inputDomain *Domain) (crossover chan *Chromosome) {
+func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjectives *MultiObjective, inputDomain *Domain) (crossover chan *Chromosome) {
 
 	// initialize crossover channel
 	output := make(chan *Chromosome, inputParameters.PopSize)
@@ -211,7 +240,7 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 			var chrom2Ind []int
 
 			// initialize empty chromosome
-			empChrom := NewEmptyChromosome(inputDomain)
+			empChrom := NewEmptyChromosome(inputDomain, inputObjectives)
 
 			// check for valid crossover point
 			chrom1Ind, chrom2Ind = ChromosomeIntersection(chrom1.Subs, chrom2.Subs)
@@ -219,7 +248,7 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 			// resample chromosomes if no intersection
 			if len(chrom1Ind) > 2 {
 				empChrom.Subs = ChromosomeCrossover(chrom1Ind, chrom2Ind, chrom1.Subs, chrom2.Subs)
-				empChrom = ChromosomeFitness(empChrom, inputObjective)
+				empChrom = ChromosomeFitness(empChrom, inputObjectives)
 				output <- empChrom
 				inputSelection <- chrom1
 				inputSelection <- chrom2
@@ -304,7 +333,7 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 
 // function to generate a mutation within a given chromosome at a specified
 // number of mutation loci
-func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputChromosome *Chromosome) {
+func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
 	// compute chromosome length
 	lenChrom := len(inputChromosome.Subs)
@@ -334,8 +363,11 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 			// perform simple deletion of mutation index
 			output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
-			output.Fitness = append(output.Fitness[:mutIndex], output.Fitness[(mutIndex+1):]...)
 
+			// loop over objective and remove fitness values
+			for r := 0; r < inputObjectives.ObjectiveCount; r++ {
+				output.Fitness[r] = append(output.Fitness[r][:mutIndex], output.Fitness[r][(mutIndex+1):]...)
+			}
 			break
 		} else {
 
@@ -373,22 +405,37 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 				} else {
 
 					subLen := len(subWlk)
-					subFit := make([]float64, subLen)
+					subFit := make([][]float64, inputObjectives.ObjectiveCount)
 
 					// translate subscripts and evaluate fitnesses
-					for i := 0; i < subLen; i++ {
-						subWlk[i][0] = subWlk[i][0] - 2 + mutLocus[0]
-						subWlk[i][1] = subWlk[i][1] - 2 + mutLocus[1]
-						subFit[i] = inputObjective.Matrix.At(subWlk[i][0], subWlk[i][1])
+					for i := 0; i < inputObjectives.ObjectiveCount; i++ {
+
+						// initialize subfit section
+						subFit[i] = make([]float64, subLen)
+
+						// translate subscripts and compute sub walk fitness
+						for j := 0; j < subLen; j++ {
+
+							if i == 0 {
+								subWlk[j][0] = subWlk[j][0] - 2 + mutLocus[0]
+								subWlk[j][1] = subWlk[j][1] - 2 + mutLocus[1]
+							}
+
+							subFit[i][j] = inputObjectives.Objectives[i].Matrix.At(subWlk[j][0], subWlk[j][1])
+						}
+
+						// delete mutation locus from fitnesses
+						output.Fitness[i] = append(output.Fitness[i][:mutIndex], output.Fitness[i][(mutIndex+1):]...)
+
+						// insert sub walk section into original chromosome fitnesses
+						output.Fitness[i] = append(output.Fitness[i][:mutIndex-1], append(subFit[i], output.Fitness[i][mutIndex+1:]...)...)
 					}
 
-					// delete mutation locus
+					// delete mutation locus from subs
 					output.Subs = append(output.Subs[:mutIndex], output.Subs[(mutIndex+1):]...)
-					output.Fitness = append(output.Fitness[:mutIndex], output.Fitness[(mutIndex+1):]...)
 
-					// insert sub walk section into original chromosome
+					// insert new sub walk subscripts into subs
 					output.Subs = append(output.Subs[:mutIndex-1], append(subWlk, output.Subs[mutIndex+1:]...)...)
-					output.Fitness = append(output.Fitness[:mutIndex-1], append(subFit, output.Fitness[mutIndex+1:]...)...)
 					break
 				}
 			}
@@ -402,11 +449,11 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 // function to generate multiple mutations on multiple separate loci on the same
 // input chromosome
-func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputChromosome *Chromosome) {
+func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
 	// loop through mutation count
 	for i := 0; i < inputParameters.MutaCnt; i++ {
-		inputChromosome = ChromosomeMutation(inputChromosome, inputDomain, inputParameters, inputObjective)
+		inputChromosome = ChromosomeMutation(inputChromosome, inputDomain, inputParameters, inputObjectives)
 	}
 
 	// return output
@@ -415,7 +462,7 @@ func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, i
 
 // function generate mutations within a specified fraction of an input
 // population with those chromosomes being selected at random
-func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Parameters, inputObjective *Objective, inputDomain *Domain) (outputChromosomes chan *Chromosome) {
+func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Parameters, inputObjectives *MultiObjective, inputDomain *Domain) (outputChromosomes chan *Chromosome) {
 
 	// calculate the total number of chromosomes that are to receive mutations
 	mutations := int(math.Floor(float64(inputParameters.PopSize) * float64(inputParameters.MutaFrc)))
@@ -440,9 +487,9 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 		if mutTest == 1 {
 
 			// launch go routines
-			go func(curChrom *Chromosome) {
-				curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjective)
-			}(curChrom)
+			go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
+				curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
+			}(curChrom, inputDomain, inputParameters, inputObjectives)
 
 			// update iterator
 			iter += 1
@@ -460,7 +507,6 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 		if iter == mutations {
 			break
 		}
-
 	}
 
 	// return selection channel
@@ -469,19 +515,19 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 
 // population evolution operator generates a new population
 // from an input population using the selection and crossover operators
-func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjective *Objective) (outputPopulation *Population) {
+func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputPopulation *Population) {
 
 	// initialize new empty population
-	output := NewEmptyPopulation(inputPopulation.Id + 1)
+	output := NewEmptyPopulation(inputPopulation.Id+1, inputObjectives)
 
 	// perform population selection
 	popSel := PopulationSelection(inputPopulation, inputParameters)
 
 	// perform selection crossover
-	selCrs := SelectionCrossover(popSel, inputParameters, inputObjective, inputDomain)
+	selCrs := SelectionCrossover(popSel, inputParameters, inputObjectives, inputDomain)
 
 	// fill empty population
-	popMut := PopulationMutation(selCrs, inputParameters, inputObjective, inputDomain)
+	popMut := PopulationMutation(selCrs, inputParameters, inputObjectives, inputDomain)
 
 	// assign channel to output population
 	output.Chromosomes = popMut

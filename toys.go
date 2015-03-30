@@ -23,12 +23,12 @@ func NewToyParameters(rows, cols int) *Parameters {
 	destinationSubscripts[0] = rows - 4
 	destinationSubscripts[1] = cols - 4
 	randomnessCoefficient := 1.0
-	populationSize := 1000
+	populationSize := 5000
 	selectionFraction := 0.5
 	selectionProbability := 0.8
-	mutationCount := 2
-	mutationFraction := 0.8
-	evolutionSize := 30
+	mutationCount := 1
+	mutationFraction := 0.5
+	evolutionSize := 1 //int(math.Floor(math.Sqrt(float64(populationSize))))
 
 	// return output
 	return &Parameters{
@@ -138,58 +138,44 @@ func NewToyMutationDomain() *Domain {
 	}
 }
 
-// new toy parameters initialization function
-func NewToyMutationParameters() *Parameters {
+func NewToyObjectives(identifier, rows, cols, objectiveCount int) *MultiObjective {
 
-	// initialize variables
-	sourceSubscripts := make([]int, 2)
-	sourceSubscripts[0] = 1
-	sourceSubscripts[1] = 1
-	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = 1
-	destinationSubscripts[1] = 3
-	randomnessCoefficient := 1.0
-	populationSize := 1
-	selectionFraction := 0.5
-	selectionProbability := 0.8
-	mutationCount := 1
-	mutationFraction := 0.8
-	evolutionSize := 1
-
-	// return output
-	return &Parameters{
-		SrcSubs: sourceSubscripts,
-		DstSubs: destinationSubscripts,
-		RndCoef: randomnessCoefficient,
-		PopSize: populationSize,
-		SelFrac: selectionFraction,
-		SelProb: selectionProbability,
-		MutaCnt: mutationCount,
-		MutaFrc: mutationFraction,
-		EvoSize: evolutionSize,
-	}
-}
-
-func NewToyObjective(identifier, rows, cols int) *Objective {
-
-	// initialize empty matrix
+	// initialize matrix dimensions
 	objectiveSize := rows * cols
-	mat := make([]float64, objectiveSize)
-	objectiveMatrix := mat64.NewDense(rows, cols, mat)
+	var objectiveId int = 0
 
 	// seed random number generator
 	rand.Seed(time.Now().UnixNano())
 
+	// initialize empty objective slice
+	objSlice := make([]*Objective, objectiveCount)
+
 	// loop through matrix indices and assign random objective values
-	for i := 0; i < rows; i++ {
-		for j := 0; j < cols; j++ {
-			objectiveMatrix.Set(i, j, math.Abs(rand.Float64()))
+	for k := 0; k < objectiveCount; k++ {
+
+		// initialize empty objective matrix
+		mat := make([]float64, objectiveSize)
+		objMat := mat64.NewDense(rows, cols, mat)
+
+		// write random objective values
+		for i := 0; i < rows; i++ {
+			for j := 0; j < cols; j++ {
+				objMat.Set(i, j, math.Abs(rand.Float64()))
+			}
 		}
+
+		// write to objective slice
+		objSlice[k] = NewObjective(objectiveId, objMat)
+
+		// iterate objective id
+		objectiveId += 1
+
 	}
 
-	return &Objective{
-		Id:     identifier,
-		Matrix: objectiveMatrix,
+	return &MultiObjective{
+		Id:             identifier,
+		ObjectiveCount: objectiveCount,
+		Objectives:     objSlice,
 	}
 
 }
