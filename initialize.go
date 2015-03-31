@@ -5,12 +5,12 @@
 package corridor
 
 import (
+	"fmt"
 	"math"
 
-	"github.com/cheggaaa/pb"
 	"github.com/gonum/diff/fd"
 	"github.com/gonum/matrix/mat64"
-	"github.com/nu7hatch/gouuid"
+	"github.com/satori/go.uuid"
 )
 
 // new problem parameters function
@@ -95,6 +95,9 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 		} else {
 			break
 		}
+
+		// DEBUG
+		fmt.Println(dstTest)
 	}
 
 	// initialize empty fitness place holders
@@ -106,7 +109,7 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 	var aggFit float64 = 0.0
 
 	// generate placeholder variables
-	uuid, _ := uuid.NewV4()
+	uuid := uuid.NewV4()
 
 	// return output
 	return &Chromosome{
@@ -125,7 +128,7 @@ func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) 
 	subs := make([][]int, searchDomain.MaxLen)
 
 	// generate placeholder id
-	uuid, _ := uuid.NewV4()
+	uuid := uuid.NewV4()
 
 	// initialize empty fitness place holders
 	fitVal := make([][]float64, searchObjectives.ObjectiveCount)
@@ -205,7 +208,7 @@ func NewEmptyPopulation(identifier int, searchObjectives *MultiObjective) *Popul
 func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 
 	// generate evolution id
-	uuid, _ := uuid.NewV4()
+	uuid := uuid.NewV4()
 
 	// initialize empty population channel
 	popChan := make(chan *Population, searchParameters.EvoSize)
@@ -225,20 +228,20 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObjectives *MultiObjective) *Evolution {
 
 	// generate evolution id
-	uuid, _ := uuid.NewV4()
+	uuid := uuid.NewV4()
 
 	// initialize seed population identifier
 	var popID int = 0
 
-	// initialize progress bar
-	bar := pb.StartNew(searchParameters.EvoSize)
+	// initialize population channel
+	popChan := make(chan *Population, 1)
+
+	// print initialization status message
+	fmt.Println("Initializing Seed Population")
 
 	// initialize seed population
-	popChan := make(chan *Population, searchParameters.EvoSize)
-
-	// initialize seed population
-	curPop := NewPopulation(popID, searchDomain, searchParameters, searchObjectives)
-	curPop = PopulationFitness(curPop, searchParameters, searchObjectives)
+	seedPop := NewPopulation(popID, searchDomain, searchParameters, searchObjectives)
+	popChan <- PopulationFitness(seedPop, searchParameters, searchObjectives)
 
 	// initialize raw fitness data slice
 	rawAggMeanFit := make([]float64, searchParameters.EvoSize)
@@ -250,13 +253,10 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 	for i := 0; i < searchParameters.EvoSize; i++ {
 
 		// perform population evolution
-		newPop := PopulationEvolution(curPop, searchDomain, searchParameters, searchObjectives)
+		newPop := PopulationEvolution(<-popChan, searchDomain, searchParameters, searchObjectives)
 
 		// compute population fitness
 		newPop = PopulationFitness(newPop, searchParameters, searchObjectives)
-
-		// update current population
-		curPop = newPop
 
 		// write aggregate mean fitness value to vector
 		rawAggMeanFit[i] = newPop.AggregateMeanFitness
@@ -268,34 +268,53 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 		gradFit[i] = fd.Derivative(fitnessGradFnc, float64(i), nil)
 
 		// skip gradient check on first iteration
-		if i <= 1 || gradFit[i] < 0 {
+		if i < 1 {
 
-			// return population to channel
+			// return new population to channel
 			popChan <- newPop
 
 			// increment progress bar
-			bar.Increment()
+			fmt.Println("Evolution: ", i+1)
 
-		} else if i > 1 && gradFit[i] > 0 {
+		} else if i >= 1 && i < (searchParameters.EvoSize-1) {
+
+			if gradFit[i] > 0 {
+
+				// return current population to channel
+				popChan <- newPop
+
+				// close population channel
+				close(popChan)
+
+				// print success message
+				fmt.Println("Convergence Achieved, Evolution Commplete!")
+
+				// break loop
+				break
+
+			} else if gradFit[i] <= 0 {
+
+				// return new population to channel
+				popChan <- newPop
+
+				// increment progress bar
+				fmt.Println("Evolution: ", i+1)
+
+			}
+
+		} else if i == searchParameters.EvoSize-1 {
+
+			// return new population to channel
+			popChan <- newPop
 
 			// close population channel
 			close(popChan)
 
-			// print success message
-			bar.FinishPrint("Convergence Achieved, Evolution Commplete!")
+			// print termination message
+			fmt.Println("Convergence Not Achieved, Maximum Number of Evolutions Reached...")
 
 			// break loop
 			break
-		} else if i == searchParameters.EvoSize {
-
-			// return population to channel
-			popChan <- newPop
-
-			// close population channel
-			close(popChan)
-
-			// increment progress bar
-			bar.FinishPrint("Convergence Not Achieved, Maximum Number of Evolutions Reached...")
 		}
 	}
 

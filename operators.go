@@ -139,8 +139,13 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 	// initialize selection loop
 	for i := 0; i < selSize; i++ {
 
-		// write selection to output channel
-		output <- ChromosomeSelection(<-inputPopulation.Chromosomes, <-inputPopulation.Chromosomes, selProb)
+		chrom1 := <-inputPopulation.Chromosomes
+		chrom2 := <-inputPopulation.Chromosomes
+
+		go func(chrom1, chrom2 *Chromosome) {
+			// write selection to output channel
+			output <- ChromosomeSelection(chrom1, chrom2, selProb)
+		}(chrom1, chrom2)
 	}
 
 	// return selection channel

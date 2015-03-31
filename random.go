@@ -34,7 +34,7 @@ func MvnRnd(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
 	output := mat64.NewDense(2, 1, o)
 
 	// perform cholesky decomposition on covariance matrix
-	lower := mat64.NewTriangular(2, false, nil)
+	lower := mat64.NewTriDense(2, false, nil)
 	lower.Cholesky(sigma, true)
 
 	// compute output

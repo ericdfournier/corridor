@@ -6,7 +6,7 @@ package corridor
 
 import (
 	"github.com/gonum/matrix/mat64"
-	"github.com/nu7hatch/gouuid"
+	"github.com/satori/go.uuid"
 )
 
 // parameters are comprised of fixed input avlues that are
@@ -63,7 +63,7 @@ type Basis struct {
 // chromosomess are comprised of genes which are distinct row column
 // indices to some spatially reference search domain.
 type Chromosome struct {
-	Id               *uuid.UUID
+	Id               uuid.UUID
 	Subs             [][]int
 	Fitness          [][]float64
 	TotalFitness     []float64
@@ -83,7 +83,7 @@ type Population struct {
 // this number is determined by the convergence rate of the
 // algorithm.
 type Evolution struct {
-	Id              *uuid.UUID
+	Id              uuid.UUID
 	Populations     chan *Population
 	FitnessGradient []float64
 }
