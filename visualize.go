@@ -10,7 +10,8 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-func ViewSearchDomain(searchDomain *Domain) {
+// function to print the properties of a search domain to the command line
+func ViewDomain(searchDomain *Domain) {
 
 	// get search domain matrix dimensions
 	rows, _ := searchDomain.Matrix.Dims()
@@ -26,7 +27,25 @@ func ViewSearchDomain(searchDomain *Domain) {
 	}
 }
 
-func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, newChromosome *Chromosome) {
+// function to print the properties of a basis solution to the command line
+func ViewBasis(basisSolution *Basis) {
+
+	// get basis solution matrix dimensions
+	rows, _ := basisSolution.Matrix.Dims()
+
+	// print domain id
+	fmt.Printf("Basis ID = %d\n", basisSolution.Id)
+
+	// print domain values to command line
+	fmt.Printf("Basis Solution Values = \n")
+	for i := 0; i < rows; i++ {
+		rawRowVals := basisSolution.Matrix.RawRowView(i)
+		fmt.Printf("%4.0f\n", rawRowVals)
+	}
+}
+
+// function to print the properties of a chromosome to the command line
+func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, inputChromosome *Chromosome) {
 
 	// get search domain matrix dimensions and empty value slice
 	rows, cols := searchDomain.Matrix.Dims()
@@ -37,8 +56,8 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, newChrom
 	blankMat := mat64.NewDense(rows, cols, v)
 
 	// assign chromosome values to the empty matrix
-	for i := 0; i < len(newChromosome.Subs); i++ {
-		blankMat.Set(newChromosome.Subs[i][0], newChromosome.Subs[i][1], 1.0)
+	for i := 0; i < len(inputChromosome.Subs); i++ {
+		blankMat.Set(inputChromosome.Subs[i][0], inputChromosome.Subs[i][1], 1.0)
 	}
 
 	// print chromosome values to command line
@@ -47,10 +66,13 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, newChrom
 		rawRowVals := blankMat.RawRowView(i)
 		fmt.Printf("%4.0f\n", rawRowVals)
 	}
-	fmt.Printf("Chromosome Length = %d\n", len(newChromosome.Subs))
-	fmt.Printf("Chromosome Total Fitness = %1.5f\n", newChromosome.TotalFitness)
+
+	// print output to the command line
+	fmt.Printf("Chromosome Length = %d\n", len(inputChromosome.Subs))
+	fmt.Printf("Chromosome Total Fitness = %1.5f\n", inputChromosome.TotalFitness)
 }
 
+// functions to print the frequency of chromosomes in a search domain to the command line
 func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPopulation *Population) {
 
 	// get search domain matrix dimensions and empty value slice
@@ -64,9 +86,13 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 
 	// accumulated visited subscripts in new empty matrix
 	for i := 0; i < popSize; i++ {
+
+		// extract current chromosome from channel
 		curChrom := <-inputPopulation.Chromosomes
 		curInd := curChrom.Subs
 		lenCurInd := len(curInd)
+
+		// iterate over subscript indices
 		for j := 0; j < lenCurInd; j++ {
 			curSubs := curInd[j]
 			curVal := mat.At(curSubs[0], curSubs[1])
@@ -75,7 +101,7 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 		}
 
 		// repopulate channel
-		//inputPopulation.Chromosomes <- curChrom
+		inputPopulation.Chromosomes <- curChrom
 	}
 
 	// print matrix values to command line
@@ -83,23 +109,6 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 	fmt.Printf("Population Frequency = \n")
 	for q := 0; q < rows; q++ {
 		rawRowVals := mat.RawRowView(q)
-		fmt.Printf("%4.0f\n", rawRowVals)
-	}
-
-}
-
-func ViewBasis(basisSolution *Basis) {
-
-	// get basis solution matrix dimensions
-	rows, _ := basisSolution.Matrix.Dims()
-
-	// print domain id
-	fmt.Printf("Basis ID = %d\n", basisSolution.Id)
-
-	// print domain values to command line
-	fmt.Printf("Basis Solution Values = \n")
-	for i := 0; i < rows; i++ {
-		rawRowVals := basisSolution.Matrix.RawRowView(i)
 		fmt.Printf("%4.0f\n", rawRowVals)
 	}
 }

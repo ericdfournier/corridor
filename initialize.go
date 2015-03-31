@@ -278,18 +278,27 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 
 		} else if i > 1 && gradFit[i] > 0 {
 
+			// close population channel
+			close(popChan)
+
+			// print success message
+			bar.FinishPrint("Convergence Achieved, Evolution Commplete!")
+
 			// break loop
 			break
-		}
+		} else if i == searchParameters.EvoSize {
 
+			// return population to channel
+			popChan <- newPop
+
+			// close population channel
+			close(popChan)
+
+			// increment progress bar
+			bar.FinishPrint("Convergence Not Achieved, Maximum Number of Evolutions Reached...")
+		}
 	}
 
-	// print success message
-	bar.FinishPrint("Evolution Commplete!")
-
-	// compute derivative
-
-	// evaluate seed population
 	// return output
 	return &Evolution{
 		Id:              uuid,
