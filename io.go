@@ -6,11 +6,13 @@ package corridor
 
 import (
 	"bytes"
+	"encoding/csv"
 	"fmt"
 	"image"
 	"image/jpeg"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	"github.com/chai2010/tiff"
 	"github.com/gonum/matrix/mat64"
@@ -213,3 +215,113 @@ func TiffToObjective(identifier int, inputFilepath string) (outputObjective *Obj
 	// return output
 	return output
 }
+
+// function to write an input comma separated value
+// file's contents to an output domain structure
+func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
+
+	// open file
+	dataFile, err := os.Open(inputFilepath)
+
+	// parse error if file not found
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// close file on completion
+	defer dataFile.Close()
+
+	// generate new reader from open file
+	reader := csv.NewReader(dataFile)
+
+	// set reader structure field
+	reader.FieldsPerRecord = -1
+
+	// use reader to read raw csv data
+	rawCSVdata, err := reader.ReadAll()
+
+	// parse csv file formatting errors
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// initialize empty row and column counts
+	rows := len(rawCSVdata)
+	cols := len(rawCSVdata[0])
+
+	// initialize domain matrix
+	objMat := mat64.NewDense(rows+2, cols+2, nil)
+
+	// write values from rawCSVdata to domain matrix
+	for i := 0; i < rows+2; i++ {
+		for j := 0; j < cols+2; j++ {
+
+			// create a 1 pixel boundary buffer of zeros
+			if i == 0 {
+				objMat.Set(i, j, 0.0)
+			} else if i == rows+1 {
+				objMat.Set(i, j, 0.0)
+			} else if j == 0 {
+				objMat.Set(i, j, 0.0)
+			} else if j == cols+1 {
+				objMat.Set(i, j, 0.0)
+			} else {
+
+				// DEBUG
+				fmt.Println(i, j)
+
+				// perform string conversion
+				val, err := strconv.ParseFloat(rawCSVdata[i-1][j-1], 64)
+
+				// parse error if string not validly formatted
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+
+				// write to matrix
+				objMat.Set(i, j, val)
+			}
+		}
+	}
+
+	// initialize new domain
+	output := NewDomain(identifier, objMat)
+
+	// return output
+	return output
+}
+
+//// function to write an the values from an input
+//// chromosome structure to an output csv file
+//func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
+
+//	// initial
+//	csvfile, err := os.Create("output.csv")
+//          if err != nil {
+//                  fmt.Println("Error:", err)
+//                  return
+//          }
+//          defer csvfile.Close()
+
+//	// get input chromosome length
+//	chromLen := len(inputChromosome.Subs)
+
+//	// count input chromosome objectives
+//	objCount := len(inputChromosome.Fitness)
+
+//	// intitialize raw output string slice
+//	rawCSVdata := make([]string, 2+objCount)
+
+//	// extract and encode the subs
+//	for i := 0; i < chromLen; i++ {
+//		for j := 0; j < 2; j++ {
+//			rawCSVdata[i] := strconv.Itoa(inputChromosomes.Subs[i][j])
+//		}
+//	}
+
+//	// extract
+
+//}

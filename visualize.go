@@ -23,7 +23,7 @@ func ViewDomain(searchDomain *Domain) {
 	fmt.Printf("Search Domain Values = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := searchDomain.Matrix.RawRowView(i)
-		fmt.Printf("%4.0f\n", rawRowVals)
+		fmt.Printf("%1.0f\n", rawRowVals)
 	}
 }
 
