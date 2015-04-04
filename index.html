@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Corridor by ericdfournier</title>
+    <title>corridor by ericdfournier</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,8 +11,8 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Corridor</h1>
-      <h2 class="project-tagline">A concurrent implementation of a genetic algorithm for the multi-objective corridor location problem written in Go</h2>
+      <h1 class="project-name">corridor</h1>
+      <h2 class="project-tagline">A concurrent genetic algorithm for the multi-objective corridor location problem written in Go</h2>
       <a href="https://github.com/ericdfournier/corridor" class="btn">View on GitHub</a>
       <a href="https://github.com/ericdfournier/corridor/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/ericdfournier/corridor/tarball/master" class="btn">Download .tar.gz</a>
@@ -22,7 +22,7 @@
       <h3>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
-<p>Corridor is library containing Go language functions for the implementation of a parallel + concurrent genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more costs. The library requires that the user provide a predefined search domain, objective functions, and some basic input parameters.</p>
+<p>corridor is library containing Go language functions for the implementation of a concurrent genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more measures of cost. The library requires that the user provide a predefined search domain, objective function(s), and input parameters specifying the nature of the problem (i.e. desired start and destination locations).</p>
 
 <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h3>
@@ -33,14 +33,28 @@
 </code></pre>
 
 <h3>
-<a id="functionality" class="anchor" href="#functionality" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functionality</h3>
+<a id="supported-input-formats" class="anchor" href="#supported-input-formats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported Input Formats</h3>
+
+<h2>
+<a id="search-domain" class="anchor" href="#search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Domain</h2>
+
+<h2>
+<a id="search-objectives" class="anchor" href="#search-objectives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Objectives</h2>
+
+<h2>
+<a id="search-parameters" class="anchor" href="#search-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Parameters</h2>
 
 <h3>
 <a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h3>
 
-<p>Example 1: Convex Search Domain 
-Example 2: Concave Search Domain
-Example 3: Obstructed Search Domain</p>
+<h2>
+<a id="example-1-convex-search-domain" class="anchor" href="#example-1-convex-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 1: Convex Search Domain</h2>
+
+<h2>
+<a id="example-2-concave-search-domain" class="anchor" href="#example-2-concave-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 2: Concave Search Domain</h2>
+
+<h2>
+<a id="example-3-obstructed-search-domain" class="anchor" href="#example-3-obstructed-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 3: Obstructed Search Domain</h2>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
@@ -48,14 +62,14 @@ Example 3: Obstructed Search Domain</p>
 <p>This project was developed by Eric Daniel Fournier [<a href="https://github.com/ericdfournier" class="user-mention">@ericdfournier</a>] as part of his doctoral dissertation in the Environmental Science at the Bren School of Environmental Science at the University of California, Santa Barbara. The author would like to acknowledge the generous financial support of the Walton Family Foundation's Sustainable Water Markets Fellowship Program in making this development effort possible. </p>
 
 <h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<a id="contact-and-support" class="anchor" href="#contact-and-support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contact and Support</h3>
 
 <p>If you have any questions about the usage of this library or would like to discuss the details of its implementation please email <a href="mailto:me@ericdfournier.com">me@ericdfournier.com</a>
 Please submit bug reports and other feature requests as issues via the GitHub repo. 
 Thank you for your interest in this project!</p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/ericdfournier/corridor">Corridor</a> is maintained by <a href="https://github.com/ericdfournier">ericdfournier</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/ericdfournier/corridor">corridor</a> is maintained by <a href="https://github.com/ericdfournier">ericdfournier</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
