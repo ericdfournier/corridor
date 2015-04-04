@@ -20,36 +20,39 @@
 
     <section class="main-content">
       <h3>
-<a id="corridor-a-genetic-algorithm-for-the-multi-objective-corridor-location-problem" class="anchor" href="#corridor-a-genetic-algorithm-for-the-multi-objective-corridor-location-problem" aria-hidden="true"><span class="octicon octicon-link"></span></a>Corridor: A Genetic Algorithm for the Multi-Objective Corridor Location Problem.</h3>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
-<p>Corridor is a parallel concurrent implementation of a genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more costs. </p>
+<p>Corridor is library containing Go language functions for the implementation of a parallel + concurrent genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more costs. The library requires that the user provide a predefined search domain, objective functions, and some basic input parameters.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h3>
+
+<p>The project is hosted as a publicly available GitHub repository. Providing that your local client GOPATH and GOROOT variables have been previously defined, the repository can be cloned and built using the following single shell command: </p>
+
+<pre><code>$ go get github.com/ericdfournier/corridor
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h3>
+<a id="functionality" class="anchor" href="#functionality" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functionality</h3>
 
 <h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Example 1: Convex Search Domain 
+Example 2: Concave Search Domain
+Example 3: Obstructed Search Domain</p>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>This project was developed by Eric Daniel Fournier [<a href="https://github.com/ericdfournier" class="user-mention">@ericdfournier</a>] as part of his doctoral dissertation in the Environmental Science at the Bren School of Environmental Science at the University of California, Santa Barbara. The author would like to acknowledge the generous financial support of the Walton Family Foundation's Sustainable Water Markets Fellowship Program in making this development effort possible. </p>
 
 <h3>
 <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="https://help.github.com/pages">https://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>If you have any questions about the usage of this library or would like to discuss the details of its implementation please email <a href="mailto:me@ericdfournier.com">me@ericdfournier.com</a>
+Please submit bug reports and other feature requests as issues via the GitHub repo. 
+Thank you for your interest in this project!</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/ericdfournier/corridor">Corridor</a> is maintained by <a href="https://github.com/ericdfournier">ericdfournier</a>.</span>
