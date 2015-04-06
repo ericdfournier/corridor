@@ -12,7 +12,6 @@ import (
 	"image/jpeg"
 	"io/ioutil"
 	"os"
-	"strconv"
 
 	"github.com/chai2010/tiff"
 	"github.com/gonum/matrix/mat64"
@@ -42,12 +41,7 @@ func ImageToDomain(identifier int, inputImage image.Image) (outputDomain *Domain
 			} else if j == cols+1 {
 				domMat.Set(i, j, 0.0)
 			} else {
-				r, g, b, _ := inputImage.At(i-1, j-1).RGBA()
-				if r > 0 || g > 0 || b > 0 {
-					domMat.Set(i, j, 1.0)
-				} else {
-					domMat.Set(i, j, 0.0)
-				}
+				domMat.Set(i, j, 1.0)
 			}
 		}
 	}
@@ -268,21 +262,8 @@ func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
 			} else if j == cols+1 {
 				objMat.Set(i, j, 0.0)
 			} else {
-
-				// DEBUG
-				fmt.Println(i, j)
-
-				// perform string conversion
-				val, err := strconv.ParseFloat(rawCSVdata[i-1][j-1], 64)
-
-				// parse error if string not validly formatted
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				// write to matrix
-				objMat.Set(i, j, val)
+				// set all interior values to 1
+				objMat.Set(i, j, 1.0)
 			}
 		}
 	}
@@ -298,13 +279,17 @@ func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
 //// chromosome structure to an output csv file
 //func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
 
-//	// initial
-//	csvfile, err := os.Create("output.csv")
-//          if err != nil {
-//                  fmt.Println("Error:", err)
-//                  return
-//          }
-//          defer csvfile.Close()
+//	// open file
+//	csvfile, err := os.Create(outputFilepath)
+
+//	// parse file opening errors
+//	if err != nil {
+//    	fmt.Println("Error:", err)
+//        return
+//	}
+
+//	// close file on completion
+//	defer csvfile.Close()
 
 //	// get input chromosome length
 //	chromLen := len(inputChromosome.Subs)
@@ -313,15 +298,28 @@ func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
 //	objCount := len(inputChromosome.Fitness)
 
 //	// intitialize raw output string slice
-//	rawCSVdata := make([]string, 2+objCount)
+//	rawCSVdata := make([][]string, 2+objCount)
+//	rawCSVdata[0] := make([]string, chromLen)
 
 //	// extract and encode the subs
 //	for i := 0; i < chromLen; i++ {
-//		for j := 0; j < 2; j++ {
-//			rawCSVdata[i] := strconv.Itoa(inputChromosomes.Subs[i][j])
-//		}
+//			rawCSVdata[0][i] = strconv.Itoa(inputChromosome.Subs[i][0])
+//			rawCSVdata[1][i] = strconv.Itoa(inputChromosome.Subs[i][1])
+//			for j := 0; j < objCount; j++ {
+//				rawCSVdata[j+2][i] = strconv.Itoa(inputChromosome.Fitness[j][i])
+//			}
 //	}
 
-//	// extract
+//	//records := [][]string{{"item1", "value1"}, {"item2", "value2"}, {"item3", "value3"}}
+
+//  //        writer := csv.NewWriter(csvfile)
+//  //        for _, record := range records {
+//  //                err := writer.Write(record)
+//  //                if err != nil {
+//  //                        fmt.Println("Error:", err)
+//  //                        return
+//  //                }
+//  //        }
+//  //        writer.Flush()
 
 //}

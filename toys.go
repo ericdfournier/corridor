@@ -169,7 +169,6 @@ func NewToyObjectives(identifier, rows, cols, objectiveCount int) *MultiObjectiv
 
 		// iterate objective id
 		objectiveId += 1
-
 	}
 
 	return &MultiObjective{
@@ -177,5 +176,4 @@ func NewToyObjectives(identifier, rows, cols, objectiveCount int) *MultiObjectiv
 		ObjectiveCount: objectiveCount,
 		Objectives:     objSlice,
 	}
-
 }

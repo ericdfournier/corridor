@@ -212,7 +212,6 @@ func NeighborhoodSubs(row, col int) (subs [9][2]int) {
 	output[8][1] = col + 1
 
 	return output
-
 }
 
 // function to validate an input sub domain for use in generating
@@ -261,5 +260,4 @@ func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 
 	//return final output
 	return output
-
 }

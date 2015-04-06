@@ -29,10 +29,8 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjectives *MultiObject
 	var aggFit float64 = 0.0
 	var curFit float64 = 0.0
 
-	// evaluate chromosome fitness according to input objective
+	// evaluate chromosome length and objectives to compute fitnesses
 	for i := 0; i < inputObjectives.ObjectiveCount; i++ {
-
-		// iterate through chromosome length to compute fitness
 		for j := 0; j < chromLen; j++ {
 			curFit = inputObjectives.Objectives[i].Matrix.At(inputChromosome.Subs[j][0], inputChromosome.Subs[j][1])
 			inputChromosome.Fitness[i][j] = curFit
@@ -41,7 +39,6 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjectives *MultiObject
 
 		// compute aggregate fitness
 		aggFit = aggFit + inputChromosome.TotalFitness[i]
-
 	}
 
 	// calculate aggregate fitness
@@ -59,10 +56,8 @@ func PopulationFitness(inputPopulation *Population, inputParameters *Parameters,
 	var cumFit float64 = 0.0
 	var aggMeanFit float64 = 0.0
 
-	// iterate over the different objectives
+	// iterate over the different objectives and drain channel to compute fitness
 	for i := 0; i < inputObjectives.ObjectiveCount; i++ {
-
-		// drain channel to accumulate fitness values
 		for j := 0; j < inputParameters.PopSize; j++ {
 
 			// read current chromosome from channel
@@ -138,7 +133,6 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 
 	// initialize selection loop
 	for i := 0; i < selSize; i++ {
-
 		chrom1 := <-inputPopulation.Chromosomes
 		chrom2 := <-inputPopulation.Chromosomes
 
@@ -171,7 +165,6 @@ func ChromosomeIntersection(subs1, subs2 [][]int) (subs1Indices, subs2Indices []
 			if subs1[i][0] == subs2[j][0] && subs1[i][1] == subs2[j][1] {
 				output1 = append(output1, i)
 				output2 = append(output2, j)
-			} else {
 			}
 		}
 	}
@@ -233,9 +226,7 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 
 	// initialize crossover loop
 	for i := 0; i < inputParameters.PopSize; i++ {
-
 		for {
-
 			// extract chromosomes
 			chrom1 := <-inputSelection
 			chrom2 := <-inputSelection
@@ -359,7 +350,6 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 	// enter unbounded mutation search loop
 	for {
-
 		// generate mutation loci
 		prvLocus, mutLocus, nxtLocus, mutIndex := MutationLoci(inputChromosome)
 
@@ -420,7 +410,6 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 						// translate subscripts and compute sub walk fitness
 						for j := 0; j < subLen; j++ {
-
 							if i == 0 {
 								subWlk[j][0] = subWlk[j][0] - 2 + mutLocus[0]
 								subWlk[j][1] = subWlk[j][1] - 2 + mutLocus[1]
