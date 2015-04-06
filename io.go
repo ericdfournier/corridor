@@ -12,6 +12,7 @@ import (
 	"image/jpeg"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	"github.com/chai2010/tiff"
 	"github.com/gonum/matrix/mat64"
@@ -106,6 +107,81 @@ func TiffToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
 
 	// convert image to domain
 	output := ImageToDomain(identifier, img)
+
+	// return output
+	return output
+}
+
+// function to write an input comma separated value
+// file's contents to an output domain structure
+func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
+
+	// open file
+	data, err := os.Open(inputFilepath)
+
+	// parse error if file not found
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// close file on completion
+	defer data.Close()
+
+	// generate new reader from open file
+	reader := csv.NewReader(data)
+
+	// set reader structure field
+	reader.FieldsPerRecord = -1
+
+	// use reader to read raw csv data
+	rawCSVdata, err := reader.ReadAll()
+
+	// parse csv file formatting errors
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// initialize empty row and column counts
+	rows := len(rawCSVdata)
+	cols := len(rawCSVdata[0])
+
+	// initialize domain matrix
+	domMat := mat64.NewDense(rows+2, cols+2, nil)
+
+	// write values from rawCSVdata to domain matrix
+	for i := 0; i < rows+2; i++ {
+		for j := 0; j < cols+2; j++ {
+			// create a 1 pixel boundary buffer of zeros
+			if i == 0 {
+				domMat.Set(i, j, 0.0)
+			} else if i == rows+1 {
+				domMat.Set(i, j, 0.0)
+			} else if j == 0 {
+				domMat.Set(i, j, 0.0)
+			} else if j == cols+1 {
+				domMat.Set(i, j, 0.0)
+			} else {
+
+				// get string value and convert to integer
+				strVal := rawCSVdata[i-1][j-1]
+				fltVal, err := strconv.ParseFloat(strVal, 64)
+
+				// parse error
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+
+				// write value to matrix
+				domMat.Set(i, j, fltVal)
+			}
+		}
+	}
+
+	// initialize new domain
+	output := NewDomain(identifier, domMat)
 
 	// return output
 	return output
@@ -211,8 +287,8 @@ func TiffToObjective(identifier int, inputFilepath string) (outputObjective *Obj
 }
 
 // function to write an input comma separated value
-// file's contents to an output domain structure
-func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
+// file's contents to an output objective structure
+func CsvToObjective(identifier int, inputFilepath string) (outputObjective *Objective) {
 
 	// open file
 	dataFile, err := os.Open(inputFilepath)
@@ -262,14 +338,25 @@ func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
 			} else if j == cols+1 {
 				objMat.Set(i, j, 0.0)
 			} else {
-				// set all interior values to 1
-				objMat.Set(i, j, 1.0)
+
+				// get string value and convert to float
+				strVal := rawCSVdata[i-1][j-1]
+				fltVal, err := strconv.ParseFloat(strVal, 64)
+
+				// parse error
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+
+				// write matrix value
+				objMat.Set(i, j, fltVal)
 			}
 		}
 	}
 
 	// initialize new domain
-	output := NewDomain(identifier, objMat)
+	output := NewObjective(identifier, objMat)
 
 	// return output
 	return output

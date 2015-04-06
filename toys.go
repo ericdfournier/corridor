@@ -17,18 +17,18 @@ func NewToyParameters(rows, cols int) *Parameters {
 
 	// initialize variables
 	sourceSubscripts := make([]int, 2)
-	sourceSubscripts[0] = 3
-	sourceSubscripts[1] = 3
+	sourceSubscripts[0] = 180 // 3
+	sourceSubscripts[1] = 100 // 3
 	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = rows - 4
-	destinationSubscripts[1] = cols - 4
+	destinationSubscripts[0] = rows - 180 // rows - 4
+	destinationSubscripts[1] = cols - 100 // cols - 4
 	randomnessCoefficient := 1.0
-	populationSize := 1000 //int(math.Floor(float64(rows*cols) * randomnessCoefficient))
+	populationSize := 10 // int(math.Floor(float64(rows*cols)*randomnessCoefficient)) / 10
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 	mutationCount := 1
 	mutationFraction := 0.2
-	evolutionSize := 10 * int(math.Floor(math.Sqrt(float64(populationSize))))
+	evolutionSize := 1 // 10 * int(math.Floor(math.Sqrt(float64(populationSize))))
 
 	// return output
 	return &Parameters{

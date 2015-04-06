@@ -246,6 +246,11 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		// get current subscripts
 		curSubs = output[len(output)-1]
 
+		// validate tabu neighborhood
+		if ValidateTabu(curSubs, tabu) == false {
+			break
+		}
+
 		// compute current distance
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 

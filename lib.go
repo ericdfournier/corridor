@@ -261,3 +261,34 @@ func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 	//return final output
 	return output
 }
+
+// function validate the tabu neighborhood of an input pair of
+// row column subscripts
+func ValidateTabu(currentSubs []int, tabuMatrix *mat64.Dense) bool {
+
+	// initialize output
+	var output bool
+
+	// initialize tabu neighborhood sum
+	var tSum int = 0
+
+	// generate neighborhood subscripts
+	tNeigh := NeighborhoodSubs(currentSubs[0], currentSubs[1])
+
+	// loop through and compute sum
+	for i := 0; i < 9; i++ {
+		if i != 4 {
+			tSum += int(tabuMatrix.At(tNeigh[i][0], tNeigh[i][1]))
+		}
+	}
+
+	// write output boolean
+	if tSum == 0 {
+		output = false
+	} else {
+		output = true
+	}
+
+	// return output
+	return output
+}

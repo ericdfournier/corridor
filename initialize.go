@@ -61,6 +61,7 @@ func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
 	}
 }
 
+// new basis solution initialization function
 func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 
 	// compute all minimum euclidean distances for search domain
@@ -95,9 +96,6 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 		} else {
 			break
 		}
-
-		// DEBUG
-		fmt.Println(dstTest)
 	}
 
 	// initialize empty fitness place holders
