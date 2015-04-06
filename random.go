@@ -54,20 +54,20 @@ func FixRnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	o := make([]float64, 2)
 
 	// write up down movement direction
-	if rndsmp.At(0, 0) > 0.5 {
+	if rndsmp.At(0, 0) > 1.0 {
 		o[0] = 1
-	} else if rndsmp.At(0, 0) >= -0.5 && rndsmp.At(0, 0) <= 0.5 {
+	} else if rndsmp.At(0, 0) >= -1.0 && rndsmp.At(0, 0) <= 1.0 {
 		o[0] = 0
-	} else if rndsmp.At(0, 0) < -0.5 {
+	} else if rndsmp.At(0, 0) < -1.0 {
 		o[0] = -1
 	}
 
 	// write left right movement direction
-	if rndsmp.At(1, 0) > 0.5 {
+	if rndsmp.At(1, 0) > 1.0 {
 		o[1] = 1
-	} else if rndsmp.At(1, 0) >= -0.5 && rndsmp.At(1, 0) <= 0.5 {
+	} else if rndsmp.At(1, 0) >= -1.0 && rndsmp.At(1, 0) <= 1.0 {
 		o[1] = 0
-	} else if rndsmp.At(1, 0) < -0.5 {
+	} else if rndsmp.At(1, 0) < -1.0 {
 		o[1] = -1
 	}
 
