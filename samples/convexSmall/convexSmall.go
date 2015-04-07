@@ -38,7 +38,7 @@ func main() {
 
 	// import domain from csv
 	domainID := 1
-	toyDomain := corridor.CsvToDomain(domainID, "/Users/ericfournier/go/src/github.com/ericdfournier/corridor/samples/convexSmall.csv")
+	toyDomain := corridor.CsvToDomain(domainID, "convexSmall.csv")
 	rows, cols := toyDomain.Matrix.Dims()
 
 	// initialize objective variables
