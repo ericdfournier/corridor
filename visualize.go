@@ -6,6 +6,7 @@ package corridor
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/gonum/matrix/mat64"
 )
@@ -40,7 +41,7 @@ func ViewBasis(basisSolution *Basis) {
 	fmt.Printf("Basis Solution Values = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := basisSolution.Matrix.RawRowView(i)
-		fmt.Printf("%4.0f\n", rawRowVals)
+		fmt.Printf("%1.0f\n", rawRowVals)
 	}
 }
 
@@ -64,7 +65,7 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, inputChr
 	fmt.Printf("Chromosome = \n")
 	for i := 0; i < rows; i++ {
 		rawRowVals := blankMat.RawRowView(i)
-		fmt.Printf("%4.0f\n", rawRowVals)
+		fmt.Printf("%1.0f\n", rawRowVals)
 	}
 
 	// print output to the command line
@@ -109,6 +110,6 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 	fmt.Printf("Population Frequency = \n")
 	for q := 0; q < rows; q++ {
 		rawRowVals := mat.RawRowView(q)
-		fmt.Printf("%4.0f\n", rawRowVals)
+		fmt.Printf("%*.0f\n", int(math.Floor(float64(popSize/10)))+1, rawRowVals)
 	}
 }

@@ -70,11 +70,30 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 	// generate subscripts from bresenham's algorithm
 	subs := Bresenham(searchParameters.SrcSubs, searchParameters.DstSubs)
 
+	// initialize convexity count at zero
+	var convexSum int = 0
+
+	// intialize convexity boolean as true
+	var convexBool bool = true
+
+	// loop through subs to evaluate if the search domain is exited
+	for i := 0; i < len(subs); i++ {
+		if searchDomain.Matrix.At(subs[i][0], subs[0][1]) == 0 {
+			convexSum += 1
+		}
+	}
+
+	// if domain is exited flip boolean
+	if convexSum > 0 {
+		convexBool = false
+	}
+
 	// return output
 	return &Basis{
 		Id:     searchDomain.Id,
 		Matrix: allMinimumDistances,
 		Subs:   subs,
+		Convex: convexBool,
 	}
 }
 

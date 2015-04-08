@@ -58,6 +58,7 @@ type Basis struct {
 	Id     int
 	Matrix *mat64.Dense
 	Subs   [][]int
+	Convex bool
 }
 
 // chromosomess are comprised of genes which are distinct row column

@@ -17,17 +17,12 @@ func main() {
 	// start clock
 	start := time.Now()
 
-	///////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////
 
 	// import domain
 	domainID := 1
-	toyDomain := corridor.CsvToDomain(domainID, "convexSmall.csv")
+	toyDomain := corridor.CsvToDomain(domainID, "concaveSmall.csv")
 	rows, cols := toyDomain.Matrix.Dims()
-
-	///////////////////////////////////////////////////////////////////////////////////
-
-	// view domain
-	corridor.ViewDomain(toyDomain)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -40,14 +35,14 @@ func main() {
 
 	// initialize parameters
 	toyParameters := corridor.NewToyParameters(rows, cols)
-	toyParameters.SrcSubs[0] = 8
-	toyParameters.SrcSubs[1] = 14
-	toyParameters.DstSubs[0] = rows - 8
-	toyParameters.DstSubs[1] = rows - 14
+	toyParameters.SrcSubs[0] = 40
+	toyParameters.SrcSubs[1] = 40
+	toyParameters.DstSubs[0] = 105
+	toyParameters.DstSubs[1] = 95
 	toyParameters.PopSize = 10
 	toyParameters.EvoSize = 1
 
-	//////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
 
 	// evolve populations
 	toyEvolution := corridor.NewEvolution(toyParameters, toyDomain, toyObjectives)
