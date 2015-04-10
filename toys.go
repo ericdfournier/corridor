@@ -13,17 +13,17 @@ import (
 )
 
 // new toy parameters initialization function
-func NewToyParameters(rows, cols int) *Parameters {
+func NewToyParameters(searchDomain *Domain) *Parameters {
 
 	// initialize variables
 	sourceSubscripts := make([]int, 2)
 	sourceSubscripts[0] = 3
 	sourceSubscripts[1] = 3
 	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = rows - 4
-	destinationSubscripts[1] = cols - 4
+	destinationSubscripts[0] = searchDomain.Rows - 4
+	destinationSubscripts[1] = searchDomain.Cols - 4
 	randomnessCoefficient := 1.0
-	populationSize := int(math.Floor(float64(rows*cols)*randomnessCoefficient)) / 10
+	populationSize := int(math.Floor(float64(searchDomain.Rows*searchDomain.Cols)*randomnessCoefficient)) / 10
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 	mutationCount := 1
@@ -76,6 +76,9 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 	// compute maximum permitted chromosome length
 	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
 
+	// calculate the total feasible count
+	feasibleCount := int(domainMatrix.Sum())
+
 	// return output
 	return &Domain{
 		Id:     identifier,
@@ -83,6 +86,7 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+		Count:  feasibleCount,
 	}
 }
 
@@ -128,6 +132,9 @@ func NewToyMutationDomain() *Domain {
 	// compute maximum permitted chromosome length
 	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
 
+	// calculate total feasible count
+	feasibleCount := int(domainMatrix.Sum())
+
 	// return output
 	return &Domain{
 		Id:     identifier,
@@ -135,6 +142,7 @@ func NewToyMutationDomain() *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+		Count:  feasibleCount,
 	}
 }
 

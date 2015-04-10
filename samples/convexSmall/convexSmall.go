@@ -39,13 +39,11 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	toyParameters := corridor.NewToyParameters(rows, cols)
+	toyParameters := corridor.NewToyParameters(toyDomain)
 	toyParameters.SrcSubs[0] = 8
 	toyParameters.SrcSubs[1] = 14
 	toyParameters.DstSubs[0] = rows - 8
 	toyParameters.DstSubs[1] = rows - 14
-	toyParameters.PopSize = 10
-	toyParameters.EvoSize = 1
 
 	//////////////////////////////////////////////////////////////////////////////////
 

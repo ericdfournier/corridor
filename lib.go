@@ -183,9 +183,8 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	return output
 }
 
-// NEED TO WRITE FUNCTION TO RETURN THE SUBSCRIPT VALUES FOR ALL OF THE
-// CELLS IN THE QUEENS NEIGHBORHOOD TO A GIVEN ROW COLUMN PAIR
-
+// function to return the subscript indices of the cells corresponding to the
+// queens neighborhood for a given subscript pair
 func NeighborhoodSubs(row, col int) (subs [9][2]int) {
 
 	// initialize output slice
@@ -288,6 +287,17 @@ func ValidateTabu(currentSubs []int, tabuMatrix *mat64.Dense) bool {
 	} else {
 		output = true
 	}
+
+	// return output
+	return output
+}
+
+// function to count the number of digits in an input integer as
+// its base ten logarithm
+func DigitCount(input int) (digits int) {
+
+	// compute digits as the log of the input
+	output := int(math.Floor(math.Log10(float64(input))))
 
 	// return output
 	return output

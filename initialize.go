@@ -38,6 +38,9 @@ func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 	var p float64 = 2
 	var s float64 = 5
 
+	// count the total number of feasible cells
+	feasibleCount := int(domainMatrix.Sum())
+
 	// compute maximum permitted chromosome length
 	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
 
@@ -48,6 +51,7 @@ func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+		Count:  feasibleCount,
 	}
 }
 
@@ -254,7 +258,7 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 	popChan := make(chan *Population, 1)
 
 	// print initialization status message
-	fmt.Println("Initializing Seed Population")
+	fmt.Println("Initializing Seed Population...")
 
 	// initialize seed population
 	seedPop := NewPopulation(popID, searchDomain, searchParameters, searchObjectives)

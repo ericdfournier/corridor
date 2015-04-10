@@ -6,7 +6,6 @@ package corridor
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/gonum/matrix/mat64"
 )
@@ -76,9 +75,6 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, inputChr
 // functions to print the frequency of chromosomes in a search domain to the command line
 func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPopulation *Population) {
 
-	// get search domain matrix dimensions and empty value slice
-	popSize := searchParameters.PopSize
-
 	// get search domain dimensions
 	rows, cols := searchDomain.Matrix.Dims()
 
@@ -86,7 +82,7 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 	mat := mat64.NewDense(rows, cols, nil)
 
 	// accumulated visited subscripts in new empty matrix
-	for i := 0; i < popSize; i++ {
+	for i := 0; i < searchParameters.PopSize; i++ {
 
 		// extract current chromosome from channel
 		curChrom := <-inputPopulation.Chromosomes
@@ -110,6 +106,6 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 	fmt.Printf("Population Frequency = \n")
 	for q := 0; q < rows; q++ {
 		rawRowVals := mat.RawRowView(q)
-		fmt.Printf("%*.0f\n", int(math.Floor(float64(popSize/10)))+1, rawRowVals)
+		fmt.Printf("%*.0f\n", DigitCount(searchParameters.PopSize)+1, rawRowVals)
 	}
 }
