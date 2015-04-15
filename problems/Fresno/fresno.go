@@ -25,15 +25,10 @@ func main() {
 	// import destination subscripts
 	destination := corridor.CsvToSubs("destinationSubs.csv")
 
-	fmt.Println(source)
-	fmt.Println(destination)
-
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// import domain
 	searchDomain := corridor.CsvToDomain("searchDomain.csv")
-
-	fmt.Println(searchDomain)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -43,13 +38,11 @@ func main() {
 		"slope.csv",
 		"disturbance.csv")
 
-	fmt.Println(searchObjectives)
-
 	///////////////////////////////////////////////////////////////////////////////////
 
 	//// initialize parameters
-	populationSize := 100
-	evolutionSize := 100
+	populationSize := 10
+	evolutionSize := 10
 	randomness := 1.0
 
 	searchParameters := corridor.NewParameters(
@@ -67,15 +60,20 @@ func main() {
 		searchDomain,
 		searchObjectives)
 
-	fmt.Println(searchEvolution)
+	///////////////////////////////////////////////////////////////////////////////////
+
+	// output final population
+	finalPopulation := <-searchEvolution.Populations
 
 	///////////////////////////////////////////////////////////////////////////////////
 
-	// view output population
-	corridor.ViewPopulation(
-		searchDomain,
-		searchParameters,
-		<-searchEvolution.Populations)
+	// output chromsome
+	testChrom := <-finalPopulation.Chromosomes
+
+	///////////////////////////////////////////////////////////////////////////////////
+
+	// write chromosome to file
+	corridor.ChromosomeToCsv(testChrom, "testChrom.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 

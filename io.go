@@ -225,7 +225,7 @@ func CsvToObjective(identifier int, inputFilepath string) (outputObjective *Obje
 
 // function to write a set of input comma separated value
 // files' contents to an output multiobjective structure
-func CsvToMultiObjective(inputFilepaths ...string) *MultiObjective {
+func CsvToMultiObjective(inputFilepaths ...string) (outputMultiObjective *MultiObjective) {
 
 	// get variadic input length
 	objectiveCount := len(inputFilepaths)
@@ -254,51 +254,62 @@ func CsvToMultiObjective(inputFilepaths ...string) *MultiObjective {
 	}
 }
 
-//// function to write an the values from an input
-//// chromosome structure to an output csv file
-//func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
+// function to write an the values from an input
+// chromosome structure to an output csv file
+func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
 
-//	// open file
-//	csvfile, err := os.Create(outputFilepath)
+	// open file
+	csvfile, err := os.Create(outputFilepath)
 
-//	// parse file opening errors
-//	if err != nil {
-//    	fmt.Println("Error:", err)
-//        return
-//	}
+	// parse file opening errors
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-//	// close file on completion
-//	defer csvfile.Close()
+	// close file on completion
+	defer csvfile.Close()
 
-//	// get input chromosome length
-//	chromLen := len(inputChromosome.Subs)
+	// get input chromosome length
+	chromLen := len(inputChromosome.Subs)
 
-//	// count input chromosome objectives
-//	objCount := len(inputChromosome.Fitness)
+	// count input chromosome objectives
+	objCount := len(inputChromosome.TotalFitness)
 
-//	// intitialize raw output string slice
-//	rawCSVdata := make([][]string, 2+objCount)
-//	rawCSVdata[0] := make([]string, chromLen)
+	// intitialize raw output string slice
+	rawCSVdata := make([][]string, objCount+2)
 
-//	// extract and encode the subs
-//	for i := 0; i < chromLen; i++ {
-//			rawCSVdata[0][i] = strconv.Itoa(inputChromosome.Subs[i][0])
-//			rawCSVdata[1][i] = strconv.Itoa(inputChromosome.Subs[i][1])
-//			for j := 0; j < objCount; j++ {
-//				rawCSVdata[j+2][i] = strconv.Itoa(inputChromosome.Fitness[j][i])
-//			}
-//	}
+	// loop through and format values as strings for output encoding
+	for j := 0; j < objCount+2; j++ {
 
-//	//records := [][]string{{"item1", "value1"}, {"item2", "value2"}, {"item3", "value3"}}
+		// allocate inner slice
+		rawCSVdata[j] = make([]string, chromLen)
 
-//  //        writer := csv.NewWriter(csvfile)
-//  //        for _, record := range records {
-//  //                err := writer.Write(record)
-//  //                if err != nil {
-//  //                        fmt.Println("Error:", err)
-//  //                        return
-//  //                }
-//  //        }
-//  //        writer.Flush()
+		for i := 0; i < chromLen; i++ {
 
-//}
+			if j == 0 {
+				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][0])
+			} else if j == 1 {
+				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][1])
+			} else {
+				rawCSVdata[j][i] = strconv.FormatFloat(inputChromosome.Fitness[j-2][i], 'f', 2, 64)
+			}
+		}
+	}
+
+	// initialize writer object
+	writer := csv.NewWriter(csvfile)
+
+	// write data or get error
+	err = writer.WriteAll(rawCSVdata)
+
+	// parse errors
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// flush writer object
+	writer.Flush()
+
+}
