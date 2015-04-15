@@ -15,7 +15,7 @@ import (
 
 // function to write an input comma separated value
 // file's contents to an output domain structure
-func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
+func CsvToDomain(inputFilepath string) (outputDomain *Domain) {
 
 	// open file
 	data, err := os.Open(inputFilepath)
@@ -82,7 +82,7 @@ func CsvToDomain(identifier int, inputFilepath string) (outputDomain *Domain) {
 	}
 
 	// initialize new domain
-	output := NewDomain(identifier, domMat)
+	output := NewDomain(domMat)
 
 	// return output
 	return output
@@ -162,6 +162,37 @@ func CsvToObjective(identifier int, inputFilepath string) (outputObjective *Obje
 
 	// return output
 	return output
+}
+
+// function to write a set of input comma separated value
+// files' contents to an output multiobjective structure
+func CsvToMultiObjective(inputFilepaths ...string) *MultiObjective {
+
+	// get variadic input length
+	objectiveCount := len(inputFilepaths)
+
+	// initialize objective slice
+	objectiveSlice := make([]*Objective, objectiveCount)
+
+	// initialize objectives identifier
+	var objectiveID int = 0
+
+	// loop through and extract objectives
+	for i := 0; i < objectiveCount; i++ {
+
+		// read CSV data to objective
+		objectiveSlice[i] = CsvToObjective(objectiveID, inputFilepaths[i])
+
+		// increment objective identifier
+		objectiveID += 1
+
+	}
+
+	// return multiObjective output
+	return &MultiObjective{
+		ObjectiveCount: objectiveCount,
+		Objectives:     objectiveSlice,
+	}
 }
 
 //// function to write an the values from an input

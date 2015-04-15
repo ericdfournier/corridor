@@ -45,7 +45,7 @@ func NewToyParameters(searchDomain *Domain) *Parameters {
 }
 
 // new test domain initialization function
-func NewToyDomain(identifier, rows, cols int) *Domain {
+func NewToyDomain(rows, cols int) *Domain {
 
 	// initialize empty matrix
 	domainSize := rows * cols
@@ -81,7 +81,6 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 
 	// return output
 	return &Domain{
-		Id:     identifier,
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
@@ -92,9 +91,6 @@ func NewToyDomain(identifier, rows, cols int) *Domain {
 
 // new test mutation domain initialization function
 func NewToyMutationDomain() *Domain {
-
-	// set identifier
-	var identifier int = 1
 
 	// fix domain size
 	var rows int = 5
@@ -137,7 +133,6 @@ func NewToyMutationDomain() *Domain {
 
 	// return output
 	return &Domain{
-		Id:     identifier,
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
@@ -146,7 +141,7 @@ func NewToyMutationDomain() *Domain {
 	}
 }
 
-func NewToyObjectives(identifier, rows, cols, objectiveCount int) *MultiObjective {
+func NewToyObjectives(rows, cols, objectiveCount int) *MultiObjective {
 
 	// initialize matrix dimensions
 	objectiveSize := rows * cols
@@ -180,7 +175,6 @@ func NewToyObjectives(identifier, rows, cols, objectiveCount int) *MultiObjectiv
 	}
 
 	return &MultiObjective{
-		Id:             identifier,
 		ObjectiveCount: objectiveCount,
 		Objectives:     objSlice,
 	}

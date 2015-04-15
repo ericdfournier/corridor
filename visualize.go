@@ -16,9 +16,6 @@ func ViewDomain(searchDomain *Domain) {
 	// get search domain matrix dimensions
 	rows, _ := searchDomain.Matrix.Dims()
 
-	// print domain id
-	fmt.Printf("Search Domain ID = %d\n", searchDomain.Id)
-
 	// print domain values to command line
 	fmt.Printf("Search Domain Values = \n")
 	for i := 0; i < rows; i++ {
@@ -32,9 +29,6 @@ func ViewBasis(basisSolution *Basis) {
 
 	// get basis solution matrix dimensions
 	rows, _ := basisSolution.Matrix.Dims()
-
-	// print domain id
-	fmt.Printf("Basis ID = %d\n", basisSolution.Id)
 
 	// print domain values to command line
 	fmt.Printf("Basis Solution Values = \n")

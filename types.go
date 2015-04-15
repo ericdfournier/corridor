@@ -28,7 +28,6 @@ type Parameters struct {
 // domains are comprised of boolean arrays which indicate the
 // feasible locations for the search algorithm
 type Domain struct {
-	Id     int
 	Rows   int
 	Cols   int
 	Matrix *mat64.Dense
@@ -48,7 +47,6 @@ type Objective struct {
 // independent objectives that are used for the evaluation of
 // chromosome and population level fitness values
 type MultiObjective struct {
-	Id             int
 	ObjectiveCount int
 	Objectives     []*Objective
 }
@@ -56,7 +54,6 @@ type MultiObjective struct {
 // a basis solution is comprised of the subscript indices forming
 // the euclidean shortest path connecting the source to the dest
 type Basis struct {
-	Id     int
 	Matrix *mat64.Dense
 	Subs   [][]int
 	Convex bool
@@ -85,7 +82,6 @@ type Population struct {
 // this number is determined by the convergence rate of the
 // algorithm.
 type Evolution struct {
-	Id              uuid.UUID
 	Populations     chan *Population
 	FitnessGradient []float64
 }

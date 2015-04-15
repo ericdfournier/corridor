@@ -20,21 +20,16 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// import domain
-	domainID := 1
-	searchDomain := corridor.CsvToDomain(domainID, "searchDomain.csv")
+	searchDomain := corridor.CsvToDomain(1,
+		"searchDomain.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
-
-	// view domain
-	corridor.ViewDomain(searchDomain)
-
-	///////////////////////////////////////////////////////////////////////////////////
-
-	// NEED AN IO ROUTINE FOR IMPORTING MULTIPLE OBJECTIVES
 
 	// initialize objectives
-	objectiveID := 1
-	toyObjectives := corridor.NewToyObjectives(objectiveID, toyDomain.Rows, toyDomain.Cols, objectiveCount)
+	searchObjectives := corridor.CsvToMultiObjective(1,
+		"accessibility.csv",
+		"slope.csv",
+		"disturbance.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -47,13 +42,13 @@ func main() {
 
 	//////////////////////////////////////////////////////////////////////////////////
 
-	// evolve populations
-	toyEvolution := corridor.NewEvolution(toyParameters, toyDomain, toyObjectives)
+	//// evolve populations
+	//toyEvolution := corridor.NewEvolution(toyParameters, toyDomain, toyObjectives)
 
-	///////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 
-	// view output population
-	corridor.ViewPopulation(toyDomain, toyParameters, <-toyEvolution.Populations)
+	//// view output population
+	//corridor.ViewPopulation(toyDomain, toyParameters, <-toyEvolution.Populations)
 
 	///////////////////////////////////////////////////////////////////////////////////
 

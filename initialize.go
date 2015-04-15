@@ -14,7 +14,7 @@ import (
 )
 
 // new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoefficient float64, populationSize, evolutionSize int, selectionFraction, selectionProbability float64) *Parameters {
+func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize, evolutionSize int, randomnessCoefficient, selectionFraction, selectionProbability float64) *Parameters {
 
 	// return output
 	return &Parameters{
@@ -22,14 +22,16 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, randomnessCoef
 		DstSubs: destinationSubscripts,
 		RndCoef: randomnessCoefficient,
 		PopSize: populationSize,
-		SelProb: selectionProbability,
 		SelFrac: selectionFraction,
+		SelProb: selectionProbability,
+		MutaCnt: mutationCount,
+		MutaFrc: mutationFraction,
 		EvoSize: evolutionSize,
 	}
 }
 
 // new domain initialization function
-func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
+func NewDomain(domainMatrix *mat64.Dense) *Domain {
 
 	// get domain size
 	rows, cols := domainMatrix.Dims()
@@ -46,7 +48,6 @@ func NewDomain(identifier int, domainMatrix *mat64.Dense) *Domain {
 
 	//return output
 	return &Domain{
-		Id:     identifier,
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
@@ -94,7 +95,6 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 
 	// return output
 	return &Basis{
-		Id:     searchDomain.Id,
 		Matrix: allMinimumDistances,
 		Subs:   subs,
 		Convex: convexBool,
@@ -228,9 +228,6 @@ func NewEmptyPopulation(identifier int, searchObjectives *MultiObjective) *Popul
 // new empty evolution initialization function
 func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 
-	// generate evolution id
-	uuid := uuid.NewV4()
-
 	// initialize empty population channel
 	popChan := make(chan *Population, searchParameters.EvoSize)
 
@@ -239,7 +236,6 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 
 	// return output
 	return &Evolution{
-		Id:              uuid,
 		Populations:     popChan,
 		FitnessGradient: gradFit,
 	}
@@ -247,9 +243,6 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 
 // new evolution initialization function
 func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObjectives *MultiObjective) *Evolution {
-
-	// generate evolution id
-	uuid := uuid.NewV4()
 
 	// initialize seed population identifier
 	var popID int = 0
@@ -341,7 +334,6 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 
 	// return output
 	return &Evolution{
-		Id:              uuid,
 		Populations:     popChan,
 		FitnessGradient: gradFit,
 	}
