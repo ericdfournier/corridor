@@ -19,31 +19,47 @@ func main() {
 
 	///////////////////////////////////////////////////////////////////////////////////
 
+	// import source subscripts
+	sourceSubs := corridor.CsvToSubs("sourceSubs.csv")
+
+	// import destination subscripts
+	destinationSubs := corridor.CsvToSubs("destinationSubs.csv")
+
+	fmt.Println(sourceSubs)
+	fmt.Println(destinationSubs)
+
+	///////////////////////////////////////////////////////////////////////////////////
+
 	// import domain
-	searchDomain := corridor.CsvToDomain(1,
-		"searchDomain.csv")
+	searchDomain := corridor.CsvToDomain("searchDomain.csv")
+
+	fmt.Println(searchDomain)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize objectives
-	searchObjectives := corridor.CsvToMultiObjective(1,
+	searchObjectives := corridor.CsvToMultiObjective(
 		"accessibility.csv",
 		"slope.csv",
 		"disturbance.csv")
 
+	fmt.Println(searchObjectives)
+
 	///////////////////////////////////////////////////////////////////////////////////
 
-	// initialize parameters
-	toyParameters := corridor.NewToyParameters(toyDomain)
-	toyParameters.SrcSubs[0] = 8
-	toyParameters.SrcSubs[1] = 14
-	toyParameters.DstSubs[0] = toyDomain.Rows - 8
-	toyParameters.DstSubs[1] = toyDomain.Rows - 14
+	//// initialize parameters
+	//searchParameters := corridor.NewParameters(
+
+	//	)
 
 	//////////////////////////////////////////////////////////////////////////////////
 
-	//// evolve populations
-	//toyEvolution := corridor.NewEvolution(toyParameters, toyDomain, toyObjectives)
+	////// evolve populations
+	//toyEvolution := corridor.NewEvolution(
+	//	searchParameters,
+	//	searchDomain,
+	//	searchObjectives
+	//	)
 
 	/////////////////////////////////////////////////////////////////////////////////////
 

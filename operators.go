@@ -379,7 +379,7 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 			// generate subdomain from sub matrix and generate sub basis
 			subDomain := NewDomain(subMat)
-			subParams := NewParameters(subSource, subDestin, inputParameters.RndCoef, 1, 1.0, 1.0, 1)
+			subParams := NewParameters(subSource, subDestin, 1, 1, inputParameters.RndCoef)
 			subBasis := NewBasis(subDomain, subParams)
 
 			// check validity of sub domain

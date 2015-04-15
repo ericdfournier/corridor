@@ -14,7 +14,19 @@ import (
 )
 
 // new problem parameters function
-func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize, evolutionSize int, randomnessCoefficient, selectionFraction, selectionProbability float64) *Parameters {
+func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize, evolutionSize int, randomnessCoefficient float64) *Parameters {
+
+	// set default mutation count
+	mutationCount := 1
+
+	// set defacult mutation fraction
+	mutationFraction := 0.2
+
+	// set selection fraction
+	selectionFraction := 0.5
+
+	// set selection probability
+	selectionProbability := 0.8
 
 	// return output
 	return &Parameters{

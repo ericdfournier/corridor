@@ -15,6 +15,65 @@ import (
 
 // function to write an input comma separated value
 // file's contents to an output domain structure
+func CsvToSubs(inputFilepath string) (outputSubs []int) {
+
+	// open file
+	data, err := os.Open(inputFilepath)
+
+	// parse error if file not found
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// close file on completion
+	defer data.Close()
+
+	// generate new reader from open file
+	reader := csv.NewReader(data)
+
+	// set reader structure field
+	reader.FieldsPerRecord = -1
+
+	// use reader to read raw csv data
+	rawCSVdata, err := reader.ReadAll()
+
+	// parse csv file formatting errors
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// initialize empty row and column counts
+	rows := len(rawCSVdata)
+	cols := len(rawCSVdata[0])
+
+	// initialize output
+	output := make([]int, 2)
+
+	// loop through and extract values
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+
+			// get string value and convert to integer
+			strVal := rawCSVdata[i][j]
+			intVal, err := strconv.Atoi(strVal)
+			output[j] = intVal
+
+			// parse error
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+	}
+
+	// return output
+	return output
+}
+
+// function to write an input comma separated value
+// file's contents to an output domain structure
 func CsvToDomain(inputFilepath string) (outputDomain *Domain) {
 
 	// open file
