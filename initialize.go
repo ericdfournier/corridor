@@ -48,15 +48,8 @@ func NewDomain(domainMatrix *mat64.Dense) *Domain {
 	// get domain size
 	rows, cols := domainMatrix.Dims()
 
-	// initialize fixed parameters
-	var p float64 = 2
-	var s float64 = 5
-
-	// count the total number of feasible cells
-	feasibleCount := int(domainMatrix.Sum())
-
 	// compute maximum permitted chromosome length
-	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
+	maximumLength := 100 * int(math.Floor(math.Sqrt(domainMatrix.Sum())))
 
 	//return output
 	return &Domain{
@@ -64,7 +57,6 @@ func NewDomain(domainMatrix *mat64.Dense) *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
-		Count:  feasibleCount,
 	}
 }
 

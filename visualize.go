@@ -42,12 +42,11 @@ func ViewBasis(basisSolution *Basis) {
 func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, inputChromosome *Chromosome) {
 
 	// get search domain matrix dimensions and empty value slice
-	rows, cols := searchDomain.Matrix.Dims()
-	domainSize := rows * cols
+	domainSize := searchDomain.Rows * searchDomain.Cols
 	v := make([]float64, domainSize)
 
 	// allocate new empty matrix
-	blankMat := mat64.NewDense(rows, cols, v)
+	blankMat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, v)
 
 	// assign chromosome values to the empty matrix
 	for i := 0; i < len(inputChromosome.Subs); i++ {
@@ -56,7 +55,7 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, inputChr
 
 	// print chromosome values to command line
 	fmt.Printf("Chromosome = \n")
-	for i := 0; i < rows; i++ {
+	for i := 0; i < searchDomain.Rows; i++ {
 		rawRowVals := blankMat.RawRowView(i)
 		fmt.Printf("%1.0f\n", rawRowVals)
 	}
@@ -69,11 +68,8 @@ func ViewChromosome(searchDomain *Domain, searchParameters *Parameters, inputChr
 // functions to print the frequency of chromosomes in a search domain to the command line
 func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPopulation *Population) {
 
-	// get search domain dimensions
-	rows, cols := searchDomain.Matrix.Dims()
-
 	// allocate new empty matrix
-	mat := mat64.NewDense(rows, cols, nil)
+	mat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
 
 	// accumulated visited subscripts in new empty matrix
 	for i := 0; i < searchParameters.PopSize; i++ {
@@ -98,7 +94,7 @@ func ViewPopulation(searchDomain *Domain, searchParameters *Parameters, inputPop
 	// print matrix values to command line
 	fmt.Printf("Population Size = %d\n", searchParameters.PopSize)
 	fmt.Printf("Population Frequency = \n")
-	for q := 0; q < rows; q++ {
+	for q := 0; q < searchDomain.Rows; q++ {
 		rawRowVals := mat.RawRowView(q)
 		fmt.Printf("%*.0f\n", DigitCount(searchParameters.PopSize)+1, rawRowVals)
 	}

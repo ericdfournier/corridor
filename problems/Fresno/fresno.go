@@ -20,13 +20,13 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// import source subscripts
-	sourceSubs := corridor.CsvToSubs("sourceSubs.csv")
+	source := corridor.CsvToSubs("sourceSubs.csv")
 
 	// import destination subscripts
-	destinationSubs := corridor.CsvToSubs("destinationSubs.csv")
+	destination := corridor.CsvToSubs("destinationSubs.csv")
 
-	fmt.Println(sourceSubs)
-	fmt.Println(destinationSubs)
+	fmt.Println(source)
+	fmt.Println(destination)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -48,23 +48,34 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	//// initialize parameters
-	//searchParameters := corridor.NewParameters(
+	populationSize := 100
+	evolutionSize := 100
+	randomness := 1.0
 
-	//	)
+	searchParameters := corridor.NewParameters(
+		source,
+		destination,
+		populationSize,
+		evolutionSize,
+		randomness)
 
 	//////////////////////////////////////////////////////////////////////////////////
 
-	////// evolve populations
-	//toyEvolution := corridor.NewEvolution(
-	//	searchParameters,
-	//	searchDomain,
-	//	searchObjectives
-	//	)
+	// evolve populations
+	searchEvolution := corridor.NewEvolution(
+		searchParameters,
+		searchDomain,
+		searchObjectives)
 
-	/////////////////////////////////////////////////////////////////////////////////////
+	fmt.Println(searchEvolution)
 
-	//// view output population
-	//corridor.ViewPopulation(toyDomain, toyParameters, <-toyEvolution.Populations)
+	///////////////////////////////////////////////////////////////////////////////////
+
+	// view output population
+	corridor.ViewPopulation(
+		searchDomain,
+		searchParameters,
+		<-searchEvolution.Populations)
 
 	///////////////////////////////////////////////////////////////////////////////////
 

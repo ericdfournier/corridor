@@ -22,7 +22,6 @@ type Parameters struct {
 	MutaCnt int
 	MutaFrc float64
 	EvoSize int
-	ObjeCnt int
 }
 
 // domains are comprised of boolean arrays which indicate the
@@ -32,7 +31,6 @@ type Domain struct {
 	Cols   int
 	Matrix *mat64.Dense
 	MaxLen int
-	Count  int
 }
 
 // objectives are comprised of matrices which use location

@@ -69,15 +69,8 @@ func NewToyDomain(rows, cols int) *Domain {
 		}
 	}
 
-	// initialize fixed parameters
-	var p float64 = 2
-	var s float64 = 5
-
 	// compute maximum permitted chromosome length
-	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
-
-	// calculate the total feasible count
-	feasibleCount := int(domainMatrix.Sum())
+	maximumLength := int(domainMatrix.Sum())
 
 	// return output
 	return &Domain{
@@ -85,7 +78,6 @@ func NewToyDomain(rows, cols int) *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
-		Count:  feasibleCount,
 	}
 }
 
@@ -121,15 +113,8 @@ func NewToyMutationDomain() *Domain {
 	// eliminate center
 	domainMatrix.Set(2, 2, 0.0)
 
-	// initialize fixed parameters
-	var p float64 = 2
-	var s float64 = 5
-
 	// compute maximum permitted chromosome length
-	maximumLength := int(math.Ceil(s * math.Sqrt(math.Pow(float64(rows), p)+math.Pow(float64(cols), p))))
-
-	// calculate total feasible count
-	feasibleCount := int(domainMatrix.Sum())
+	maximumLength := int(domainMatrix.Sum())
 
 	// return output
 	return &Domain{
@@ -137,7 +122,6 @@ func NewToyMutationDomain() *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
-		Count:  feasibleCount,
 	}
 }
 

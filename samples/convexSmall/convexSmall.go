@@ -20,8 +20,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// import domain
-	domainID := 1
-	toyDomain := corridor.CsvToDomain(domainID, "convexSmall.csv")
+	toyDomain := corridor.CsvToDomain("convexSmall.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -31,9 +30,8 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize objectives
-	objectiveID := 1
 	objectiveCount := 3
-	toyObjectives := corridor.NewToyObjectives(objectiveID, toyDomain.Rows, toyDomain.Cols, objectiveCount)
+	toyObjectives := corridor.NewToyObjectives(toyDomain.Rows, toyDomain.Cols, objectiveCount)
 
 	///////////////////////////////////////////////////////////////////////////////////
 

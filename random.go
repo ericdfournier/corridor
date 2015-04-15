@@ -202,11 +202,14 @@ func NewInd(curSubs []int, curDist float64, searchParameters *Parameters, search
 		output[0] = curSubs[0] + try[0]
 		output[1] = curSubs[1] + try[1]
 
+		// DEBUG
+		/*		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
+				iterations += 1
+				continue
+			} else*/
+
 		// test if currentIndex inside search domain
-		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
-			iterations += 1
-			continue
-		} else if output[0] > searchDomain.Rows-1 || output[1] > searchDomain.Cols-1 || output[0] < 0 || output[1] < 0 {
+		if output[0] > searchDomain.Rows-1 || output[1] > searchDomain.Cols-1 || output[0] < 0 || output[1] < 0 {
 			iterations += 1
 			continue
 		} else {
