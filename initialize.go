@@ -342,3 +342,20 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 		FitnessGradient: gradFit,
 	}
 }
+
+//// THIS ROUTINE IS STILL UNDER DEVELOPMENT...
+
+//// function to return copies of a user specified fraction of
+//// the individual chromosomes within a population ranked in terms
+//// of individual aggregate fitness
+//func NewElites(inputFraction float64, inputPopulation *Population) (outputChromosomes []*Chromosomes) {
+
+//	// initialize aggregate score slice
+//	count := math.Floor(inputFraction * cap(inputPopulation.Chromosomes))
+
+//	// initialize map
+//	chromMap := make(map[uuid.UUID]float64)
+
+//	// initialize
+
+//}

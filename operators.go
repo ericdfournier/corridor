@@ -454,7 +454,7 @@ func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, i
 	return inputChromosome
 }
 
-// function generate mutations within a specified fraction of an input
+// function to generate mutations within a specified fraction of an input
 // population with those chromosomes being selected at random
 func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Parameters, inputObjectives *MultiObjective, inputDomain *Domain) (outputChromosomes chan *Chromosome) {
 
