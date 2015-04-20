@@ -41,8 +41,8 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	//// initialize parameters
-	populationSize := 10
-	evolutionSize := 1
+	populationSize := 100000
+	evolutionSize := 10000
 	randomness := 1.0
 
 	searchParameters := corridor.NewParameters(
@@ -73,7 +73,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// write chromosome to file
-	corridor.ChromosomeToCsv(testChrom, "testChrom.csv")
+	defer corridor.ChromosomeToCsv(testChrom, "testChrom.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
