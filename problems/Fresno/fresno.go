@@ -41,7 +41,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	//// initialize parameters
-	populationSize := 10000
+	populationSize := 5000
 	evolutionSize := 1000
 	randomness := 1.0
 
