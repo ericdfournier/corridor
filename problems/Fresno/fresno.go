@@ -6,12 +6,22 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 
 	"github.com/ericdfournier/corridor"
 )
 
 func main() {
+	///////////////////////////////////////////////////////////////////////////////////
+
+	// set max processing units
+	cpuCount := runtime.NumCPU()
+	runtime.GOMAXPROCS(cpuCount)
+
+	fmt.Println("CPU Count:")
+	fmt.Println(cpuCount)
+
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// start clock
