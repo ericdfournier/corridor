@@ -52,7 +52,7 @@ func main() {
 
 	//// initialize parameters
 	populationSize := 1000
-	evolutionSize := 100
+	evolutionSize := 1000
 	randomness := 1.0
 
 	searchParameters := corridor.NewParameters(
