@@ -49,7 +49,7 @@ func NewDomain(domainMatrix *mat64.Dense) *Domain {
 	rows, cols := domainMatrix.Dims()
 
 	// compute maximum permitted chromosome length
-	maximumLength := 100 * int(math.Floor(math.Sqrt(domainMatrix.Sum())))
+	maximumLength := 10 * int(math.Floor(math.Sqrt(domainMatrix.Sum())))
 
 	//return output
 	return &Domain{
