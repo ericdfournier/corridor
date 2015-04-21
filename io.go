@@ -254,21 +254,9 @@ func CsvToMultiObjective(inputFilepaths ...string) (outputMultiObjective *MultiO
 	}
 }
 
-// function to write an the values from an input
+// function to write the values from an input
 // chromosome structure to an output csv file
-func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
-
-	// open file
-	csvfile, err := os.Create(outputFilepath)
-
-	// parse file opening errors
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	// close file on completion
-	defer csvfile.Close()
+func ChromosomeToString(inputChromosome *Chromosome) (outputRawString [][]string) {
 
 	// get input chromosome length
 	chromLen := len(inputChromosome.Subs)
@@ -295,6 +283,39 @@ func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
 				rawCSVdata[j][i] = strconv.FormatFloat(inputChromosome.Fitness[j-2][i], 'f', 2, 64)
 			}
 		}
+	}
+
+	// return output
+	return rawCSVdata
+}
+
+// function to write the values from an input elite set
+// to an output csv file
+func EliteSetToCSV(inputEliteSet []*Chromosome, outputFilepath string) {
+
+	// open file
+	csvfile, err := os.Create(outputFilepath)
+
+	// parse file opening errors
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// close file on completion
+	defer csvfile.Close()
+
+	// get chromosome count
+	chromCount := len(inputEliteSet)
+
+	// initialize rawCSVdata and chromosome string structures
+	var chromString, rawCSVdata [][]string
+
+	// loop through chromsomes and generate composite string structure
+	for i := 0; i < chromCount; i++ {
+
+		chromString = ChromosomeToString(inputEliteSet[i])
+		rawCSVdata = append(rawCSVdata, chromString...)
 	}
 
 	// initialize writer object

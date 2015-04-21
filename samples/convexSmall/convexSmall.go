@@ -60,10 +60,10 @@ func main() {
 	// select elite fraction
 	toyElites := corridor.NewEliteSet(10, finalPop)
 
-	for i := 0; i < 10; i++ {
-		fmt.Println(toyElites[i].Id)
-		fmt.Println(toyElites[i].AggregateFitness)
-	}
+	///////////////////////////////////////////////////////////////////////////////////
+
+	// write elite set to file
+	corridor.EliteSetToCSV(toyElites, "output.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
