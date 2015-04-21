@@ -382,3 +382,66 @@ func NewEliteFraction(inputFraction float64, inputPopulation *Population) (outpu
 	// return output
 	return output
 }
+
+// function to return copies of a user specified number of
+// unique individual chromosomes from within a population
+// with each chromosome being ranked in terms of its
+// individual aggregate fitness
+func NewEliteSet(inputCount int, inputPopulation *Population) (outputChromosomes []*Chromosome) {
+
+	// count input chromosomes
+	chromCount := cap(inputPopulation.Chromosomes)
+
+	// initialize chromosome map
+	chromMap := make(map[float64]*Chromosome)
+
+	// initialize chromosome map key slice
+	chromKey := make([]float64, chromCount)
+
+	// initialize output slice
+	output := make([]*Chromosome, inputCount)
+
+	// loop through channel to populate slice
+	for i := 0; i < chromCount; i++ {
+		curChrom := <-inputPopulation.Chromosomes
+		chromMap[curChrom.AggregateFitness] = curChrom
+		chromKey[i] = curChrom.AggregateFitness
+	}
+
+	// sort on aggregate fitness keys
+	sort.Float64s(chromKey)
+
+	// initalize iteration counter
+	var iter int = 0
+
+	// loop through and generate output slice set
+	for j := 0; j < chromCount; j++ {
+
+		// deal with initial state
+		if j == 0 {
+			output[iter] = chromMap[chromKey[j]]
+			iter += 1
+			continue
+		}
+
+		// get uuids
+		prevUuid := chromMap[chromKey[j-1]].Id.String()
+		curUuid := chromMap[chromKey[j]].Id.String()
+
+		// impose uniqueness constraint
+		if prevUuid != curUuid {
+			output[iter] = chromMap[chromKey[j]]
+			iter += 1
+		} else {
+			continue
+		}
+
+		// stop if inputCount reached
+		if iter == inputCount {
+			break
+		}
+	}
+
+	// return output
+	return output
+}

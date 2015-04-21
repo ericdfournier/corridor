@@ -41,7 +41,7 @@ func main() {
 	toyParameters.SrcSubs[1] = 14
 	toyParameters.DstSubs[0] = toyDomain.Rows - 8
 	toyParameters.DstSubs[1] = toyDomain.Rows - 14
-	toyParameters.PopSize = 100
+	toyParameters.PopSize = 1000
 	toyParameters.EvoSize = 100
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -52,14 +52,16 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// view output population
-	//corridor.ViewPopulation(toyDomain, toyParameters, <-toyEvolution.Populations)
+	finalPop := <-toyEvolution.Populations
+	corridor.ViewPopulation(toyDomain, toyParameters, finalPop)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// select elite fraction
-	toyElites := corridor.NewEliteFraction(0.5, <-toyEvolution.Populations)
+	toyElites := corridor.NewEliteSet(10, finalPop)
 
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 10; i++ {
+		fmt.Println(toyElites[i].Id)
 		fmt.Println(toyElites[i].AggregateFitness)
 	}
 
