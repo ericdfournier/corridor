@@ -234,7 +234,18 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 
 	// initialize new tabu matrix
 	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
-	tabu.Clone(searchDomain.Matrix)
+	for i := 0; i < searchDomain.Rows; i++ {
+		for j := 0; j < searchDomain.Cols; j++ {
+
+			if i == 0 || i == searchDomain.Rows-1 || j == 0 || j == searchDomain.Cols-1 {
+				tabu.Set(i, j, 0.0)
+			} else {
+				tabu.Set(i, j, 1.0)
+			}
+		}
+	}
+
+	//tabu.Clone(searchDomain.Matrix)
 	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
 
 	// initialize current subscripts, distance, try, and iteration counter

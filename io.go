@@ -291,7 +291,7 @@ func ChromosomeToString(inputChromosome *Chromosome) (outputRawString [][]string
 
 // function to write the values from an input elite set
 // to an output csv file
-func EliteSetToCSV(inputEliteSet []*Chromosome, outputFilepath string) {
+func EliteSetToCsv(inputEliteSet []*Chromosome, outputFilepath string) {
 
 	// open file
 	csvfile, err := os.Create(outputFilepath)

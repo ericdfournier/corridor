@@ -20,26 +20,25 @@ func main() {
 	////////////////////////////////////////////////////////////////////////////////////
 
 	// import domain
-	domainID := 1
-	toyDomain := corridor.CsvToDomain(domainID, "concaveSmall.csv")
+	toyDomain := corridor.CsvToDomain("concaveSmall.csv")
 	rows, cols := toyDomain.Matrix.Dims()
+	corridor.ViewDomain(toyDomain)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize objectives
-	objectiveID := 1
 	objectiveCount := 3
-	toyObjectives := corridor.NewToyObjectives(objectiveID, rows, cols, objectiveCount)
+	toyObjectives := corridor.NewToyObjectives(rows, cols, objectiveCount)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	toyParameters := corridor.NewToyParameters(rows, cols)
+	toyParameters := corridor.NewToyParameters(toyDomain)
 	toyParameters.SrcSubs[0] = 40
 	toyParameters.SrcSubs[1] = 40
 	toyParameters.DstSubs[0] = 105
 	toyParameters.DstSubs[1] = 95
-	toyParameters.PopSize = 10
+	toyParameters.PopSize = 5000
 	toyParameters.EvoSize = 1
 
 	///////////////////////////////////////////////////////////////////////////////////
