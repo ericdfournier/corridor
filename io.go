@@ -311,5 +311,4 @@ func ChromosomeToCsv(inputChromosome *Chromosome, outputFilepath string) {
 
 	// flush writer object
 	writer.Flush()
-
 }

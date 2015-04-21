@@ -7,6 +7,7 @@ package corridor
 import (
 	"fmt"
 	"math"
+	"sort"
 
 	"github.com/gonum/diff/fd"
 	"github.com/gonum/matrix/mat64"
@@ -343,19 +344,41 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 	}
 }
 
-//// THIS ROUTINE IS STILL UNDER DEVELOPMENT...
+// function to return copies of a user specified fraction of
+// the individual chromosomes within a population ranked in terms
+// of individual aggregate fitness
+func NewEliteFraction(inputFraction float64, inputPopulation *Population) (outputChromosomes []*Chromosome) {
 
-//// function to return copies of a user specified fraction of
-//// the individual chromosomes within a population ranked in terms
-//// of individual aggregate fitness
-//func NewElites(inputFraction float64, inputPopulation *Population) (outputChromosomes []*Chromosomes) {
+	// count input chromosomes
+	chromCount := cap(inputPopulation.Chromosomes)
 
-//	// initialize aggregate score slice
-//	count := math.Floor(inputFraction * cap(inputPopulation.Chromosomes))
+	// initialize aggregate score slice
+	chromFrac := int(math.Ceil(inputFraction * float64(chromCount)))
 
-//	// initialize map
-//	chromMap := make(map[uuid.UUID]float64)
+	// initialize chromosome map
+	chromMap := make(map[float64]*Chromosome)
 
-//	// initialize
+	// initialize chromosome map key slice
+	chromKey := make([]float64, chromCount)
 
-//}
+	// initialize output slice
+	output := make([]*Chromosome, chromFrac)
+
+	// loop through channel to populate slice
+	for i := 0; i < chromCount; i++ {
+		curChrom := <-inputPopulation.Chromosomes
+		chromMap[curChrom.AggregateFitness] = curChrom
+		chromKey[i] = curChrom.AggregateFitness
+	}
+
+	// sort on aggregate fitness keys
+	sort.Float64s(chromKey)
+
+	// loop through and generate output slice faction
+	for j := 0; j < chromFrac; j++ {
+		output[j] = chromMap[chromKey[j]]
+	}
+
+	// return output
+	return output
+}
