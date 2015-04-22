@@ -189,14 +189,11 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.PopSize; i++ {
 
-		// DEBUG
 		// launch chromosome initialization go routines
-		// go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
-		go func() {
+		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
 			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
 			chr <- ChromosomeFitness(emptyChrom, searchObjectives)
-		}()
-		//}(searchDomain, searchParameters, searchObjectives, basisSolution)
+		}(searchDomain, searchParameters, searchObjectives, basisSolution)
 
 	}
 
