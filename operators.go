@@ -480,10 +480,11 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 		// screen on mutation indices
 		if mutTest == 1 {
 
+			// DEBUG
 			// launch go routines
-			go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
-				curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
-			}(curChrom, inputDomain, inputParameters, inputObjectives)
+			//go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
+			curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
+			//}(curChrom, inputDomain, inputParameters, inputObjectives)
 
 			// update iterator
 			iter += 1
