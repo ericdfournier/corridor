@@ -401,11 +401,12 @@ func NewEliteSet(inputCount int, inputPopulation *Population) (outputChromosomes
 	// initialize output slice
 	output := make([]*Chromosome, inputCount)
 
-	// loop through channel to populate slice
+	// loop through channel to populate slice from channel
 	for i := 0; i < chromCount; i++ {
 		curChrom := <-inputPopulation.Chromosomes
 		chromMap[curChrom.AggregateFitness] = curChrom
 		chromKey[i] = curChrom.AggregateFitness
+		inputPopulation.Chromosomes <- curChrom
 	}
 
 	// sort on aggregate fitness keys

@@ -19,9 +19,6 @@ func main() {
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
 
-	fmt.Println("CPU Count:")
-	fmt.Println(cpuCount)
-
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// start clock
@@ -72,14 +69,13 @@ func main() {
 
 	///////////////////////////////////////////////////////////////////////////////////
 
-	// generate elite set
-	eliteCount := 100
+	eliteCount := 10
 	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// write chromosome to file
-	corridor.EliteSetToCsv(eliteSet, "eliteSet.csv")
+	corridor.EliteSetToCsv(eliteSet, "fresno_eliteSet.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
