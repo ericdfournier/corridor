@@ -48,8 +48,8 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 10000
-	evolutionSize := 1000
+	populationSize := 10
+	evolutionSize := 10
 	randomness := 1.0
 
 	// generate parameter structure
