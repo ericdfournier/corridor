@@ -279,9 +279,9 @@ func ChromosomeToString(inputChromosome *Chromosome) (outputRawString [][]string
 
 			// transpose subs by one to account for boundary buffer
 			if j == 0 {
-				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][0]) - 1
+				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][0] - 1)
 			} else if j == 1 {
-				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][1]) - 1
+				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][1] - 1)
 			} else {
 				rawCSVdata[j][i] = strconv.FormatFloat(inputChromosome.Fitness[j-2][i], 'f', 2, 64)
 			}
