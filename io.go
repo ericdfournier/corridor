@@ -58,7 +58,9 @@ func CsvToSubs(inputFilepath string) (outputSubs []int) {
 			// get string value and convert to integer
 			strVal := rawCSVdata[i][j]
 			intVal, err := strconv.Atoi(strVal)
-			output[j] = intVal
+
+			// shift value by one to account for buffer boundaries
+			output[j] = intVal + 1
 
 			// parse error
 			if err != nil {
@@ -275,10 +277,11 @@ func ChromosomeToString(inputChromosome *Chromosome) (outputRawString [][]string
 
 		for i := 0; i < chromLen; i++ {
 
+			// transpose subs by one to account for boundary buffer
 			if j == 0 {
-				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][0])
+				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][0]) - 1
 			} else if j == 1 {
-				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][1])
+				rawCSVdata[j][i] = strconv.Itoa(inputChromosome.Subs[i][1]) - 1
 			} else {
 				rawCSVdata[j][i] = strconv.FormatFloat(inputChromosome.Fitness[j-2][i], 'f', 2, 64)
 			}
@@ -313,7 +316,6 @@ func EliteSetToCsv(inputEliteSet []*Chromosome, outputFilepath string) {
 
 	// loop through chromsomes and generate composite string structure
 	for i := 0; i < chromCount; i++ {
-
 		chromString = ChromosomeToString(inputEliteSet[i])
 		rawCSVdata = append(rawCSVdata, chromString...)
 	}
