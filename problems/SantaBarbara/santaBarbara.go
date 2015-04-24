@@ -35,7 +35,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// import domain
-	searchDomain := corridor.CsvToDomain("searchDomain.csv")
+	searchDomain := corridor.CsvToDomain("blankDomain.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -48,9 +48,9 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 1000
+	populationSize := 10000
 	evolutionSize := 1000
-	randomness := 1.0
+	randomness := 2.0
 
 	// generate parameter structure
 	searchParameters := corridor.NewParameters(
