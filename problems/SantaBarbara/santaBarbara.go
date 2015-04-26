@@ -48,7 +48,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 1000
+	populationSize := 10000
 	evolutionSize := 1000
 	randomness := 2.0
 
@@ -79,7 +79,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// write elite set to file
-	corridor.EliteSetToCsv(eliteSet, "santaBarbara_p-1000_e-1000_eliteSet.csv")
+	corridor.EliteSetToCsv(eliteSet, "santaBarbara_p-10000_e-1000_eliteSet.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
