@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 	"time"
 
@@ -48,8 +47,8 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 10000
-	evolutionSize := 1000
+	populationSize := 100
+	evolutionSize := 10
 	randomness := 1.0
 
 	// generate parameter structure
@@ -71,7 +70,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize elite count
-	eliteCount := 100
+	eliteCount := 2
 
 	// extract elite set
 	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations)
@@ -79,12 +78,12 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// write elite set to file
-	corridor.EliteSetToCsv(eliteSet, "santaBarbara_p-10000_e-1000_eliteSet.csv")
+	corridor.EliteSetToCsv(eliteSet, "santaBarbara_p-100000_e-1000_eliteSet.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 
-	// stop clock and print runtime
-	fmt.Printf("Elapsed Time: %s\n", time.Since(start))
+	// write log data to file
+	corridor.RuntimeLogToCsv(searchEvolution, time.Since(start), "log.csv")
 
 	///////////////////////////////////////////////////////////////////////////////////
 }

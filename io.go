@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gonum/matrix/mat64"
 )
@@ -325,6 +326,59 @@ func EliteSetToCsv(inputEliteSet []*Chromosome, outputFilepath string) {
 
 	// write data or get error
 	err = writer.WriteAll(rawCSVdata)
+
+	// parse errors
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// flush writer object
+	writer.Flush()
+}
+
+// function to write the runtime parameters from an evolution
+// to an output csv file
+func RuntimeLogToCsv(inputEvolution *Evolution, inputRuntime time.Duration, outputFilepath string) {
+
+	// open file
+	csvfile, err := os.Create(outputFilepath)
+
+	// parse file opening errors
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// close file on completion
+	defer csvfile.Close()
+
+	// initialize rawCSVdata structure
+	var rawCSVdata []string
+
+	// populate string slice
+	rawCSVdata = append(rawCSVdata, inputRuntime.String())
+
+	// initalize evolutionary counter
+	var evo int = 0
+
+	// count required evolutions
+	for i := 0; i < len(inputEvolution.FitnessGradient); i++ {
+		if inputEvolution.FitnessGradient[i] != 0 {
+			evo += 1
+		} else {
+			continue
+		}
+	}
+
+	// convert to string
+	rawCSVdata = append(rawCSVdata, strconv.Itoa(evo))
+
+	// initialize writer object
+	writer := csv.NewWriter(csvfile)
+
+	// write data or get error
+	err = writer.Write(rawCSVdata)
 
 	// parse errors
 	if err != nil {
