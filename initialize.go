@@ -194,6 +194,7 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 		//go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
 		emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
 		chr <- ChromosomeFitness(emptyChrom, searchObjectives)
+		fmt.Printf("Chromosome: %v \n", i)
 		//}(searchDomain, searchParameters, searchObjectives, basisSolution)
 
 	}
