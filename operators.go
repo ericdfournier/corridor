@@ -7,7 +7,6 @@ package corridor
 import (
 	"math"
 	"math/rand"
-	"runtime"
 	"time"
 
 	"github.com/gonum/matrix/mat64"
@@ -438,10 +437,6 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 	}
 
-	// DEBUG
-	// initiate garbage collection upon completion
-	runtime.GC()
-
 	// return output
 	return output
 }
@@ -473,8 +468,14 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 	var iter int
 	var mutTest int
 
+	// initialize throttle size
+	conc := make(chan bool, searchParameters.ConSize)
+
 	// initialize selection loop
 	for j := 0; j < inputParameters.PopSize; j++ {
+
+		// write to control channel
+		conc <- true
 
 		// get current chromosome from channel
 		curChrom := <-inputChromosomes
@@ -488,6 +489,7 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 			// DEBUG
 			// launch go routines
 			go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
+				defer func() { <-conc }()
 				curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
 			}(curChrom, inputDomain, inputParameters, inputObjectives)
 
@@ -507,6 +509,11 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 		if iter == mutations {
 			break
 		}
+	}
+
+	// cap parallelism at concurrency limit
+	for j := 0; j < cap(conc); j++ {
+		conc <- true
 	}
 
 	// return selection channel

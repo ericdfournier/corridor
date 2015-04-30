@@ -7,7 +7,6 @@ package corridor
 import (
 	"fmt"
 	"math"
-	"runtime"
 	"sort"
 
 	"github.com/gonum/diff/fd"
@@ -30,6 +29,9 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize
 	// set selection probability
 	selectionProbability := 0.8
 
+	// get concurrency size
+	maxConcurrency := 20 //runtime.NumCPU()
+
 	// return output
 	return &Parameters{
 		SrcSubs: sourceSubscripts,
@@ -41,6 +43,7 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize
 		MutaCnt: mutationCount,
 		MutaFrc: mutationFraction,
 		EvoSize: evolutionSize,
+		ConSize: maxConcurrency,
 	}
 }
 
@@ -138,10 +141,6 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 	// generate placeholder variables
 	uuid := uuid.NewV4()
 
-	// DEBUG
-	// initiate garbage collection upon completion
-	runtime.GC()
-
 	// return output
 	return &Chromosome{
 		Id:               uuid,
@@ -191,18 +190,29 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	// initialize new empty chromosome before entering loop
 	emptyChrom := NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
 
+	// initialize concurrency limit channel
+	conc := make(chan bool, searchParameters.ConSize)
+
 	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.PopSize; i++ {
 
-		// DEBUG
+		// write to control channel
+		conc <- true
+
 		// launch chromosome initialization go routines
 		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
+			defer func() { <-conc }()
 			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
 			chr <- ChromosomeFitness(emptyChrom, searchObjectives)
-			//fmt.Printf("Chromosome: %v \n", i)
 		}(searchDomain, searchParameters, searchObjectives, basisSolution)
-
 	}
+
+	// cap parallelism at concurrency limit
+	for j := 0; j < cap(conc); j++ {
+		conc <- true
+	}
+
+	// DEBUG
 
 	// initialize fitness placeholder
 	meanFit := make([]float64, searchObjectives.ObjectiveCount)

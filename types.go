@@ -22,6 +22,7 @@ type Parameters struct {
 	MutaCnt int
 	MutaFrc float64
 	EvoSize int
+	ConSize int
 }
 
 // domains are comprised of boolean arrays which indicate the
