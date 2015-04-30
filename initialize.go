@@ -7,6 +7,7 @@ package corridor
 import (
 	"fmt"
 	"math"
+	"runtime"
 	"sort"
 
 	"github.com/gonum/diff/fd"
@@ -30,7 +31,7 @@ func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize
 	selectionProbability := 0.8
 
 	// get concurrency size
-	maxConcurrency := 20 //runtime.NumCPU()
+	maxConcurrency := runtime.NumCPU()
 
 	// return output
 	return &Parameters{
