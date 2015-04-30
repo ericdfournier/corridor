@@ -7,6 +7,7 @@ package corridor
 import (
 	"fmt"
 	"math"
+	"runtime"
 	"sort"
 
 	"github.com/gonum/diff/fd"
@@ -137,6 +138,10 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 	// generate placeholder variables
 	uuid := uuid.NewV4()
 
+	// DEBUG
+	// initiate garbage collection upon completion
+	runtime.GC()
+
 	// return output
 	return &Chromosome{
 		Id:               uuid,
@@ -191,11 +196,11 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 
 		// DEBUG
 		// launch chromosome initialization go routines
-		//go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
-		emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
-		chr <- ChromosomeFitness(emptyChrom, searchObjectives)
-		fmt.Printf("Chromosome: %v \n", i)
-		//}(searchDomain, searchParameters, searchObjectives, basisSolution)
+		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
+			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
+			chr <- ChromosomeFitness(emptyChrom, searchObjectives)
+			//fmt.Printf("Chromosome: %v \n", i)
+		}(searchDomain, searchParameters, searchObjectives, basisSolution)
 
 	}
 

@@ -7,6 +7,7 @@ package corridor
 import (
 	"math"
 	"math/rand"
+	"runtime"
 	"time"
 
 	"github.com/gonum/matrix/mat64"
@@ -437,6 +438,10 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 
 	}
 
+	// DEBUG
+	// initiate garbage collection upon completion
+	runtime.GC()
+
 	// return output
 	return output
 }
@@ -482,9 +487,9 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 
 			// DEBUG
 			// launch go routines
-			//go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
-			curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
-			//}(curChrom, inputDomain, inputParameters, inputObjectives)
+			go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
+				curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
+			}(curChrom, inputDomain, inputParameters, inputObjectives)
 
 			// update iterator
 			iter += 1
