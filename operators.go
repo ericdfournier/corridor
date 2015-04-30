@@ -469,7 +469,7 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 	var mutTest int
 
 	// initialize throttle size
-	conc := make(chan bool, searchParameters.ConSize)
+	conc := make(chan bool, inputParameters.ConSize)
 
 	// initialize selection loop
 	for j := 0; j < inputParameters.PopSize; j++ {
