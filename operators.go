@@ -474,9 +474,6 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 	// initialize selection loop
 	for j := 0; j < inputParameters.PopSize; j++ {
 
-		// write to control channel
-		conc <- true
-
 		// get current chromosome from channel
 		curChrom := <-inputChromosomes
 
@@ -485,6 +482,9 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 
 		// screen on mutation indices
 		if mutTest == 1 {
+
+			// write to control channel
+			conc <- true
 
 			// DEBUG
 			// launch go routines

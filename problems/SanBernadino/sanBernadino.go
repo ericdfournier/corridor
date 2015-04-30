@@ -47,8 +47,8 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 100000
-	evolutionSize := 1000
+	populationSize := 100
+	evolutionSize := 10
 	randomness := 1.0
 
 	// generate parameter structure
@@ -70,7 +70,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize elite count
-	eliteCount := 100
+	eliteCount := 10
 
 	// extract elite set
 	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations)
