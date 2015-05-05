@@ -45,7 +45,9 @@
 <h3>
 <a id="example-search-domain" class="anchor" href="#example-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Search Domain</h3>
 
-<p>searchDomain.csv</p>
+<p>The search domain should be encoded in a binary format with cells in the feasible search domain set to a value of 1 and cells outside of the feasible search domain set to a value of 0 as below. The user need not generate a "buffer zone" of zero encoded cells surrounding the feasible search domain as this is done automatically by the algorithm at runtime. </p>
+
+<p>searchDomain.csv </p>
 
 <pre><code>0,0,0,0,0,0,0,0,
 0,0,1,1,1,1,0,0,
@@ -57,26 +59,30 @@
 <h3>
 <a id="example-search-objectives" class="anchor" href="#example-search-objectives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Search Objectives</h3>
 
+<p>The user should note that the objective values for cells that are outside of the search domain should be set to values that are arbitrarily high. A good rule of thumb for this purpose is to set their values to be equal to the total number of cells (feasible and otherwise) contained within the entire search domain as below.</p>
+
 <p>objective1.csv</p>
 
-<pre><code>0,0,0,0,0,0,0,0,
-0,0,10,7,5,4,0,0,
-0,0,2,9,1,2,0,0,
-0,0,7,10,2,4,0,0,
-0,0,0,0,0,0,0,0
+<pre><code>40,40,40,40,40,40,40,40,
+40,40,10,7,5,4,40,40,
+40,40,2,9,1,2,40,40,
+40,40,7,10,2,4,40,40,
+40,40,40,40,40,40,40,40
 </code></pre>
 
 <p>objective2.csv</p>
 
-<pre><code>0,0,0,0,0,0,0,0,
-0,0,3,6,3,4,0,0,
-0,0,8,9,8,2,0,0,
-0,0,4,5,9,5,0,0,
-0,0,0,0,0,0,0,0
+<pre><code>40,40,40,40,40,40,40,40,
+40,40,3,6,3,4,40,40,
+40,40,8,9,8,2,40,40,
+40,40,4,5,9,5,40,40,
+40,40,40,40,40,40,40,40
 </code></pre>
 
 <h3>
 <a id="example-source-and-destination-subscripts" class="anchor" href="#example-source-and-destination-subscripts" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Source and Destination Subscripts</h3>
+
+<p>The source and destination subscript files should be formatted to contain, separately, the row and column subscripts corresponding to the location of the either the source or the destination within the context of the input search domain grid. These subscripts should be stored as two comma separated values on a single line of the input .csv file as below.</p>
 
 <p>sourceSubs.csv</p>
 
