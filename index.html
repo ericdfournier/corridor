@@ -35,29 +35,58 @@
 <h3>
 <a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description</h3>
 
+<p>The work contained in this library is based upon the MOGADOR algorithm that was first introduced by Zhang &amp; Armstrong (2008) in: <a href="http://www.envplan.com/abstract.cgi?id=b32167">http://www.envplan.com/abstract.cgi?id=b32167</a> . It also contains additional modifications to the initialization routine introduced by Fournier (2014) in: placeholderURL . </p>
+
 <h3>
 <a id="supported-input-formats" class="anchor" href="#supported-input-formats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported Input Formats</h3>
 
-<h2>
-<a id="search-domain" class="anchor" href="#search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Domain</h2>
+<p>All inputs must be formatted as comma delimited value (CSV) files. </p>
 
 <h2>
-<a id="search-objectives" class="anchor" href="#search-objectives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Objectives</h2>
+<a id="example-search-domain" class="anchor" href="#example-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Search Domain</h2>
+
+<p>searchDomain.csv</p>
+
+<pre><code>0,0,0,0,0,0,0,0,
+0,0,1,1,1,1,0,0,
+0,0,1,1,1,1,0,0,
+0,0,1,1,1,1,0,0,
+0,0,0,0,0,0,0,0
+</code></pre>
 
 <h2>
-<a id="search-parameters" class="anchor" href="#search-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Parameters</h2>
+<a id="example-search-objectives" class="anchor" href="#example-search-objectives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Search Objectives</h2>
 
-<h3>
-<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h3>
+<p>objective1.csv</p>
+
+<pre><code>0,0,0,0,0,0,0,0,
+0,0,10,7,5,4,0,0,
+0,0,2,9,1,2,0,0,
+0,0,7,10,2,4,0,0,
+0,0,0,0,0,0,0,0
+</code></pre>
+
+<p>objective2.csv</p>
+
+<pre><code>0,0,0,0,0,0,0,0,
+0,0,3,6,3,4,0,0,
+0,0,8,9,8,2,0,0,
+0,0,4,5,9,5,0,0,
+0,0,0,0,0,0,0,0
+</code></pre>
 
 <h2>
-<a id="example-1-convex-search-domain" class="anchor" href="#example-1-convex-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 1: Convex Search Domain</h2>
+<a id="example-source-and-destination-subscripts" class="anchor" href="#example-source-and-destination-subscripts" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Source and Destination Subscripts</h2>
 
-<h2>
-<a id="example-2-concave-search-domain" class="anchor" href="#example-2-concave-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 2: Concave Search Domain</h2>
+<p>sourceSubs.csv</p>
 
-<h2>
-<a id="example-3-obstructed-search-domain" class="anchor" href="#example-3-obstructed-search-domain" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 3: Obstructed Search Domain</h2>
+<pre><code>1,3
+</code></pre>
+
+<p>destinationSubs.csv</p>
+
+<pre><code>3,5
+</code></pre>
 
 <h3>
 <a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>Author</h3>
