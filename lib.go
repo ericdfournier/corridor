@@ -29,6 +29,34 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 	return output
 }
 
+// alldistance computes the distance from each location with the input
+// search domain and a given point defined by an input pair of row
+// column subscripts
+func AllDistance(aSubs []int, searchDomain *mat64.Dense) (allDistMatrix *mat64.Dense) {
+
+	// get matrix dimensions
+	rows, cols := searchDomain.Dims()
+
+	// initialize new output matrix
+	output := mat64.NewDense(rows, cols, nil)
+
+	// initialize destination point subscript slice
+	bSubs := make([]int, 2)
+
+	// loop through all values and compute minimum distances
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			bSubs[0] = i
+			bSubs[1] = j
+			output.Set(bSubs[0], bSubs[1], Distance(aSubs, bSubs))
+		}
+	}
+
+	// return output
+	return output
+
+}
+
 // compute the minimum distance between a given input point and
 // the subscripts comprised of a line segement joining two other
 // input points
@@ -89,7 +117,7 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 // allmindistance computes the distance from each location within the
 // input search domain and to the nearest subscript located along the
 // line formed by the two input subscripts
-func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allDistMatrix *mat64.Dense) {
+func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allMinDistMatrix *mat64.Dense) {
 
 	// get matrix dimensions
 	rows, cols := searchDomain.Dims()
@@ -97,10 +125,12 @@ func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allDistMatri
 	// initialize new output matrix
 	output := mat64.NewDense(rows, cols, nil)
 
+	// initialize slice
+	pSubs := make([]int, 2)
+
 	// loop through all values and compute minimum distances
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
-			pSubs := make([]int, 2)
 			pSubs[0] = i
 			pSubs[1] = j
 			curMinDist := MinDistance(pSubs, aSubs, bSubs)
