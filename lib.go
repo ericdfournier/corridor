@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"errors"
 	"math"
 
 	"github.com/gonum/matrix/mat64"
@@ -139,6 +140,56 @@ func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allMinDistMa
 	}
 
 	// return final output
+	return output
+}
+
+// distance to bands recodes a distance matrix computed from a single
+// source location to ordinal set of bands of increasing distance
+func AllDistanceToBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix *mat64.Dense) {
+
+	// get matrix dimensions
+	rows, cols := distanceMatrix.Dims()
+
+	// initialize output
+	output := mat64.NewDense(rows, cols, nil)
+
+	// check band count against input distance matrix size
+	if bandCount > rows || bandCount > cols {
+		err := errors.New("Input band count too large for input distance matrix \n")
+		panic(err)
+	}
+
+	// generate band range
+	minDist := distanceMatrix.Min()
+	maxDist := distanceMatrix.Max()
+
+	// initialize band interval unit and slice
+	bandUnit := (maxDist - minDist) / float64(bandCount+1)
+	bandInt := make([]float64, bandCount+1)
+
+	// generate band intervals
+	for i := 0; i < bandCount+1; i++ {
+		if i == 0 {
+			bandInt[i] = 0
+		} else {
+			bandInt[i] = bandInt[i-1] + bandUnit
+		}
+	}
+
+	// perform conversion to bands
+	for i := 0; i < len(bandInt)-1; i++ {
+		for j := 0; j < rows; j++ {
+			for k := 0; k < rows; k++ {
+				if distanceMatrix.At(j, k) > bandInt[i] && distanceMatrix.At(j, k) < bandInt[i+1] {
+					output.Set(j, k, float64(i))
+				} else if distanceMatrix.At(j, k) > bandInt[i+1] {
+					output.Set(j, k, float64(i+1))
+				}
+			}
+		}
+	}
+
+	// return output
 	return output
 }
 
