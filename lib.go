@@ -118,10 +118,10 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 // allmindistance computes the distance from each location within the
 // input search domain and to the nearest subscript located along the
 // line formed by the two input subscripts
-func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allMinDistMatrix *mat64.Dense) {
+func AllMinDistance(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (allMinDistMatrix *mat64.Dense) {
 
 	// get matrix dimensions
-	rows, cols := searchDomain.Dims()
+	rows, cols := searchDomainMatrix.Dims()
 
 	// initialize new output matrix
 	output := mat64.NewDense(rows, cols, nil)
@@ -143,9 +143,9 @@ func AllMinDistance(aSubs, bSubs []int, searchDomain *mat64.Dense) (allMinDistMa
 	return output
 }
 
-// distance to bands recodes a distance matrix computed from a single
+// distancebands recodes a distance matrix computed from a single
 // source location to ordinal set of bands of increasing distance
-func AllDistanceToBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix *mat64.Dense) {
+func DistanceBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix *mat64.Dense) {
 
 	// get matrix dimensions
 	rows, cols := distanceMatrix.Dims()
@@ -176,7 +176,7 @@ func AllDistanceToBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix 
 		}
 	}
 
-	// perform conversion to bands
+	// perform conversion to the appropriate band interval
 	for i := 0; i < len(bandInt)-1; i++ {
 		for j := 0; j < rows; j++ {
 			for k := 0; k < rows; k++ {
@@ -184,6 +184,80 @@ func AllDistanceToBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix 
 					output.Set(j, k, float64(i))
 				} else if distanceMatrix.At(j, k) > bandInt[i+1] {
 					output.Set(j, k, float64(i+1))
+				}
+			}
+		}
+	}
+
+	// return output
+	return output
+}
+
+// orientation accepts as inputs a pair of point subscripts
+// and returns a binary vector indicating the relative orientation
+// of the first point to the second in binary terms
+func Orientation(aSubs, bSubs []int) (orientationVector []int) {
+
+	// initialize output
+	output := make([]int, 2)
+
+	// generate reference orientation row parameter
+	if aSubs[0]-bSubs[0] < 0 {
+		output[0] = 1
+	} else if aSubs[0]-bSubs[0] == 0 {
+		output[0] = 0
+	} else if aSubs[0]-bSubs[0] > 0 {
+		output[0] = -1
+	}
+
+	// generate reference orientation column parameter
+	if aSubs[1]-bSubs[1] < 0 {
+		output[1] = 1
+	} else if aSubs[1]-bSubs[1] == 0 {
+		output[1] = 0
+	} else if aSubs[1]-bSubs[1] > 0 {
+		output[1] = -1
+	}
+
+	// return output
+	return output
+}
+
+// orientation mask returns a binary encoded matrix for
+// a given point where all points orientated towards
+// a given second point are encoded as 1 and all points
+// orientated away from the given second point as 0
+func OrientationMask(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (orientationMask *mat64.Dense) {
+
+	// generate matrix dimensions
+	rows, cols := searchDomainMatrix.Dims()
+
+	// initialize output matrix
+	output := mat64.NewDense(rows, cols, nil)
+
+	// generate reference orientation vectors
+	sRefOrientVec := Orientation(aSubs, bSubs)
+	dRefOrientVec := Orientation(bSubs, aSubs)
+
+	// initialize current subs and orientation vectors
+	curSubs := make([]int, 2)
+	sOrientVec := make([]int, 2)
+	dOrientVec := make([]int, 2)
+
+	// loop through domain matrix and generate orientation matrix values
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+
+			// compute current orientation
+			curSubs[0] = i
+			curSubs[1] = j
+			sOrientVec = Orientation(curSubs, bSubs)
+			dOrientVec = Orientation(curSubs, aSubs)
+
+			// check for match and assign values
+			if sOrientVec[0] == sRefOrientVec[0] && sOrientVec[1] == sRefOrientVec[1] {
+				if dOrientVec[0] == dRefOrientVec[0] && dOrientVec[1] == dRefOrientVec[1] {
+					output.Set(i, j, 1.0)
 				}
 			}
 		}
