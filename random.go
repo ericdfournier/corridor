@@ -113,26 +113,11 @@ func NewRnd(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 // destination subscript
 func NewMu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 
-	// initialize vector slice
-	muVec := make([]float64, 2)
+	// compute mu as the orientation vector
+	orientVec := Orientation(curSubs, dstSubs)
 
-	// assign row based parameter
-	if curSubs[0]-dstSubs[0] < 0 {
-		muVec[0] = 1
-	} else if curSubs[0]-dstSubs[0] == 0 {
-		muVec[0] = 0
-	} else if curSubs[0]-dstSubs[0] > 0 {
-		muVec[0] = -1
-	}
-
-	// assign column based parameter
-	if curSubs[1]-dstSubs[1] < 0 {
-		muVec[1] = 1
-	} else if curSubs[1]-dstSubs[1] == 0 {
-		muVec[1] = 0
-	} else if curSubs[1]-dstSubs[1] > 0 {
-		muVec[1] = -1
-	}
+	// convert mu to float
+	var muVec = []float64{float64(orientVec[0]), float64(orientVec[1])}
 
 	// initialize matrix output
 	output := mat64.NewDense(2, 1, muVec)
