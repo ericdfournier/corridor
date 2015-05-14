@@ -223,6 +223,42 @@ func BandMask(bandValue float64, bandMatrix *mat64.Dense) (binaryBandMat *mat64.
 	return output
 }
 
+// nonzerosubs returns a 2-D slice containing the row column indices
+// of all nonzero elements contained wihtin a given input matrix
+func NonZeroSubs(inputMatrix *mat64.Dense) (nonZeroSubs [][]int) {
+
+	// get matrix dimensions
+	rows, cols := inputMatrix.Dims()
+
+	// initialize output
+	output := make([][]int, 1)
+	output[0] = make([]int, 2)
+
+	// initialize iterator and current subscript slice
+	var iter int = 0
+
+	// loop through and check values
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+
+			// test for non-zero values
+			if inputMatrix.At(i, j) != 0.0 {
+				if iter == 0 {
+					output[iter] = []int{i, j}
+					iter += 1
+				} else if iter > 0 {
+					output = append(output, []int{i, j})
+					iter += 1
+				}
+			} else if inputMatrix.At(i, j) == 0.0 {
+			}
+		}
+	}
+
+	// return output
+	return output
+}
+
 // orientation accepts as inputs a pair of point subscripts
 // and returns a binary vector indicating the relative orientation
 // of the first point to the second in binary terms
