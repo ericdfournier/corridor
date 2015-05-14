@@ -145,7 +145,7 @@ func AllMinDistance(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (allMin
 
 // distancebands recodes a distance matrix computed from a single
 // source location to ordinal set of bands of increasing distance
-func DistanceBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix *mat64.Dense) {
+func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat64.Dense) {
 
 	// get matrix dimensions
 	rows, cols := distanceMatrix.Dims()
@@ -185,6 +185,36 @@ func DistanceBands(distanceMatrix *mat64.Dense, bandCount int) (bandMatrix *mat6
 				} else if distanceMatrix.At(j, k) > bandInt[i+1] {
 					output.Set(j, k, float64(i+1))
 				}
+			}
+		}
+	}
+
+	// return output
+	return output
+}
+
+// bandmask selects the elements in a distance band matrix
+// corresponding to a specified input band identification number
+// and outputs a binary matrix of the same dimensions as the distance
+// band matrix with the values at those locations encoded as ones
+// and all other locations encoded as zeros
+func BandMask(bandValue float64, bandMatrix *mat64.Dense) (binaryBandMat *mat64.Dense) {
+
+	// get row column dimensions of band matrix
+	rows, cols := bandMatrix.Dims()
+
+	// initialize output
+	output := mat64.NewDense(rows, cols, nil)
+
+	// loop through matrix values and perform binary encoding
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+
+			// perform elementwise equality test
+			if bandValue == bandMatrix.At(i, j) {
+				output.Set(i, j, 1.0)
+			} else {
+				output.Set(i, j, 0.0)
 			}
 		}
 	}
