@@ -335,3 +335,48 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	// return final output
 	return output, test
 }
+
+//// newNod generates an poutput slice of new intermediate destination nodes
+//// that are progressively further, in terms of euclidean distance, from
+//// a given input source location and are orientation towards a given
+//// destination location
+
+//// THINK ABOUT INCORPORATING THE BAND COUNT INPUT VARIABLE INTO THE
+//// SEARCH PARAMETER STRUCTURE (THIS WOULD REQUIRE PASSING THE SEARCH
+//// DOMAIN OBJECT TO THE SEARCH PARAMETER TYPE INITIALIZATION ROUTINE)
+//func NewNod(searchDomain *Domain, searchParameters *Parameters, bandCount int) (nodeSubs [][]int) {
+
+//	// check band count against input distance matrix size
+//	if bandCount < 3 {
+//		err := errors.New("Band count must be greater than three \n")
+//		panic(err)
+//	}
+
+//	// generate distance matrix from source subscripts
+//	distMat := AllDistance(searchParameters.SrcSubs, searchDomainMat)
+
+//	// encode distance bands
+//	bandMat := DistanceBands(bandCount, distMat)
+
+//	// loop through band vector and generate band value subscripts
+//	for i := 1; i < bandCount-1; i++ {
+
+//		// generate band mask
+//		bandMaskMat := BandMask(i, bandMat)
+
+//		// generate orientation mask
+//		orientMaskMat := OrientationMask(aSubs, bSubs, searchDomainMat)
+
+//		// initialize final mask
+//		finalMaskMat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+
+//		// compute final mask through elementwise multiplication
+//		finalMaskMat.MulElem(bandMaskMat, orientMaskMat)
+
+//		// generate subs from final mask
+//		finalSubs := NonZeroSubs(finalMaskMat)
+
+//		// RANDOMLY SELECT A NODE FROM THE FINAL SUBS LIST
+//	}
+
+//}

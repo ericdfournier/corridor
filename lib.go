@@ -147,17 +147,17 @@ func AllMinDistance(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (allMin
 // source location to ordinal set of bands of increasing distance
 func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat64.Dense) {
 
-	// get matrix dimensions
-	rows, cols := distanceMatrix.Dims()
-
-	// initialize output
-	output := mat64.NewDense(rows, cols, nil)
-
 	// check band count against input distance matrix size
 	if bandCount > rows || bandCount > cols {
 		err := errors.New("Input band count too large for input distance matrix \n")
 		panic(err)
 	}
+
+	// get matrix dimensions
+	rows, cols := distanceMatrix.Dims()
+
+	// initialize output
+	output := mat64.NewDense(rows, cols, nil)
 
 	// generate band range
 	minDist := distanceMatrix.Min()
@@ -250,7 +250,42 @@ func NonZeroSubs(inputMatrix *mat64.Dense) (nonZeroSubs [][]int) {
 					output = append(output, []int{i, j})
 					iter += 1
 				}
-			} else if inputMatrix.At(i, j) == 0.0 {
+			}
+		}
+	}
+
+	// return output
+	return output
+}
+
+// findsubs returns a 2-D slice containing the row column indices
+// of all of the elements contained wihtin a given input matrix
+// that are equal in value to some provided input value
+func FindSubs(inputValue float64, inputMatrix *mat64.Dense) (foundSubs [][]int) {
+
+	// get matrix dimensions
+	rows, cols := inputMatrix.Dims()
+
+	// initialize output
+	output := make([][]int, 1)
+	output[0] = make([]int, 2)
+
+	// initialize iterator and current subscript slice
+	var iter int = 0
+
+	// loop through and check values
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+
+			// test for equality
+			if inputMatrix.At(i, j) != inputValue {
+				if iter == 0 {
+					output[iter] = []int{i, j}
+					iter += 1
+				} else if iter > 0 {
+					output = append(output, []int{i, j})
+					iter += 1
+				}
 			}
 		}
 	}
