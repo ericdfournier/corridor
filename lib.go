@@ -147,14 +147,14 @@ func AllMinDistance(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (allMin
 // source location to ordinal set of bands of increasing distance
 func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat64.Dense) {
 
+	// get matrix dimensions
+	rows, cols := distanceMatrix.Dims()
+
 	// check band count against input distance matrix size
 	if bandCount > rows || bandCount > cols {
 		err := errors.New("Input band count too large for input distance matrix \n")
 		panic(err)
 	}
-
-	// get matrix dimensions
-	rows, cols := distanceMatrix.Dims()
 
 	// initialize output
 	output := mat64.NewDense(rows, cols, nil)

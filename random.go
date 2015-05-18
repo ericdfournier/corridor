@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"errors"
 	"math"
 	"math/rand"
 	"time"
@@ -336,47 +337,63 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	return output, test
 }
 
-//// newNod generates an poutput slice of new intermediate destination nodes
-//// that are progressively further, in terms of euclidean distance, from
-//// a given input source location and are orientation towards a given
-//// destination location
+// newNod generates an poutput slice of new intermediate destination nodes
+// that are progressively further, in terms of euclidean distance, from
+// a given input source location and are orientation towards a given
+// destination location
 
-//// THINK ABOUT INCORPORATING THE BAND COUNT INPUT VARIABLE INTO THE
-//// SEARCH PARAMETER STRUCTURE (THIS WOULD REQUIRE PASSING THE SEARCH
-//// DOMAIN OBJECT TO THE SEARCH PARAMETER TYPE INITIALIZATION ROUTINE)
-//func NewNod(searchDomain *Domain, searchParameters *Parameters, bandCount int) (nodeSubs [][]int) {
+// THINK ABOUT INCORPORATING THE BAND COUNT INPUT VARIABLE INTO THE
+// SEARCH PARAMETER STRUCTURE (THIS WOULD REQUIRE PASSING THE SEARCH
+// DOMAIN OBJECT TO THE SEARCH PARAMETER TYPE INITIALIZATION ROUTINE)
+func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters, bandCount int) (nodeSubs [][]int) {
 
-//	// check band count against input distance matrix size
-//	if bandCount < 3 {
-//		err := errors.New("Band count must be greater than three \n")
-//		panic(err)
-//	}
+	// check band count against input distance matrix size
+	if bandCount < 3 {
+		err := errors.New("Band count must be greater than three \n")
+		panic(err)
+	}
 
-//	// generate distance matrix from source subscripts
-//	distMat := AllDistance(searchParameters.SrcSubs, searchDomainMat)
+	// generate distance matrix from source subscripts
+	distMat := AllDistance(searchParameters.SrcSubs, searchDomain.Matrix)
 
-//	// encode distance bands
-//	bandMat := DistanceBands(bandCount, distMat)
+	// initialize output
+	output := make([][]int, 1)
+	output[0] = searchParameters.SrcSubs
 
-//	// loop through band vector and generate band value subscripts
-//	for i := 1; i < bandCount-1; i++ {
+	// encode distance bands
+	bandMat := DistanceBands(bandCount, distMat)
 
-//		// generate band mask
-//		bandMaskMat := BandMask(i, bandMat)
+	// seed random number generator
+	rand.Seed(time.Now().UnixNano())
 
-//		// generate orientation mask
-//		orientMaskMat := OrientationMask(aSubs, bSubs, searchDomainMat)
+	// loop through band vector and generate band value subscripts
+	for i := 1; i < bandCount-1; i++ {
 
-//		// initialize final mask
-//		finalMaskMat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+		// generate band mask
+		bandMaskMat := BandMask(float64(i), bandMat)
 
-//		// compute final mask through elementwise multiplication
-//		finalMaskMat.MulElem(bandMaskMat, orientMaskMat)
+		// generate orientation mask
+		orientMaskMat := OrientationMask(output[i-1], searchParameters.DstSubs, searchDomain.Matrix)
 
-//		// generate subs from final mask
-//		finalSubs := NonZeroSubs(finalMaskMat)
+		// initialize final mask
+		finalMaskMat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
 
-//		// RANDOMLY SELECT A NODE FROM THE FINAL SUBS LIST
-//	}
+		// compute final mask through elementwise multiplication
+		finalMaskMat.MulElem(bandMaskMat, orientMaskMat)
 
-//}
+		// generate subs from final mask
+		finalSubs := NonZeroSubs(finalMaskMat)
+
+		// generate random number of length interval
+		randInd := finalSubs[rand.Intn(len(finalSubs))]
+
+		// extract randomly selected value and write to output
+		output = append(output, randInd)
+	}
+
+	// set the final subscript to the destination
+	output = append(output, searchParameters.DstSubs)
+
+	// return output
+	return output
+}
