@@ -72,12 +72,16 @@ func NewToyDomain(rows, cols int) *Domain {
 	// compute maximum permitted chromosome length
 	maximumLength := int(domainMatrix.Sum())
 
+	// compute band count
+	bandCount := 2 + (int(math.Floor(math.Sqrt(math.Pow(float64(rows), 2.0)+math.Pow(float64(cols), 2.0)))) / 142)
+
 	// return output
 	return &Domain{
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+		BndCnt: bandCount,
 	}
 }
 
@@ -116,12 +120,16 @@ func NewToyMutationDomain() *Domain {
 	// compute maximum permitted chromosome length
 	maximumLength := int(domainMatrix.Sum())
 
+	// set band count to nil
+	var bandCount int = 2
+
 	// return output
 	return &Domain{
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+		BndCnt: bandCount,
 	}
 }
 

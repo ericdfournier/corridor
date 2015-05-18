@@ -345,10 +345,10 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 // THINK ABOUT INCORPORATING THE BAND COUNT INPUT VARIABLE INTO THE
 // SEARCH PARAMETER STRUCTURE (THIS WOULD REQUIRE PASSING THE SEARCH
 // DOMAIN OBJECT TO THE SEARCH PARAMETER TYPE INITIALIZATION ROUTINE)
-func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters, bandCount int) (nodeSubs [][]int) {
+func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [][]int) {
 
 	// check band count against input distance matrix size
-	if bandCount < 3 {
+	if searchDomain.BndCnt < 3 {
 		err := errors.New("Band count must be greater than three \n")
 		panic(err)
 	}
@@ -361,13 +361,13 @@ func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters, bandCount i
 	output[0] = searchParameters.SrcSubs
 
 	// encode distance bands
-	bandMat := DistanceBands(bandCount, distMat)
+	bandMat := DistanceBands(searchDomain.BndCnt, distMat)
 
 	// seed random number generator
 	rand.Seed(time.Now().UnixNano())
 
 	// loop through band vector and generate band value subscripts
-	for i := 1; i < bandCount-1; i++ {
+	for i := 1; i < searchDomain.BndCnt-1; i++ {
 
 		// generate band mask
 		bandMaskMat := BandMask(float64(i), bandMat)
@@ -397,3 +397,7 @@ func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters, bandCount i
 	// return output
 	return output
 }
+
+// MultiDirectedWalk generates a new multipart directed walk from a given set
+// of input problem parameters
+//func MultiDirectedWalk(searchDomain *Domain, searchParameters *Parameters)

@@ -57,12 +57,16 @@ func NewDomain(domainMatrix *mat64.Dense) *Domain {
 	// compute maximum permitted chromosome length
 	maximumLength := 10 * int(math.Floor(math.Sqrt(domainMatrix.Sum())))
 
+	// compute band count
+	bandCount := 2 + (int(math.Floor(math.Sqrt(math.Pow(float64(rows), 2.0)+math.Pow(float64(cols), 2.0)))) / 142)
+
 	//return output
 	return &Domain{
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
 		MaxLen: maximumLength,
+		BndCnt: bandCount,
 	}
 }
 
@@ -212,8 +216,6 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	for j := 0; j < cap(conc); j++ {
 		conc <- true
 	}
-
-	// DEBUG
 
 	// initialize fitness placeholder
 	meanFit := make([]float64, searchObjectives.ObjectiveCount)

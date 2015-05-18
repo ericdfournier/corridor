@@ -32,6 +32,7 @@ type Domain struct {
 	Cols   int
 	Matrix *mat64.Dense
 	MaxLen int
+	BndCnt int
 }
 
 // objectives are comprised of matrices which use location
