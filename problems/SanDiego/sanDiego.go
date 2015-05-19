@@ -73,7 +73,7 @@ func main() {
 	eliteCount := 100
 
 	// extract elite set
-	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations)
+	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations, searchParameters)
 
 	///////////////////////////////////////////////////////////////////////////////////
 

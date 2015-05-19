@@ -13,9 +13,9 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-// mvnrnd generates pairs of bivariate normally distributed random numbers
-// given an input mean vector and covariance matrix
-func MvnRnd(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
+// multivariatenormalrandom generates pairs of bivariate normally distributed
+// random numbers given an input mean vector and covariance matrix
+func MultiVariateNormalRandom(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
 
 	// initialize vector slices
 	o := make([]float64, 2)
@@ -46,10 +46,10 @@ func MvnRnd(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
 	return output
 }
 
-// fixrnd converts an input vector of bivariate normally distributed random
+// fixrandom converts an input vector of bivariate normally distributed random
 // numbers into a version where the values have been fixed to a [-1, 0 ,1]
 // range
-func FixRnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
+func FixRandom(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 
 	// initialize vector slice
 	o := make([]float64, 2)
@@ -79,9 +79,9 @@ func FixRnd(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	return output
 }
 
-// newrnd repeatedly generates a new random sample from mvrnd and then fixes
-// it using fixrnd until the sample is comprised of a non [0, 0] case
-func NewRnd(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
+// newrandom repeatedly generates a new random sample from mvrnd and then fixes
+// it using fixrandom until the sample is comprised of a non [0, 0] case
+func NewRandom(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
 	rndsmp := mat64.NewDense(2, 1, nil)
@@ -89,8 +89,8 @@ func NewRnd(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 
 	// generate random vectors prohibiting zero-zero cases
 	for {
-		rndsmp = MvnRnd(mu, sigma)
-		fixsmp = FixRnd(rndsmp)
+		rndsmp = MultiVariateNormalRandom(mu, sigma)
+		fixsmp = FixRandom(rndsmp)
 		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
 			continue
 		} else {
@@ -127,10 +127,10 @@ func NewMu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 	return output
 }
 
-// newsig generates a matrix representation of sigma that reflects the
+// newsigma generates a matrix representation of sigma that reflects the
 // number of iterations in the sampling process as well as the distance
 // from the basis euclidean solution
-func NewSig(iterations int, randomness, distance float64) (sigma *mat64.SymDense) {
+func NewSigma(iterations int, randomness, distance float64) (sigma *mat64.SymDense) {
 
 	// impose lower bound on distance
 	if distance < 1 {
@@ -163,9 +163,9 @@ func NewSig(iterations int, randomness, distance float64) (sigma *mat64.SymDense
 	return output
 }
 
-// newind generates a feasible new index value within the input search
-// domain
-func NewInd(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+// newsubs generates a feasible new subscript value set within the
+// input search domain
+func NewSubs(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
 
 	// initialize iteration counter
 	var iterations int = 1
@@ -179,10 +179,10 @@ func NewInd(curSubs []int, curDist float64, searchParameters *Parameters, search
 
 		// generate mu and sigma values
 		mu := NewMu(curSubs, searchParameters.DstSubs)
-		sigma := NewSig(iterations, searchParameters.RndCoef, curDist)
+		sigma := NewSigma(iterations, searchParameters.RndCoef, curDist)
 
 		// generate fixed random bivariate normally distributed numbers
-		try := NewRnd(mu, sigma)
+		try := NewRandom(mu, sigma)
 
 		// write output
 		output[0] = curSubs[0] + try[0]
@@ -207,9 +207,9 @@ func NewInd(curSubs []int, curDist float64, searchParameters *Parameters, search
 	return output
 }
 
-// dirwlk generates a new directed walk connecting a source subscript to a
+// directedwalk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
-func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, destinationTest bool) {
+func DirectedWalk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, destinationTest bool) {
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
@@ -255,7 +255,7 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 
 		// generate new try
-		try = NewInd(curSubs, curDist, searchParameters, searchDomain)
+		try = NewSubs(curSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
 		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
@@ -279,9 +279,9 @@ func DirWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	return output, dstTest
 }
 
-// dirwlk generates a new directed walk connecting a source subscript to a
-// destination subscript within the context of an input search domain
-func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, tabuTest bool) {
+// mutationwalk generates a new directed walk connecting a source subscript to a
+// destination subscript within the context of an input mutation search domain
+func MutationWalk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, tabuTest bool) {
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
@@ -311,7 +311,7 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 
 		// generate new try
-		try = NewInd(curSubs, curDist, searchParameters, searchDomain)
+		try = NewSubs(curSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
 		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
@@ -337,14 +337,10 @@ func MutWlk(searchDomain *Domain, searchParameters *Parameters, basisSolution *B
 	return output, test
 }
 
-// newNod generates an poutput slice of new intermediate destination nodes
+// newnodesubs generates an poutput slice of new intermediate destination nodes
 // that are progressively further, in terms of euclidean distance, from
 // a given input source location and are orientation towards a given
 // destination location
-
-// THINK ABOUT INCORPORATING THE BAND COUNT INPUT VARIABLE INTO THE
-// SEARCH PARAMETER STRUCTURE (THIS WOULD REQUIRE PASSING THE SEARCH
-// DOMAIN OBJECT TO THE SEARCH PARAMETER TYPE INITIALIZATION ROUTINE)
 func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [][]int) {
 
 	// check band count against input distance matrix size
@@ -400,4 +396,6 @@ func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [
 
 // MultiDirectedWalk generates a new multipart directed walk from a given set
 // of input problem parameters
-//func MultiDirectedWalk(searchDomain *Domain, searchParameters *Parameters)
+//func MultiDirectedWalk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]int) {
+
+//}

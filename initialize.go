@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"runtime"
@@ -125,7 +126,7 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 	// enter unbounded for loop
 	for {
 		// generate subscripts from directed walk procedure
-		subs, dstTest = DirWlk(searchDomain, searchParameters, basisSolution)
+		subs, dstTest = DirectedWalk(searchDomain, searchParameters, basisSolution)
 
 		// regenerate walk if destination not met within maximum chromosome length
 		if dstTest == false {
@@ -407,7 +408,13 @@ func NewEliteFraction(inputFraction float64, inputPopulation *Population) (outpu
 // unique individual chromosomes from within a population
 // with each chromosome being ranked in terms of its
 // individual aggregate fitness
-func NewEliteSet(inputCount int, inputPopulation *Population) (outputChromosomes []*Chromosome) {
+func NewEliteSet(inputCount int, inputPopulation *Population, inputParameters *Parameters) (outputChromosomes []*Chromosome) {
+
+	// check band count against population size
+	if inputCount >= int(math.Floor((0.5 * float64(inputParameters.PopSize)))) {
+		err := errors.New("Input elite set count must be less than 1/2 the input population size \n")
+		panic(err)
+	}
 
 	// count input chromosomes
 	chromCount := cap(inputPopulation.Chromosomes)
