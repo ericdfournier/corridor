@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 	"time"
 
@@ -36,7 +35,6 @@ func main() {
 
 	// import domain
 	searchDomain := corridor.CsvToDomain("searchDomain.csv")
-	fmt.Println(searchDomain.BndCnt)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +47,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 100000
+	populationSize := 100
 	evolutionSize := 1000
 	randomness := 1.0
 
@@ -72,7 +70,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize elite count
-	eliteCount := 100
+	eliteCount := 10
 
 	// extract elite set
 	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations, searchParameters)
