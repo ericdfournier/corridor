@@ -7,6 +7,7 @@ package corridor
 import (
 	"math"
 	"math/rand"
+	"runtime"
 	"time"
 
 	"github.com/gonum/matrix/mat64"
@@ -29,6 +30,7 @@ func NewToyParameters(searchDomain *Domain) *Parameters {
 	mutationCount := 1
 	mutationFraction := 0.2
 	evolutionSize := 10 * int(math.Floor(math.Sqrt(float64(populationSize))))
+	maxConcurrency := runtime.NumCPU()
 
 	// return output
 	return &Parameters{
@@ -41,6 +43,7 @@ func NewToyParameters(searchDomain *Domain) *Parameters {
 		MutaCnt: mutationCount,
 		MutaFrc: mutationFraction,
 		EvoSize: evolutionSize,
+		ConSize: maxConcurrency,
 	}
 }
 

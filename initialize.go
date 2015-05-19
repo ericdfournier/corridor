@@ -119,22 +119,11 @@ func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
 // new chromosome initialization function
 func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) *Chromosome {
 
-	// initialize variables
-	var subs [][]int
-	var dstTest bool
+	// generate node subscripts
+	nodeSubs := NewNodeSubs(searchDomain, searchParameters)
 
-	// enter unbounded for loop
-	for {
-		// generate subscripts from directed walk procedure
-		subs, dstTest = DirectedWalk(searchDomain, searchParameters, basisSolution)
-
-		// regenerate walk if destination not met within maximum chromosome length
-		if dstTest == false {
-			continue
-		} else {
-			break
-		}
-	}
+	// generate subscripts from directed walk procedure
+	subs := MultiPartDirectedWalk(nodeSubs, searchDomain, searchParameters, basisSolution)
 
 	// initialize empty fitness place holders
 	fitVal := make([][]float64, searchObjectives.ObjectiveCount)
@@ -194,7 +183,7 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	basisSolution := NewBasis(searchDomain, searchParameters)
 
 	// initialize new empty chromosome before entering loop
-	emptyChrom := NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
+	newChrom := NewEmptyChromosome(searchDomain, searchObjectives)
 
 	// initialize concurrency limit channel
 	conc := make(chan bool, searchParameters.ConSize)
@@ -208,8 +197,8 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 		// launch chromosome initialization go routines
 		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
 			defer func() { <-conc }()
-			emptyChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
-			chr <- ChromosomeFitness(emptyChrom, searchObjectives)
+			newChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
+			chr <- ChromosomeFitness(newChrom, searchObjectives)
 		}(searchDomain, searchParameters, searchObjectives, basisSolution)
 	}
 

@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"errors"
 	"math"
 	"math/rand"
 	"time"
@@ -165,7 +164,7 @@ func NewSigma(iterations int, randomness, distance float64) (sigma *mat64.SymDen
 
 // newsubs generates a feasible new subscript value set within the
 // input search domain
-func NewSubs(curSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (newSubscripts []int) {
+func NewSubs(curSubs, destinationSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (subs []int) {
 
 	// initialize iteration counter
 	var iterations int = 1
@@ -178,7 +177,7 @@ func NewSubs(curSubs []int, curDist float64, searchParameters *Parameters, searc
 	for {
 
 		// generate mu and sigma values
-		mu := NewMu(curSubs, searchParameters.DstSubs)
+		mu := NewMu(curSubs, destinationSubs)
 		sigma := NewSigma(iterations, searchParameters.RndCoef, curDist)
 
 		// generate fixed random bivariate normally distributed numbers
@@ -209,91 +208,104 @@ func NewSubs(curSubs []int, curDist float64, searchParameters *Parameters, searc
 
 // directedwalk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input search domain
-func DirectedWalk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, destinationTest bool) {
+func DirectedWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int) {
 
-	// initialize chromosomal 2D slice with source subscript as first
-	// element
+	// initialize chromosomal 2D slice with source subscript as first element
 	output := make([][]int, 1, searchDomain.MaxLen)
 	output[0] = make([]int, 2)
-	output[0][0] = searchParameters.SrcSubs[0]
-	output[0][1] = searchParameters.SrcSubs[1]
+	output[0][0] = sourceSubs[0]
+	output[0][1] = sourceSubs[1]
 
-	// initialize new tabu matrix
-	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
-	for i := 0; i < searchDomain.Rows; i++ {
-		for j := 0; j < searchDomain.Cols; j++ {
+	// enter unbounded for loop
+	for {
 
-			if i == 0 || i == searchDomain.Rows-1 || j == 0 || j == searchDomain.Cols-1 {
-				tabu.Set(i, j, 0.0)
-			} else {
-				tabu.Set(i, j, 1.0)
+		// initialize new tabu matrix
+		tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+		for i := 0; i < searchDomain.Rows; i++ {
+			for j := 0; j < searchDomain.Cols; j++ {
+
+				if i == 0 || i == searchDomain.Rows-1 || j == 0 || j == searchDomain.Cols-1 {
+					tabu.Set(i, j, 0.0)
+				} else {
+					tabu.Set(i, j, 1.0)
+				}
 			}
 		}
-	}
 
-	//tabu.Clone(searchDomain.Matrix)
-	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+		//tabu.Clone(searchDomain.Matrix)
+		tabu.Set(sourceSubs[0], sourceSubs[1], 0.0)
 
-	// initialize current subscripts, distance, try, and iteration counter
-	curSubs := make([]int, 2)
-	var curDist float64
-	var try []int
-	var dstTest bool
+		// initialize current subscripts, distance, try, and iteration counter
+		curSubs := make([]int, 2)
+		var curDist float64
+		var try []int
 
-	// enter bounded for loop
-	for i := 0; i < searchDomain.MaxLen; i++ {
+		// enter bounded for loop
+		for i := 0; i < searchDomain.MaxLen; i++ {
 
-		// get current subscripts
-		curSubs = output[len(output)-1]
+			// get current subscripts
+			curSubs = output[len(output)-1]
 
-		// validate tabu neighborhood
-		if ValidateTabu(curSubs, tabu) == false {
-			break
+			// validate tabu neighborhood
+			if ValidateTabu(curSubs, tabu) == false {
+				break
+			}
+
+			// compute current distance
+			curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
+
+			// generate new try
+			try = NewSubs(curSubs, destinationSubs, curDist, searchParameters, searchDomain)
+
+			// apply control conditions
+			if try[0] == destinationSubs[0] && try[1] == destinationSubs[1] {
+				output = append(output, try)
+				break
+			} else if tabu.At(try[0], try[1]) == 0.0 {
+				continue
+			} else {
+				output = append(output, try)
+				tabu.Set(try[0], try[1], 0.0)
+			}
 		}
 
-		// compute current distance
-		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
+		// repeat walk if destination not reached
+		if output[len(output)-1][0] == destinationSubs[0] && output[len(output)-1][1] == destinationSubs[1] {
 
-		// generate new try
-		try = NewSubs(curSubs, curDist, searchParameters, searchDomain)
-
-		// apply control conditions
-		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
-			output = append(output, try)
+			// break unbounded for loop
 			break
-		} else if tabu.At(try[0], try[1]) == 0.0 {
-			continue
 		} else {
-			output = append(output, try)
-			tabu.Set(try[0], try[1], 0.0)
-		}
-	}
 
-	if output[len(output)-1][0] == searchParameters.DstSubs[0] && output[len(output)-1][1] == searchParameters.DstSubs[1] {
-		dstTest = true
-	} else {
-		dstTest = false
+			// re-initialize chromosomal 2D slice with source subscript as first element
+			output := make([][]int, 1, searchDomain.MaxLen)
+			output[0] = make([]int, 2)
+			output[0][0] = sourceSubs[0]
+			output[0][1] = sourceSubs[1]
+
+			// restart process
+			continue
+		}
 	}
 
 	// return final output
-	return output, dstTest
+	return output
 }
 
 // mutationwalk generates a new directed walk connecting a source subscript to a
 // destination subscript within the context of an input mutation search domain
-func MutationWalk(searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subscripts [][]int, tabuTest bool) {
+func MutationWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int, tabuTest bool) {
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
 	output := make([][]int, 1, searchDomain.MaxLen)
 	output[0] = make([]int, 2)
-	output[0][0] = searchParameters.SrcSubs[0]
-	output[0][1] = searchParameters.SrcSubs[1]
+	output[0][0] = sourceSubs[0]
+	output[0][1] = sourceSubs[1]
 
 	// initialize new tabu matrix
 	tabu := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
 	tabu.Clone(searchDomain.Matrix)
-	tabu.Set(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1], 0.0)
+	tabu.Set(sourceSubs[0], sourceSubs[1], 0.0)
 
 	// initialize current subscripts, distance, try, and iteration counter
 	curSubs := make([]int, 2)
@@ -301,7 +313,7 @@ func MutationWalk(searchDomain *Domain, searchParameters *Parameters, basisSolut
 	var try []int
 	var test bool
 
-	// enter bounded for loop
+	// enter un-bounded for loop
 	for {
 
 		// get current subscripts
@@ -311,10 +323,10 @@ func MutationWalk(searchDomain *Domain, searchParameters *Parameters, basisSolut
 		curDist = basisSolution.Matrix.At(curSubs[0], curSubs[1])
 
 		// generate new try
-		try = NewSubs(curSubs, curDist, searchParameters, searchDomain)
+		try = NewSubs(curSubs, searchParameters.DstSubs, curDist, searchParameters, searchDomain)
 
 		// apply control conditions
-		if try[0] == searchParameters.DstSubs[0] && try[1] == searchParameters.DstSubs[1] {
+		if try[0] == destinationSubs[0] && try[1] == destinationSubs[1] {
 			output = append(output, try)
 			break
 		} else if tabu.At(try[0], try[1]) == 0.0 {
@@ -325,7 +337,7 @@ func MutationWalk(searchDomain *Domain, searchParameters *Parameters, basisSolut
 		}
 
 		// validate tabu matrix
-		test = ValidateSubDomain(try, searchParameters.DstSubs, tabu)
+		test = ValidateSubDomain(try, destinationSubs, tabu)
 
 		// reset if tabu is invalid
 		if test == false {
@@ -343,59 +355,106 @@ func MutationWalk(searchDomain *Domain, searchParameters *Parameters, basisSolut
 // destination location
 func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [][]int) {
 
-	// check band count against input distance matrix size
-	if searchDomain.BndCnt < 3 {
-		err := errors.New("Band count must be greater than three \n")
-		panic(err)
-	}
-
-	// generate distance matrix from source subscripts
-	distMat := AllDistance(searchParameters.SrcSubs, searchDomain.Matrix)
-
 	// initialize output
 	output := make([][]int, 1)
 	output[0] = searchParameters.SrcSubs
 
-	// encode distance bands
-	bandMat := DistanceBands(searchDomain.BndCnt, distMat)
+	// check band count against input distance matrix size
+	if searchDomain.BndCnt < 3 {
 
-	// seed random number generator
-	rand.Seed(time.Now().UnixNano())
+		// asign node subscripts
+		output = append(output, searchParameters.DstSubs)
+	} else if searchDomain.BndCnt >= 3 {
 
-	// loop through band vector and generate band value subscripts
-	for i := 1; i < searchDomain.BndCnt-1; i++ {
+		// generate distance matrix from source subscripts
+		distMat := AllDistance(searchParameters.SrcSubs, searchDomain.Matrix)
 
-		// generate band mask
-		bandMaskMat := BandMask(float64(i), bandMat)
+		// encode distance bands
+		bandMat := DistanceBands(searchDomain.BndCnt, distMat)
 
-		// generate orientation mask
-		orientMaskMat := OrientationMask(output[i-1], searchParameters.DstSubs, searchDomain.Matrix)
+		if bandMat.At(searchParameters.SrcSubs[0], searchParameters.SrcSubs[1]) == bandMat.At(searchParameters.DstSubs[0], searchParameters.DstSubs[1]) {
 
-		// initialize final mask
-		finalMaskMat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+			// asign node subscripts
+			output = append(output, searchParameters.DstSubs)
+		} else {
 
-		// compute final mask through elementwise multiplication
-		finalMaskMat.MulElem(bandMaskMat, orientMaskMat)
+			// seed random number generator
+			rand.Seed(time.Now().UnixNano())
 
-		// generate subs from final mask
-		finalSubs := NonZeroSubs(finalMaskMat)
+			// loop through band vector and generate band value subscripts
+			for i := 1; i < searchDomain.BndCnt-1; i++ {
 
-		// generate random number of length interval
-		randInd := finalSubs[rand.Intn(len(finalSubs))]
+				// generate band mask
+				bandMaskMat := BandMask(float64(i), bandMat)
 
-		// extract randomly selected value and write to output
-		output = append(output, randInd)
+				// break loop if the destination is in the current band mask
+				if bandMaskMat.At(searchParameters.DstSubs[0], searchParameters.DstSubs[1]) == 1.0 {
+					break
+				}
+
+				// generate orientation mask
+				orientMaskMat := OrientationMask(output[i-1], searchParameters.DstSubs, searchDomain.Matrix)
+
+				// initialize final mask
+				finalMaskMat := mat64.NewDense(searchDomain.Rows, searchDomain.Cols, nil)
+
+				// compute final mask through elementwise multiplication
+				finalMaskMat.MulElem(bandMaskMat, orientMaskMat)
+
+				// generate subs from final mask
+				finalSubs := NonZeroSubs(finalMaskMat)
+
+				// generate random number of length interval
+				randInd := finalSubs[rand.Intn(len(finalSubs))]
+
+				// break out of loop if final mask is empty
+				if randInd[0] == 0 && randInd[1] == 0 {
+					break
+				}
+
+				// extract randomly selected value and write to output
+				output = append(output, randInd)
+			}
+
+			// set the final subscript to the destination
+			output = append(output, searchParameters.DstSubs)
+		}
 	}
-
-	// set the final subscript to the destination
-	output = append(output, searchParameters.DstSubs)
 
 	// return output
 	return output
 }
 
-// MultiDirectedWalk generates a new multipart directed walk from a given set
+// multipartdirectedwalk generates a new multipart directed walk from a given set
 // of input problem parameters
-//func MultiDirectedWalk(searchDomain *Domain, searchParameters *Parameters) (subscripts [][]int) {
+func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int) {
 
-//}
+	// initialize output
+	output := make([][]int, searchDomain.MaxLen)
+
+	// catch single part walk case
+	if len(nodeSubs) == 2 {
+
+		// generate output as a single part directed walk
+		output = DirectedWalk(nodeSubs[0], nodeSubs[1], searchDomain, searchParameters, basisSolution)
+
+	} else if len(nodeSubs) > 2 {
+
+		output = DirectedWalk(nodeSubs[0], nodeSubs[1], searchDomain, searchParameters, basisSolution)
+
+		// loop through the band count to generate sub walk parts
+		for i := 1; i < len(nodeSubs)-1; i++ {
+
+			// generate initial output slice and then append subsequent slices
+			curWalk := DirectedWalk(nodeSubs[i], nodeSubs[i+1], searchDomain, searchParameters, basisSolution)
+
+			// append subscripts to output
+			for j := 1; j < len(curWalk); j++ {
+				output = append(output, curWalk[j])
+			}
+		}
+	}
+
+	// return output
+	return output
+}

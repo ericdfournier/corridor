@@ -211,10 +211,14 @@ func BandMask(bandValue float64, bandMatrix *mat64.Dense) (binaryBandMat *mat64.
 		for j := 0; j < cols; j++ {
 
 			// perform elementwise equality test
-			if bandValue == bandMatrix.At(i, j) {
-				output.Set(i, j, 1.0)
-			} else {
+			if i == 0 || i == rows-1 || j == 0 || j == cols-1 {
 				output.Set(i, j, 0.0)
+			} else {
+				if bandValue == bandMatrix.At(i, j) {
+					output.Set(i, j, 1.0)
+				} else {
+					output.Set(i, j, 0.0)
+				}
 			}
 		}
 	}

@@ -391,7 +391,7 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 			} else {
 
 				// generate directed walk based mutation
-				subWlk, tabuTest := MutationWalk(subDomain, subParams, subBasis)
+				subWlk, tabuTest := MutationWalk(subParams.SrcSubs, subParams.DstSubs, subDomain, subParams, subBasis)
 
 				// if tabu test fails abort mutation and restart
 				if tabuTest == false {
