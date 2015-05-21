@@ -116,3 +116,141 @@ func TestAllMinDistance(t *testing.T) {
 		t.Error("AllMinDistance Test: Computed Matrix =", testCase)
 	}
 }
+
+// test DistanceBands
+func TestDistanceBands(t *testing.T) {
+
+	// initialize test case
+	t.Log("DistanceBands Test: Expected Matrix = {{3 3 3 [0 1 2 1 1 2 2 2 2]} 3 3}")
+
+	// initialize expected value
+	var expValueVector = []float64{
+		0.0, 1.0, 2.0,
+		1.0, 1.0, 2.0,
+		2.0, 2.0, 2.0}
+	expValueMatrix := mat64.NewDense(3, 3, expValueVector)
+
+	// initialize test case variables
+	var aSubs = []int{0, 0}
+	var bandCount int = 2
+	searchDomainMatrix := mat64.NewDense(3, 3, nil)
+
+	// compute distance matrix !! dependent on AllDistance test result !!
+	distanceMatrix := AllDistance(aSubs, searchDomainMatrix)
+
+	// perform test case
+	testCase := DistanceBands(bandCount, distanceMatrix)
+
+	// log test result
+	if testCase.Equals(expValueMatrix) {
+		t.Log("DistanceBands Test: Computed Matrix =", *testCase)
+	} else {
+		t.Error("DistanceBands Test: Computed Matrix =", *testCase)
+	}
+}
+
+// test BandMask
+func TestBandMask(t *testing.T) {
+
+	// initialize test case
+	t.Log("DistanceBands Test: Expected Matrix = {{3 3 3 [0 0 0 0 1 0 0 0 0]} 3 3}")
+
+	// initialize expected value
+	var expValueVector = []float64{
+		0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0}
+	expValueMatrix := mat64.NewDense(3, 3, expValueVector)
+
+	// initialize test case variables
+	var aSubs = []int{0, 0}
+	var bandCount int = 2
+	var bandValue float64 = 1.0
+	searchDomainMatrix := mat64.NewDense(3, 3, nil)
+
+	// compute distance matrix !! dependent on AllDistance test result !!
+	distanceMatrix := AllDistance(aSubs, searchDomainMatrix)
+
+	// compute band matrix !! dependent on DistanceBands test result!!
+	bandMatrix := DistanceBands(bandCount, distanceMatrix)
+
+	// perform test case
+	testCase := BandMask(bandValue, bandMatrix)
+
+	// log test results
+	if testCase.Equals(expValueMatrix) {
+		t.Log("BandMask Test: Computed Matrix =", *testCase)
+	} else {
+		t.Error("BandMask Test: Computed Matrix =", *testCase)
+	}
+}
+
+// test NonZeroSubs
+func TestNonZeroSubs(t *testing.T) {
+
+	// initialize test case
+	t.Log("DistanceBands Test: Expected Vector = [[1 1]]")
+
+	// initialize expected value
+	expValueVector := make([][]int, 1)
+	expValueVector[0] = []int{1, 1}
+
+	// initialize test case variables
+	var aSubs = []int{0, 0}
+	var bandCount int = 2
+	var bandValue float64 = 1.0
+	searchDomainMatrix := mat64.NewDense(3, 3, nil)
+
+	// compute distance matrix !! dependent on AllDistance test result !!
+	distanceMatrix := AllDistance(aSubs, searchDomainMatrix)
+
+	// compute band matrix !! dependent on DistanceBands test result!!
+	bandMatrix := DistanceBands(bandCount, distanceMatrix)
+
+	// compute band mask !! dependent on BandMask test result!!
+	bandMask := BandMask(bandValue, bandMatrix)
+
+	// perform test case
+	testCase := NonZeroSubs(bandMask)
+
+	// log test results
+	if testCase[0][0] == expValueVector[0][0] && testCase[0][1] == expValueVector[0][1] {
+		t.Log("NonZeroSubs Test: Computed Vector =", testCase)
+	} else {
+		t.Error("NonZeroSubs Test: Computed Vector =", testCase)
+	}
+}
+
+// test FindSubs
+func TestFindSubs(t *testing.T) {
+
+	// initialize test case
+	t.Log("DistanceBands Test: Expected Vector = [[1 1]]")
+
+	// initialize expected value
+	expValueVector := make([][]int, 1)
+	expValueVector[0] = []int{1, 1}
+
+	// initialize test case variables
+	var inputValue float64 = 1.0
+	var aSubs = []int{0, 0}
+	var bandCount int = 2
+	var bandValue float64 = 1.0
+	searchDomainMatrix := mat64.NewDense(3, 3, nil)
+
+	// compute distance matrix !! dependent on AllDistance test result !!
+	distanceMatrix := AllDistance(aSubs, searchDomainMatrix)
+
+	// compute band matrix !! dependent on DistanceBands test result!!
+	bandMatrix := DistanceBands(bandCount, distanceMatrix)
+
+	// perform test case
+	testCase := FindSubs(inputValue, bandMatrix)
+
+	// log test results
+	if testCase[0][0] == expValueVector[0][0] && testCase[0][1] == expValueVector[0][1] {
+		t.Log("NonZeroSubs Test: Computed Vector =", testCase)
+	} else {
+		t.Error("NonZeroSubs Test: Computed Vector =", testCase)
+	}
+}

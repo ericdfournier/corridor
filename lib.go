@@ -180,9 +180,9 @@ func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat6
 	for i := 0; i < len(bandInt)-1; i++ {
 		for j := 0; j < rows; j++ {
 			for k := 0; k < rows; k++ {
-				if distanceMatrix.At(j, k) > bandInt[i] && distanceMatrix.At(j, k) < bandInt[i+1] {
+				if distanceMatrix.At(j, k) >= bandInt[i] && distanceMatrix.At(j, k) < bandInt[i+1] {
 					output.Set(j, k, float64(i))
-				} else if distanceMatrix.At(j, k) > bandInt[i+1] {
+				} else if distanceMatrix.At(j, k) >= bandInt[i+1] {
 					output.Set(j, k, float64(i+1))
 				}
 			}
