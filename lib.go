@@ -33,10 +33,10 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 // alldistance computes the distance from each location with the input
 // search domain and a given point defined by an input pair of row
 // column subscripts
-func AllDistance(aSubs []int, searchDomain *mat64.Dense) (allDistMatrix *mat64.Dense) {
+func AllDistance(aSubs []int, searchDomainMatrix *mat64.Dense) (allDistMatrix *mat64.Dense) {
 
 	// get matrix dimensions
-	rows, cols := searchDomain.Dims()
+	rows, cols := searchDomainMatrix.Dims()
 
 	// initialize new output matrix
 	output := mat64.NewDense(rows, cols, nil)
