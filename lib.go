@@ -282,7 +282,7 @@ func FindSubs(inputValue float64, inputMatrix *mat64.Dense) (foundSubs [][]int) 
 		for j := 0; j < cols; j++ {
 
 			// test for equality
-			if inputMatrix.At(i, j) != inputValue {
+			if inputMatrix.At(i, j) == inputValue {
 				if iter == 0 {
 					output[iter] = []int{i, j}
 					iter += 1

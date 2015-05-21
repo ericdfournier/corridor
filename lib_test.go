@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -225,32 +226,30 @@ func TestNonZeroSubs(t *testing.T) {
 func TestFindSubs(t *testing.T) {
 
 	// initialize test case
-	t.Log("DistanceBands Test: Expected Vector = [[1 1]]")
+	t.Log("DistanceBands Test: Expected Vector = [[0 0]]")
 
 	// initialize expected value
 	expValueVector := make([][]int, 1)
-	expValueVector[0] = []int{1, 1}
+	expValueVector[0] = []int{0, 0}
 
 	// initialize test case variables
-	var inputValue float64 = 1.0
+	var inputValue float64 = 0.0
 	var aSubs = []int{0, 0}
-	var bandCount int = 2
-	var bandValue float64 = 1.0
 	searchDomainMatrix := mat64.NewDense(3, 3, nil)
 
 	// compute distance matrix !! dependent on AllDistance test result !!
 	distanceMatrix := AllDistance(aSubs, searchDomainMatrix)
 
-	// compute band matrix !! dependent on DistanceBands test result!!
-	bandMatrix := DistanceBands(bandCount, distanceMatrix)
+	// DEBUG
+	fmt.Println(distanceMatrix)
 
 	// perform test case
-	testCase := FindSubs(inputValue, bandMatrix)
+	testCase := FindSubs(inputValue, distanceMatrix)
 
 	// log test results
 	if testCase[0][0] == expValueVector[0][0] && testCase[0][1] == expValueVector[0][1] {
-		t.Log("NonZeroSubs Test: Computed Vector =", testCase)
+		t.Log("FindSubs Test: Computed Vector =", testCase)
 	} else {
-		t.Error("NonZeroSubs Test: Computed Vector =", testCase)
+		t.Error("FindSubs Test: Computed Vector =", testCase)
 	}
 }
