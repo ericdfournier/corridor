@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -154,7 +153,7 @@ func TestDistanceBands(t *testing.T) {
 func TestBandMask(t *testing.T) {
 
 	// initialize test case
-	t.Log("DistanceBands Test: Expected Matrix = {{3 3 3 [0 0 0 0 1 0 0 0 0]} 3 3}")
+	t.Log("BandMask Test: Expected Matrix = {{3 3 3 [0 0 0 0 1 0 0 0 0]} 3 3}")
 
 	// initialize expected value
 	var expValueVector = []float64{
@@ -190,7 +189,7 @@ func TestBandMask(t *testing.T) {
 func TestNonZeroSubs(t *testing.T) {
 
 	// initialize test case
-	t.Log("DistanceBands Test: Expected Vector = [[1 1]]")
+	t.Log("NonZeroSubs Test: Expected Vector = [[1 1]]")
 
 	// initialize expected value
 	expValueVector := make([][]int, 1)
@@ -226,7 +225,7 @@ func TestNonZeroSubs(t *testing.T) {
 func TestFindSubs(t *testing.T) {
 
 	// initialize test case
-	t.Log("DistanceBands Test: Expected Vector = [[0 0]]")
+	t.Log("FindSubs Test: Expected Vector = [[0 0]]")
 
 	// initialize expected value
 	expValueVector := make([][]int, 1)
@@ -240,9 +239,6 @@ func TestFindSubs(t *testing.T) {
 	// compute distance matrix !! dependent on AllDistance test result !!
 	distanceMatrix := AllDistance(aSubs, searchDomainMatrix)
 
-	// DEBUG
-	fmt.Println(distanceMatrix)
-
 	// perform test case
 	testCase := FindSubs(inputValue, distanceMatrix)
 
@@ -251,5 +247,58 @@ func TestFindSubs(t *testing.T) {
 		t.Log("FindSubs Test: Computed Vector =", testCase)
 	} else {
 		t.Error("FindSubs Test: Computed Vector =", testCase)
+	}
+}
+
+// test Orientation
+func TestOrientation(t *testing.T) {
+
+	// initialize test case
+	t.Log("Orientation Test: Expected Vector = [1 1]")
+
+	// initialize expected value
+	var expValueVector = []int{1, 1}
+
+	// initialize test case variables
+	var aSubs = []int{0, 0}
+	var bSubs = []int{2, 2}
+
+	// perform test case
+	testCase := Orientation(aSubs, bSubs)
+
+	// log test results
+	if testCase[0] == expValueVector[0] && testCase[1] == expValueVector[1] {
+		t.Log("Orientation Test: Computed Vector =", testCase)
+	} else {
+		t.Error("Orientation Test: Computed Vector =", testCase)
+	}
+}
+
+// test OrientationMask
+func TestOrientationMask(t *testing.T) {
+
+	// initialize test case
+	t.Log("OrientationMask Test: Expected Matrix = {{3 3 3 [0 0 0 0 1 0 0 0 0]} 3 3}")
+
+	// initialize expected value
+	var expValueVector = []float64{
+		0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0}
+	expValueMatrix := mat64.NewDense(3, 3, expValueVector)
+
+	// initialize test case variables
+	var aSubs = []int{0, 0}
+	var bSubs = []int{2, 2}
+	searchDomainMatrix := mat64.NewDense(3, 3, nil)
+
+	// perform test case
+	testCase := OrientationMask(aSubs, bSubs, searchDomainMatrix)
+
+	// log test results
+	if testCase.Equals(expValueMatrix) {
+		t.Log("OrientationMask Test: Computed Matrix =", testCase)
+	} else {
+		t.Error("OrientationMask Test: Computed Matrix =", testCase)
 	}
 }
