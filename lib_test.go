@@ -297,8 +297,82 @@ func TestOrientationMask(t *testing.T) {
 
 	// log test results
 	if testCase.Equals(expValueMatrix) {
-		t.Log("OrientationMask Test: Computed Matrix =", testCase)
+		t.Log("OrientationMask Test: Computed Matrix =", *testCase)
 	} else {
-		t.Error("OrientationMask Test: Computed Matrix =", testCase)
+		t.Error("OrientationMask Test: Computed Matrix =", *testCase)
+	}
+}
+
+// test Bresenham
+func TestBresenham(t *testing.T) {
+
+	// initialize test case
+	t.Log("Bresenham Test: Expected Vector = [[0 0] [1 1] [2 2]]")
+
+	// initialize expected value
+	expValueVector := make([][]int, 1)
+	expValueVector[0] = []int{0, 0}
+	expValueVector = append(expValueVector, []int{1, 1})
+	expValueVector = append(expValueVector, []int{2, 2})
+
+	// initialize test case variables
+	var aSubs = []int{0, 0}
+	var bSubs = []int{2, 2}
+	var testBool bool = true
+
+	// perform test case
+	testCase := Bresenham(aSubs, bSubs)
+
+	// examine test results
+	for i := 0; i < len(testCase); i++ {
+		if testCase[i][0] != expValueVector[i][0] || testCase[i][1] != expValueVector[i][1] {
+			testBool = false
+			break
+		}
+	}
+
+	// log test results
+	if testBool == true {
+		t.Log("Bresenham Test: Computed Vector =", testCase)
+	} else {
+		t.Error("Bresenham Test: Computed Vector =", testCase)
+	}
+}
+
+// test NeighborhoodSubs
+func TestNeighborhoodSubs(t *testing.T) {
+
+	// initialize test case
+	t.Log("NeighborhoodSubs Test: Expected Vector = [[0 0] [0 1] [0 2] [1 0] [1 1] [1 2] [2 0] [2 1] [2 2]]")
+
+	// initialize expected value
+	expValueVector := make([][]int, 0)
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			expValueVector = append(expValueVector, []int{i, j})
+		}
+	}
+
+	// initialize test ccase variables
+	var row int = 1
+	var col int = 1
+	var testBool bool = true
+
+	// perform test case
+	testCase := NeighborhoodSubs(row, col)
+
+	// examine test results
+	for k := 0; k < len(testCase); k++ {
+		if testCase[k][0] != expValueVector[k][0] || testCase[k][1] != expValueVector[k][1] {
+			testBool = false
+			break
+		}
+	}
+
+	// log test results
+	if testBool == true {
+		t.Log("NeighborhoodSubs Test: Computed Vector =", testCase)
+	} else {
+		t.Error("NeighborhoodSubs Test: Computed Vector =", testCase)
 	}
 }

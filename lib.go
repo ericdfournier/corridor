@@ -443,6 +443,9 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	return output
 }
 
+// CONSIDER CONVERTING NEIGHBORHOODS SUBS INPUT TO SUBSCRIPT FORMAT FOR THE
+// PURPOSES OF CONSISTENCY...
+
 // function to return the subscript indices of the cells corresponding to the
 // queens neighborhood for a given subscript pair
 func NeighborhoodSubs(row, col int) (subs [9][2]int) {
