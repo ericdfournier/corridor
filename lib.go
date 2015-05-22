@@ -443,36 +443,25 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	return output
 }
 
-// CONSIDER CONVERTING NEIGHBORHOODS SUBS INPUT TO SUBSCRIPT FORMAT FOR THE
-// PURPOSES OF CONSISTENCY...
-
 // function to return the subscript indices of the cells corresponding to the
 // queens neighborhood for a given subscript pair
-func NeighborhoodSubs(row, col int) (subs [9][2]int) {
+func NeighborhoodSubs(aSubs []int) (neighSubs [][]int) {
 
 	// initialize output slice
-	var output [9][2]int
+	output := make([][]int, 0)
 
 	// write neighborhood subscript values
-	output[0][0] = row - 1
-	output[0][1] = col - 1
-	output[1][0] = row - 1
-	output[1][1] = col
-	output[2][0] = row - 1
-	output[2][1] = col + 1
-	output[3][0] = row
-	output[3][1] = col - 1
-	output[4][0] = row
-	output[4][1] = col
-	output[5][0] = row
-	output[5][1] = col + 1
-	output[6][0] = row + 1
-	output[6][1] = col - 1
-	output[7][0] = row + 1
-	output[7][1] = col
-	output[8][0] = row + 1
-	output[8][1] = col + 1
+	output = append(output, []int{aSubs[0] - 1, aSubs[1] - 1})
+	output = append(output, []int{aSubs[0] - 1, aSubs[1]})
+	output = append(output, []int{aSubs[0] - 1, aSubs[1] + 1})
+	output = append(output, []int{aSubs[0], aSubs[1] - 1})
+	output = append(output, []int{aSubs[0], aSubs[1]})
+	output = append(output, []int{aSubs[0], aSubs[1] + 1})
+	output = append(output, []int{aSubs[0] + 1, aSubs[1] - 1})
+	output = append(output, []int{aSubs[0] + 1, aSubs[1]})
+	output = append(output, []int{aSubs[0] + 1, aSubs[1] + 1})
 
+	// return output
 	return output
 }
 
@@ -484,10 +473,10 @@ func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 	var output bool
 
 	// generate sub source neighborhood
-	sNeigh := NeighborhoodSubs(subSource[0], subSource[1])
+	sNeigh := NeighborhoodSubs(subSource)
 
 	// generate sub destination neighborhood
-	dNeigh := NeighborhoodSubs(subDestin[0], subDestin[1])
+	dNeigh := NeighborhoodSubs(subDestin)
 
 	// generate center row
 	centerRow := subMat.RowView(2)
@@ -535,7 +524,7 @@ func ValidateTabu(currentSubs []int, tabuMatrix *mat64.Dense) bool {
 	var tSum int = 0
 
 	// generate neighborhood subscripts
-	tNeigh := NeighborhoodSubs(currentSubs[0], currentSubs[1])
+	tNeigh := NeighborhoodSubs(currentSubs)
 
 	// loop through and compute sum
 	for i := 0; i < 9; i++ {

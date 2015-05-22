@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -354,12 +355,14 @@ func TestNeighborhoodSubs(t *testing.T) {
 	}
 
 	// initialize test ccase variables
-	var row int = 1
-	var col int = 1
+	var aSubs = []int{1, 1}
 	var testBool bool = true
 
 	// perform test case
-	testCase := NeighborhoodSubs(row, col)
+	testCase := NeighborhoodSubs(aSubs)
+
+	// DEBUG
+	fmt.Println(len(testCase))
 
 	// examine test results
 	for k := 0; k < len(testCase); k++ {
@@ -374,5 +377,48 @@ func TestNeighborhoodSubs(t *testing.T) {
 		t.Log("NeighborhoodSubs Test: Computed Vector =", testCase)
 	} else {
 		t.Error("NeighborhoodSubs Test: Computed Vector =", testCase)
+	}
+}
+
+// test ValidateSubDomain
+func TestValidateSubDomain(t *testing.T) {
+
+	// initialize test case
+	t.Log("ValidateSubDomain")
+
+	// initialize expected values
+	var invalidVector = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	invalidMatrix := mat64.NewDense(5, 5, invalidVector)
+	var validVector = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	validMatrix := mat64.NewDense(5, 5, validVector)
+
+	// DEBUG
+	fmt.Println(invalidMatrix)
+
+	// initialize test case variables
+	var subSource = []int{1, 1}
+	var subDestin = []int{2, 3}
+	var testCase1 bool
+	var testCase2 bool
+
+	// perform test case
+	testCase1 = ValidateSubDomain(subSource, subDestin, invalidMatrix)
+	testCase2 = ValidateSubDomain(subSource, subDestin, validMatrix)
+
+	// log test results
+	if testCase1 == false && testCase2 == true {
+		t.Log("ValidateSubDomain Test: SubDomains Valid")
+	} else {
+		t.Error("Validate SubDomain Test: SubDomains Invalid")
 	}
 }

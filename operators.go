@@ -288,7 +288,7 @@ func MutationLoci(inputChromosome *Chromosome) (previousLocus, mutationLocus, ne
 func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomain *mat64.Dense) (outputSubDomain *mat64.Dense) {
 
 	// generate mutation locus neighborhood indices
-	nInd := NeighborhoodSubs(mutationLocus[0], mutationLocus[1])
+	nInd := NeighborhoodSubs(mutationLocus)
 
 	// initialize iterator
 	var n int = 0
