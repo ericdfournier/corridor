@@ -422,3 +422,8 @@ func TestValidateSubDomain(t *testing.T) {
 		t.Error("Validate SubDomain Test: SubDomains Invalid")
 	}
 }
+
+// test ValidateTabu
+func TestValidateTabu(t *testing.T) {
+
+}
