@@ -402,16 +402,13 @@ func TestValidateSubDomain(t *testing.T) {
 		0.0, 0.0, 0.0, 0.0, 0.0}
 	validMatrix := mat64.NewDense(5, 5, validVector)
 
-	// DEBUG
-	fmt.Println(invalidMatrix)
-
 	// initialize test case variables
 	var subSource = []int{1, 1}
 	var subDestin = []int{2, 3}
 	var testCase1 bool
 	var testCase2 bool
 
-	// perform test case
+	// perform test cases
 	testCase1 = ValidateSubDomain(subSource, subDestin, invalidMatrix)
 	testCase2 = ValidateSubDomain(subSource, subDestin, validMatrix)
 
@@ -419,11 +416,68 @@ func TestValidateSubDomain(t *testing.T) {
 	if testCase1 == false && testCase2 == true {
 		t.Log("ValidateSubDomain Test: SubDomains Valid")
 	} else {
-		t.Error("Validate SubDomain Test: SubDomains Invalid")
+		t.Error("ValidateSubDomain Test: SubDomains Invalid")
 	}
 }
 
 // test ValidateTabu
 func TestValidateTabu(t *testing.T) {
 
+	// initialize test case
+	t.Log("ValidateTabu Test")
+
+	// initialize expected values
+	var invalidVector = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	invalidMatrix := mat64.NewDense(5, 5, invalidVector)
+	var validVector = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	validMatrix := mat64.NewDense(5, 5, validVector)
+
+	// initialize test case variables
+	var currentSubs = []int{2, 2}
+	var testCase1 bool
+	var testCase2 bool
+
+	// perform test cases
+	testCase1 = ValidateTabu(currentSubs, invalidMatrix)
+	testCase2 = ValidateTabu(currentSubs, validMatrix)
+
+	// log test results
+	if testCase1 == false && testCase2 == true {
+		t.Log("ValidateTabu Test: Tabus Valid")
+	} else {
+		t.Error("ValidateTabu Test: Tabus Invalid")
+	}
+}
+
+// test DigitCount
+func TestDigitCount(t *testing.T) {
+
+	// initialize test case
+	t.Log("DigitCount Test: Expected Value = 10")
+
+	// initialize expected values
+	var expValue int = 10
+
+	// initialize test case variables
+	input := 10000000000
+
+	// peform test case
+	testCase := DigitCount(input)
+
+	// log test results
+	if testCase == expValue {
+		t.Log("DigitCount Test: Computed Value =", testCase)
+	} else {
+		t.Error("DigitCount Test: Computed Value =", testCase)
+	}
 }
