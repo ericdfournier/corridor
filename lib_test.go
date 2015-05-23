@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -360,9 +359,6 @@ func TestNeighborhoodSubs(t *testing.T) {
 
 	// perform test case
 	testCase := NeighborhoodSubs(aSubs)
-
-	// DEBUG
-	fmt.Println(len(testCase))
 
 	// examine test results
 	for k := 0; k < len(testCase); k++ {
