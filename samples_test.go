@@ -6,10 +6,11 @@ package corridor
 
 import "testing"
 
+// small convex problem benchmark
 func BenchmarkConvexSmall(b *testing.B) {
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(50, 50)
+	sampleDomain := NewSampleDomain(20, 20)
 
 	// initialize objectives
 	objectiveCount := 3
@@ -26,5 +27,28 @@ func BenchmarkConvexSmall(b *testing.B) {
 
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
+}
 
+// large convex problem benchmark
+func BenchmarkConvexLarge(b *testing.B) {
+
+	// initialize domain
+	sampleDomain := NewSampleDomain(20, 20)
+
+	// initialize objectives
+	objectiveCount := 3
+	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+
+	// initialize parameters
+	sampleParameters := NewSampleParameters(sampleDomain)
+	sampleParameters.PopSize = 10000
+
+	// evolve populations
+	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
+
+	// extract output population
+	finalPop := <-toyEvolution.Populations
+
+	// view output population
+	ViewPopulation(sampleDomain, sampleParameters, finalPop)
 }

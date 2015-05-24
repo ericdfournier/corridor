@@ -18,11 +18,11 @@ func NewSampleParameters(searchDomain *Domain) *Parameters {
 
 	// initialize variables
 	sourceSubscripts := make([]int, 2)
-	sourceSubscripts[0] = 5
-	sourceSubscripts[1] = 5
+	sourceSubscripts[0] = 3
+	sourceSubscripts[1] = 3
 	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = searchDomain.Rows - 5
-	destinationSubscripts[1] = searchDomain.Cols - 5
+	destinationSubscripts[0] = searchDomain.Rows - 3
+	destinationSubscripts[1] = searchDomain.Cols - 3
 	randomnessCoefficient := 1.0
 	populationSize := 1000
 	selectionFraction := 0.5
