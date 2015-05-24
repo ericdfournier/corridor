@@ -13,23 +13,23 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-// new toy parameters initialization function
-func NewToyParameters(searchDomain *Domain) *Parameters {
+// new sample parameters initialization function
+func NewSampleParameters(searchDomain *Domain) *Parameters {
 
 	// initialize variables
 	sourceSubscripts := make([]int, 2)
-	sourceSubscripts[0] = 3
-	sourceSubscripts[1] = 3
+	sourceSubscripts[0] = 5
+	sourceSubscripts[1] = 5
 	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = searchDomain.Rows - 4
-	destinationSubscripts[1] = searchDomain.Cols - 4
+	destinationSubscripts[0] = searchDomain.Rows - 5
+	destinationSubscripts[1] = searchDomain.Cols - 5
 	randomnessCoefficient := 1.0
-	populationSize := int(math.Floor(float64(searchDomain.Rows*searchDomain.Cols)*randomnessCoefficient)) / 10
+	populationSize := 1000
 	selectionFraction := 0.5
 	selectionProbability := 0.8
 	mutationCount := 1
 	mutationFraction := 0.2
-	evolutionSize := 10 * int(math.Floor(math.Sqrt(float64(populationSize))))
+	evolutionSize := 1000
 	maxConcurrency := runtime.NumCPU()
 
 	// return output
@@ -47,8 +47,8 @@ func NewToyParameters(searchDomain *Domain) *Parameters {
 	}
 }
 
-// new test domain initialization function
-func NewToyDomain(rows, cols int) *Domain {
+// new sample domain initialization function
+func NewSampleDomain(rows, cols int) *Domain {
 
 	// initialize empty matrix
 	domainSize := rows * cols
@@ -88,8 +88,8 @@ func NewToyDomain(rows, cols int) *Domain {
 	}
 }
 
-// new test mutation domain initialization function
-func NewToyMutationDomain() *Domain {
+// new sample mutation domain initialization function
+func NewSampleMutationDomain() *Domain {
 
 	// fix domain size
 	var rows int = 5
@@ -136,7 +136,8 @@ func NewToyMutationDomain() *Domain {
 	}
 }
 
-func NewToyObjectives(rows, cols, objectiveCount int) *MultiObjective {
+// new sample objective initialization function
+func NewSampleObjectives(rows, cols, objectiveCount int) *MultiObjective {
 
 	// initialize matrix dimensions
 	objectiveSize := rows * cols
