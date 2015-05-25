@@ -82,48 +82,29 @@ func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
 }
 
 // new basis solution initialization function
-func NewBasis(searchDomain *Domain, searchParameters *Parameters) *Basis {
+func NewBasis(sourceSubs, destinationSubs []int, searchDomain *Domain) *Basis {
 
 	// compute all minimum euclidean distances for search domain
-	allMinimumDistances := AllMinDistance(searchParameters.SrcSubs, searchParameters.DstSubs, searchDomain.Matrix)
+	allMinimumDistances := AllMinDistance(sourceSubs, destinationSubs, searchDomain.Matrix)
 
 	// generate subscripts from bresenham's algorithm
-	subs := Bresenham(searchParameters.SrcSubs, searchParameters.DstSubs)
-
-	// initialize convexity count at zero
-	var convexSum int = 0
-
-	// intialize convexity boolean as true
-	var convexBool bool = true
-
-	// loop through subs to evaluate if the search domain is exited
-	for i := 0; i < len(subs); i++ {
-		if searchDomain.Matrix.At(subs[i][0], subs[0][1]) == 0 {
-			convexSum += 1
-		}
-	}
-
-	// if domain is exited flip boolean
-	if convexSum > 0 {
-		convexBool = false
-	}
+	subs := Bresenham(sourceSubs, destinationSubs)
 
 	// return output
 	return &Basis{
 		Matrix: allMinimumDistances,
 		Subs:   subs,
-		Convex: convexBool,
 	}
 }
 
 // new chromosome initialization function
-func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) *Chromosome {
+func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) *Chromosome {
 
 	// generate node subscripts
 	nodeSubs := NewNodeSubs(searchDomain, searchParameters)
 
 	// generate subscripts from directed walk procedure
-	subs := MultiPartDirectedWalk(nodeSubs, searchDomain, searchParameters, basisSolution)
+	subs := MultiPartDirectedWalk(nodeSubs, searchDomain, searchParameters)
 
 	// initialize empty fitness place holders
 	fitVal := make([][]float64, searchObjectives.ObjectiveCount)
@@ -179,9 +160,6 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	// initialize communication channel
 	chr := make(chan *Chromosome, searchParameters.PopSize)
 
-	// generate basis solution
-	basisSolution := NewBasis(searchDomain, searchParameters)
-
 	// initialize new empty chromosome before entering loop
 	newChrom := NewEmptyChromosome(searchDomain, searchObjectives)
 
@@ -195,11 +173,11 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 		conc <- true
 
 		// launch chromosome initialization go routines
-		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, basisSolution *Basis) {
+		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) {
 			defer func() { <-conc }()
-			newChrom = NewChromosome(searchDomain, searchParameters, searchObjectives, basisSolution)
+			newChrom = NewChromosome(searchDomain, searchParameters, searchObjectives)
 			chr <- ChromosomeFitness(newChrom, searchObjectives)
-		}(searchDomain, searchParameters, searchObjectives, basisSolution)
+		}(searchDomain, searchParameters, searchObjectives)
 	}
 
 	// cap parallelism at concurrency limit

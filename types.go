@@ -56,7 +56,6 @@ type MultiObjective struct {
 type Basis struct {
 	Matrix *mat64.Dense
 	Subs   [][]int
-	Convex bool
 }
 
 // chromosomess are comprised of genes which are distinct row column

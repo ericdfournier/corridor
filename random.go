@@ -427,7 +427,7 @@ func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [
 
 // multipartdirectedwalk generates a new multipart directed walk from a given set
 // of input problem parameters
-func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int) {
+func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParameters *Parameters) (subs [][]int) {
 
 	// initialize output
 	output := make([][]int, searchDomain.MaxLen)
@@ -435,15 +435,24 @@ func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParamet
 	// catch single part walk case
 	if len(nodeSubs) == 2 {
 
+		// generate basis solution
+		basisSolution := NewBasis(nodeSubs[0], nodeSubs[1], searchDomain)
+
 		// generate output as a single part directed walk
 		output = DirectedWalk(nodeSubs[0], nodeSubs[1], searchDomain, searchParameters, basisSolution)
 
 	} else if len(nodeSubs) > 2 {
 
+		// generate basis solution
+		basisSolution := NewBasis(nodeSubs[0], nodeSubs[1], searchDomain)
+
 		output = DirectedWalk(nodeSubs[0], nodeSubs[1], searchDomain, searchParameters, basisSolution)
 
 		// loop through the band count to generate sub walk parts
 		for i := 1; i < len(nodeSubs)-1; i++ {
+
+			// generate basis solution
+			basisSolution = NewBasis(nodeSubs[i], nodeSubs[i+1], searchDomain)
 
 			// generate initial output slice and then append subsequent slices
 			curWalk := DirectedWalk(nodeSubs[i], nodeSubs[i+1], searchDomain, searchParameters, basisSolution)

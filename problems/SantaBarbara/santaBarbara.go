@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 	"time"
 
@@ -35,6 +36,9 @@ func main() {
 
 	// import domain
 	searchDomain := corridor.CsvToDomain("searchDomain.csv")
+
+	// DEBUG
+	fmt.Println(searchDomain.BndCnt)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -75,7 +79,7 @@ func main() {
 	// extract elite set
 	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations, searchParameters)
 
-	/////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
 
 	// write elite set to file
 	corridor.EliteSetToCsv(eliteSet, "santaBarbara_p-100000_e-1000_eliteSet.csv")
