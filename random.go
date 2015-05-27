@@ -45,10 +45,10 @@ func MultiVariateNormalRandom(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *m
 	return output
 }
 
-// fixrandom converts an input vector of bivariate normally distributed random
-// numbers into a version where the values have been fixed to a [-1, 0 ,1]
-// range
-func FixRandom(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
+// fixmultivariatenormalrandom converts an input vector of bivariate normally
+// distributed random numbers into a version where the values have been fixed
+// to a [-1, 0 ,1] range
+func FixMultiVariateNormalRandom(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 
 	// initialize vector slice
 	o := make([]float64, 2)
@@ -89,7 +89,7 @@ func NewRandom(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 	// generate random vectors prohibiting zero-zero cases
 	for {
 		rndsmp = MultiVariateNormalRandom(mu, sigma)
-		fixsmp = FixRandom(rndsmp)
+		fixsmp = FixMultiVariateNormalRandom(rndsmp)
 		if fixsmp.At(0, 0) == 0 && fixsmp.At(0, 1) == 0 {
 			continue
 		} else {

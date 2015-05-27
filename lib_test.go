@@ -449,9 +449,9 @@ func TestValidateTabu(t *testing.T) {
 
 	// log test results
 	if testCase1 == false && testCase2 == true {
-		t.Log("ValidateTabu Test: Tabus Valid")
+		t.Log("ValidateTabu Test: Tabu Valid")
 	} else {
-		t.Error("ValidateTabu Test: Tabus Invalid")
+		t.Error("ValidateTabu Test: Tabu Invalid")
 	}
 }
 
