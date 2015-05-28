@@ -135,8 +135,61 @@ func TestNewRandom(t *testing.T) {
 
 	// log test results
 	if testBool {
-		t.Log("NewRandom Test: Computed Mean =", testCase)
+		t.Log("NewRandom Test: Computed Value =", testCase)
 	} else {
 		t.Error("NewRandom Test: Computed Value =", testCase)
+	}
+}
+
+// test newmu
+func TestNewMu(t *testing.T) {
+
+	// initialize test case
+	t.Log("NewMu Test: Expected Value = {{2 1 1 [1 1]} 2 1}")
+
+	// initialize expected values
+	var expVal = []float64{1.0, 1.0}
+
+	// initialize test case variables
+	var curSubs = []int{10, 10}
+	var dstSubs = []int{100, 100}
+
+	// perform test case
+	testCase := NewMu(curSubs, dstSubs)
+
+	// log test results
+	if testCase.At(0, 0) == expVal[0] && testCase.At(1, 0) == expVal[1] {
+		t.Log("NewMu Test: Computed Value =", *testCase)
+	} else {
+		t.Error("NewMu Test: Computed Value =", *testCase)
+	}
+}
+
+// test newsigma
+func TestNewSigma(t *testing.T) {
+
+	// initialize test case
+	t.Log("NewSigma Test: Expected Matrix = {{2 1 [10 0 0 10]} 121}")
+
+	// initialize expected values
+	var expValVec = []float64{10.0, 0.0, 0.0, 10.0}
+	expValMat := mat64.NewDense(2, 2, expValVec)
+
+	// initialize test case variables
+	var iterations int = 1
+	var randomness float64 = 1.0
+	var distance float64 = 10.0
+
+	// perform test case
+	testCase := NewSigma(iterations, randomness, distance)
+
+	// log test results
+	if testCase.At(0, 0) == expValMat.At(0, 0) &&
+		testCase.At(0, 1) == expValMat.At(0, 1) &&
+		testCase.At(1, 0) == expValMat.At(1, 0) &&
+		testCase.At(1, 1) == expValMat.At(1, 1) {
+		t.Log("NewSigma Test: Computed Matrix =", testCase)
+	} else {
+		t.Error("NewSigma Test: Compute Matrix =", testCase)
 	}
 }
