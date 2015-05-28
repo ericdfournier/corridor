@@ -31,7 +31,6 @@ type Domain struct {
 	Rows   int
 	Cols   int
 	Matrix *mat64.Dense
-	MaxLen int
 	BndCnt int
 }
 
@@ -56,6 +55,7 @@ type MultiObjective struct {
 type Basis struct {
 	Matrix *mat64.Dense
 	Subs   [][]int
+	MaxLen int
 }
 
 // chromosomess are comprised of genes which are distinct row column

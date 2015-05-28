@@ -72,9 +72,6 @@ func NewSampleDomain(rows, cols int) *Domain {
 		}
 	}
 
-	// compute maximum permitted chromosome length
-	maximumLength := int(domainMatrix.Sum())
-
 	// compute band count
 	bandCount := 2 + (int(math.Floor(math.Sqrt(math.Pow(float64(rows), 2.0)+math.Pow(float64(cols), 2.0)))) / 142)
 
@@ -83,7 +80,6 @@ func NewSampleDomain(rows, cols int) *Domain {
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
-		MaxLen: maximumLength,
 		BndCnt: bandCount,
 	}
 }
@@ -120,9 +116,6 @@ func NewSampleMutationDomain() *Domain {
 	// eliminate center
 	domainMatrix.Set(2, 2, 0.0)
 
-	// compute maximum permitted chromosome length
-	maximumLength := int(domainMatrix.Sum())
-
 	// set band count to nil
 	var bandCount int = 2
 
@@ -131,7 +124,6 @@ func NewSampleMutationDomain() *Domain {
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
-		MaxLen: maximumLength,
 		BndCnt: bandCount,
 	}
 }

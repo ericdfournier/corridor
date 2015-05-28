@@ -55,9 +55,6 @@ func NewDomain(domainMatrix *mat64.Dense) *Domain {
 	// get domain size
 	rows, cols := domainMatrix.Dims()
 
-	// compute maximum permitted chromosome length
-	maximumLength := 10 * int(math.Floor(math.Sqrt(domainMatrix.Sum())))
-
 	// compute band count
 	bandCount := 2 + (int(math.Floor(math.Sqrt(math.Pow(float64(rows), 2.0)+math.Pow(float64(cols), 2.0)))) / 142)
 
@@ -66,7 +63,6 @@ func NewDomain(domainMatrix *mat64.Dense) *Domain {
 		Rows:   rows,
 		Cols:   cols,
 		Matrix: domainMatrix,
-		MaxLen: maximumLength,
 		BndCnt: bandCount,
 	}
 }
@@ -90,10 +86,14 @@ func NewBasis(sourceSubs, destinationSubs []int, searchDomain *Domain) *Basis {
 	// generate subscripts from bresenham's algorithm
 	subs := Bresenham(sourceSubs, destinationSubs)
 
+	// compute maximum permitted chromosome length
+	maxLength := len(subs) * 10
+
 	// return output
 	return &Basis{
 		Matrix: allMinimumDistances,
 		Subs:   subs,
+		MaxLen: maxLength,
 	}
 }
 
@@ -131,7 +131,7 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) *Chromosome {
 
 	// initialize subscripts
-	subs := make([][]int, searchDomain.MaxLen)
+	subs := make([][]int, 0)
 
 	// generate placeholder id
 	uuid := uuid.NewV4()

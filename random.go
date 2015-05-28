@@ -212,7 +212,7 @@ func NewSubs(curSubs, destinationSubs []int, curDist float64, searchParameters *
 func DirectedWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int) {
 
 	// initialize chromosomal 2D slice with source subscript as first element
-	output := make([][]int, 1, searchDomain.MaxLen)
+	output := make([][]int, 1, basisSolution.MaxLen)
 	output[0] = make([]int, 2)
 	output[0][0] = sourceSubs[0]
 	output[0][1] = sourceSubs[1]
@@ -242,7 +242,7 @@ func DirectedWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searc
 		var try []int
 
 		// enter bounded for loop
-		for i := 0; i < searchDomain.MaxLen; i++ {
+		for i := 0; i < basisSolution.MaxLen; i++ {
 
 			// get current subscripts
 			curSubs = output[len(output)-1]
@@ -278,7 +278,7 @@ func DirectedWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searc
 		} else {
 
 			// re-initialize chromosomal 2D slice with source subscript as first element
-			output := make([][]int, 1, searchDomain.MaxLen)
+			output := make([][]int, 1, basisSolution.MaxLen)
 			output[0] = make([]int, 2)
 			output[0][0] = sourceSubs[0]
 			output[0][1] = sourceSubs[1]
@@ -298,7 +298,7 @@ func MutationWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searc
 
 	// initialize chromosomal 2D slice with source subscript as first
 	// element
-	output := make([][]int, 1, searchDomain.MaxLen)
+	output := make([][]int, 1, basisSolution.MaxLen)
 	output[0] = make([]int, 2)
 	output[0][0] = sourceSubs[0]
 	output[0][1] = sourceSubs[1]
@@ -430,23 +430,21 @@ func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [
 // of input problem parameters
 func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParameters *Parameters) (subs [][]int) {
 
+	// generate basis solution
+	basisSolution := NewBasis(nodeSubs[0], nodeSubs[1], searchDomain)
+
 	// initialize output
-	output := make([][]int, searchDomain.MaxLen)
+	output := make([][]int, basisSolution.MaxLen)
 
 	// catch single part walk case
 	if len(nodeSubs) == 2 {
-
-		// generate basis solution
-		basisSolution := NewBasis(nodeSubs[0], nodeSubs[1], searchDomain)
 
 		// generate output as a single part directed walk
 		output = DirectedWalk(nodeSubs[0], nodeSubs[1], searchDomain, searchParameters, basisSolution)
 
 	} else if len(nodeSubs) > 2 {
 
-		// generate basis solution
-		basisSolution := NewBasis(nodeSubs[0], nodeSubs[1], searchDomain)
-
+		// generate output as multi part directed walk
 		output = DirectedWalk(nodeSubs[0], nodeSubs[1], searchDomain, searchParameters, basisSolution)
 
 		// loop through the band count to generate sub walk parts
