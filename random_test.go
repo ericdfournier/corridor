@@ -188,8 +188,93 @@ func TestNewSigma(t *testing.T) {
 		testCase.At(0, 1) == expValMat.At(0, 1) &&
 		testCase.At(1, 0) == expValMat.At(1, 0) &&
 		testCase.At(1, 1) == expValMat.At(1, 1) {
-		t.Log("NewSigma Test: Computed Matrix =", testCase)
+		t.Log("NewSigma Test: Computed Matrix =", *testCase)
 	} else {
-		t.Error("NewSigma Test: Compute Matrix =", testCase)
+		t.Error("NewSigma Test: Compute Matrix =", *testCase)
+	}
+}
+
+// test newsubs
+func TestNewSubs(t *testing.T) {
+
+	// initialize test case
+	t.Log("NewSubs Test: Expected Value = [1 2] or [2 1]")
+
+	// initialize expected values
+	var expVal1 = []int{1, 2}
+	var expVal2 = []int{2, 1}
+
+	// initialize test case variables
+	var curSubs = []int{1, 1}
+	var dstSubs = []int{3, 3}
+	var curDist float64 = 0.0
+	testParams := NewParameters(curSubs, dstSubs, 10, 10, 1.0)
+	var domainVec = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 0.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	domainMat := mat64.NewDense(5, 5, domainVec)
+	testDomain := NewDomain(domainMat)
+
+	// perform test case
+	testCase := NewSubs(curSubs, dstSubs, curDist, testParams, testDomain)
+
+	// log test results
+	if (testCase[0] == expVal1[0] && testCase[1] == expVal1[1]) ||
+		(testCase[0] == expVal2[0] && testCase[1] == expVal2[1]) {
+		t.Log("NewSubs Test: Computed Value =", testCase)
+	} else {
+		t.Error("NewSubs Test: Computed Value =", testCase)
+	}
+}
+
+// test newdirectedwalk
+func TestDirectedWalk(t *testing.T) {
+
+	// initialize test case
+	t.Log("DirectedWalk Test: Expected Value = [[1 1] [1 2] [2 3] [3 3]]")
+
+	// initialize expected values
+	expVal := make([][]int, 5)
+	expVal[0] = []int{1, 1}
+	expVal[1] = []int{1, 2}
+	expVal[2] = []int{2, 3}
+	expVal[3] = []int{3, 3}
+
+	// initialize test case variables
+	var sourceSubs = []int{1, 1}
+	var destinationSubs = []int{3, 3}
+	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
+	var domainVec = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	domainMat := mat64.NewDense(5, 5, domainVec)
+	testDomain := NewDomain(domainMat)
+	testBasis := NewBasis(sourceSubs, destinationSubs, testDomain)
+	var testBool bool
+
+	// perform test case
+	testCase := DirectedWalk(sourceSubs, destinationSubs, testDomain, testParams, testBasis)
+
+	// evaluate test results
+	for i := 0; i < 4; i++ {
+		if testCase[i][0] == expVal[i][0] && testCase[i][1] == expVal[i][1] {
+			testBool = true
+		} else {
+			testBool = false
+			break
+		}
+	}
+
+	// log test results
+	if testBool {
+		t.Log("DirectedWalk Test: Computed Value =", testCase)
+	} else {
+		t.Error("DirectedWalk Test: Computed Value =", testCase)
 	}
 }

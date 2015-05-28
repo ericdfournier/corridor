@@ -188,10 +188,11 @@ func NewSubs(curSubs, destinationSubs []int, curDist float64, searchParameters *
 		output[1] = curSubs[1] + try[1]
 
 		// DEBUG
-		/*		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
-				iterations += 1
-				continue
-			} else*/
+		// test if currentIndex is forbidden
+		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
+			iterations += 1
+			continue
+		}
 
 		// test if currentIndex inside search domain
 		if output[0] > searchDomain.Rows-1 || output[1] > searchDomain.Cols-1 || output[0] < 0 || output[1] < 0 {
