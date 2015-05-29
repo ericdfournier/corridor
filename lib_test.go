@@ -410,9 +410,9 @@ func TestValidateSubDomain(t *testing.T) {
 
 	// log test results
 	if testCase1 == false && testCase2 == true {
-		t.Log("ValidateSubDomain Test: SubDomains Valid")
+		t.Log("ValidateSubDomain Test: Computed Value =", true)
 	} else {
-		t.Error("ValidateSubDomain Test: SubDomains Invalid")
+		t.Error("ValidateSubDomain Test: Computed Value =", false)
 	}
 }
 
@@ -420,7 +420,7 @@ func TestValidateSubDomain(t *testing.T) {
 func TestValidateTabu(t *testing.T) {
 
 	// initialize test case
-	t.Log("ValidateTabu Test")
+	t.Log("ValidateTabu Test: Expected Value = true")
 
 	// initialize expected values
 	var invalidVector = []float64{

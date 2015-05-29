@@ -230,7 +230,7 @@ func TestNewSubs(t *testing.T) {
 	}
 }
 
-// test newdirectedwalk
+// test directedwalk
 func TestDirectedWalk(t *testing.T) {
 
 	// initialize test case
@@ -276,5 +276,84 @@ func TestDirectedWalk(t *testing.T) {
 		t.Log("DirectedWalk Test: Computed Value =", testCase)
 	} else {
 		t.Error("DirectedWalk Test: Computed Value =", testCase)
+	}
+}
+
+// test mutationwalk
+func TestMutationWalk(t *testing.T) {
+
+	// initialize test case
+	t.Log("MutationWalk Test: Expected Value = [Valid Path]")
+
+	// initialize test case variables
+	var sourceSubs = []int{1, 1}
+	var destinationSubs = []int{3, 3}
+	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
+	var domainVec = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 1.1, 0.0,
+		0.0, 1.0, 0.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	domainMat := mat64.NewDense(5, 5, domainVec)
+	testDomain := NewDomain(domainMat)
+	testBasis := NewBasis(sourceSubs, destinationSubs, testDomain)
+	var testBool bool
+	var testCase [][]int
+
+	// perform test case
+	for {
+		testCase, testBool = MutationWalk(sourceSubs, destinationSubs, testDomain, testParams, testBasis)
+		if testBool == true {
+			break
+		} else {
+			continue
+		}
+	}
+
+	// log test results
+	if testBool {
+		t.Log("MutationWalk Test: Computed Value =", testCase)
+	} else {
+		t.Error("MutationWalk Test: Computed Value =", testCase)
+	}
+}
+
+// test newnodesubs
+func TestNewNodeSubs(t *testing.T) {
+
+	// initialize test case
+	t.Log("NewNodeSubs Test: Expected Value = [[1 1] [3 3]]")
+
+	// initialize expected values
+	expVal := make([][]int, 2)
+	expVal[0] = []int{1, 1}
+	expVal[1] = []int{3, 3}
+
+	// initialize test case variables
+	var sourceSubs = []int{1, 1}
+	var destinationSubs = []int{3, 3}
+	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
+	var domainVec = []float64{
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 1.1, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0}
+	domainMat := mat64.NewDense(5, 5, domainVec)
+	testDomain := NewDomain(domainMat)
+
+	// perform test case
+	testCase := NewNodeSubs(testDomain, testParams)
+	testBool := (testCase[0][0] == expVal[0][0] &&
+		testCase[0][1] == expVal[0][1] &&
+		testCase[1][0] == expVal[1][0] &&
+		testCase[1][1] == expVal[1][1])
+
+	// log test results
+	if testBool {
+		t.Log("NewNodeSubs Test: Computed Value =", testCase)
+	} else {
+		t.Error("NewNodeSubs Test: Computed Value =", testCase)
 	}
 }
