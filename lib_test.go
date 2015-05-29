@@ -380,7 +380,7 @@ func TestNeighborhoodSubs(t *testing.T) {
 func TestValidateSubDomain(t *testing.T) {
 
 	// initialize test case
-	t.Log("ValidateSubDomain")
+	t.Log("ValidateSubDomain: Expecte Value = true")
 
 	// initialize expected values
 	var invalidVector = []float64{
@@ -446,12 +446,13 @@ func TestValidateTabu(t *testing.T) {
 	// perform test cases
 	testCase1 = ValidateTabu(currentSubs, invalidMatrix)
 	testCase2 = ValidateTabu(currentSubs, validMatrix)
+	testBool := testCase1 == false && testCase2 == true
 
 	// log test results
-	if testCase1 == false && testCase2 == true {
-		t.Log("ValidateTabu Test: Tabu Valid")
+	if testBool {
+		t.Log("ValidateTabu Test: Computed Value =", testBool)
 	} else {
-		t.Error("ValidateTabu Test: Tabu Invalid")
+		t.Error("ValidateTabu Test: Computed Value =", testBool)
 	}
 }
 

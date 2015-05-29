@@ -283,7 +283,7 @@ func TestDirectedWalk(t *testing.T) {
 func TestMutationWalk(t *testing.T) {
 
 	// initialize test case
-	t.Log("MutationWalk Test: Expected Value = [Valid Path]")
+	t.Log("MutationWalk Test: Expected Value = [[1 1] [2 1] [3 2] [3 3]] or [[1 1] [1 2] [2 3] [3 3]]")
 
 	// initialize test case variables
 	var sourceSubs = []int{1, 1}
@@ -323,12 +323,13 @@ func TestMutationWalk(t *testing.T) {
 func TestNewNodeSubs(t *testing.T) {
 
 	// initialize test case
-	t.Log("NewNodeSubs Test: Expected Value = [[1 1] [3 3]]")
+	t.Log("NewNodeSubs Test: Expected Value = [[1 1] [2 2] [3 3]]")
 
 	// initialize expected values
-	expVal := make([][]int, 2)
+	expVal := make([][]int, 3)
 	expVal[0] = []int{1, 1}
-	expVal[1] = []int{3, 3}
+	expVal[1] = []int{2, 2}
+	expVal[2] = []int{3, 3}
 
 	// initialize test case variables
 	var sourceSubs = []int{1, 1}
@@ -342,13 +343,16 @@ func TestNewNodeSubs(t *testing.T) {
 		0.0, 0.0, 0.0, 0.0, 0.0}
 	domainMat := mat64.NewDense(5, 5, domainVec)
 	testDomain := NewDomain(domainMat)
+	testDomain.BndCnt = 3
 
 	// perform test case
 	testCase := NewNodeSubs(testDomain, testParams)
 	testBool := (testCase[0][0] == expVal[0][0] &&
 		testCase[0][1] == expVal[0][1] &&
 		testCase[1][0] == expVal[1][0] &&
-		testCase[1][1] == expVal[1][1])
+		testCase[1][1] == expVal[1][1] &&
+		testCase[2][0] == expVal[2][0] &&
+		testCase[2][1] == expVal[2][1])
 
 	// log test results
 	if testBool {
@@ -357,3 +361,34 @@ func TestNewNodeSubs(t *testing.T) {
 		t.Error("NewNodeSubs Test: Computed Value =", testCase)
 	}
 }
+
+//// test multipartdirectedwalk
+//func TestMultiPartDirectedWalk(t *testing.T) {
+
+//	// initialize test case
+//	t.Log("MultiPartDirectedWalk: Expected Value")
+
+//	// initialize expected value
+
+//	// initialize test case variables
+//	var sourceSubs = []int{1, 1}
+//	var destinationSubs = []int{3, 3}
+//	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
+//	var domainVec = []float64{
+//		0.0, 0.0, 0.0, 0.0, 0.0,
+//		0.0, 1.0, 0.0, 0.1, 0.0,
+//		0.0, 1.0, 1.0, 0.0, 0.0,
+//		0.0, 1.0, 1.0, 1.0, 0.0,
+//		0.0, 0.0, 0.0, 0.0, 0.0}
+//	domainMat := mat64.NewDense(5, 5, domainVec)
+//	testDomain := NewDomain(domainMat)
+//	testDomain.BndCnt = 3
+//	nodeSubs := make([][]int, 3)
+//	nodeSubs[0] = []int{1, 1}
+//	nodeSubs[1] = []int{3, 1}
+//	nodeSubs[2] = []int{3, 3}
+
+//	// perform test case
+//	testCase := MultiPartDirectedWalk(nodeSubs, testDomain, testParams)
+
+//}

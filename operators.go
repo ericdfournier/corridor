@@ -486,7 +486,6 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 			// write to control channel
 			conc <- true
 
-			// DEBUG
 			// launch go routines
 			go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
 				defer func() { <-conc }()
