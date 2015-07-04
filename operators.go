@@ -327,6 +327,15 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 	return subMat
 }
 
+// function to generate a generic subDomain for an arbitrary set of node
+// subscripts contained within a given input search domain
+func SubDomain(sourceLocus, destinationLocus, inputDomain *mat64.Dense) (outputSubDomain *mat64.Dense) {
+
+	/*
+		PLACE CODE FOR GENERATING A GENERIC SUB DOMAIN HERE!!!!
+	*/
+}
+
 // function to generate a mutation within a given chromosome at a specified
 // number of mutation loci
 func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
