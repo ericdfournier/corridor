@@ -383,7 +383,7 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 			subBasis := NewBasis(subSource, subDestin, subDomain)
 
 			// check validity of sub domain
-			subDomainTest := ValidateSubDomain(subSource, subDestin, subMat)
+			subDomainTest := ValidateMutationSubDomain(subSource, subDestin, subMat)
 
 			// resample if subdomain is invalid
 			if subDomainTest == false {

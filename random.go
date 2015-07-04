@@ -338,7 +338,7 @@ func MutationWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searc
 		}
 
 		// validate tabu matrix
-		test = ValidateSubDomain(try, destinationSubs, tabu)
+		test = ValidateMutationSubDomain(try, destinationSubs, tabu)
 
 		// reset if tabu is invalid
 		if test == false {

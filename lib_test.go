@@ -405,14 +405,14 @@ func TestValidateSubDomain(t *testing.T) {
 	var testCase2 bool
 
 	// perform test cases
-	testCase1 = ValidateSubDomain(subSource, subDestin, invalidMatrix)
-	testCase2 = ValidateSubDomain(subSource, subDestin, validMatrix)
+	testCase1 = ValidateMutationSubDomain(subSource, subDestin, invalidMatrix)
+	testCase2 = ValidateMutationSubDomain(subSource, subDestin, validMatrix)
 
 	// log test results
 	if testCase1 == false && testCase2 == true {
-		t.Log("ValidateSubDomain Test: Computed Value =", true)
+		t.Log("ValidateMutationSubDomain Test: Computed Value =", true)
 	} else {
-		t.Error("ValidateSubDomain Test: Computed Value =", false)
+		t.Error("ValidateMutationSubDomain Test: Computed Value =", false)
 	}
 }
 

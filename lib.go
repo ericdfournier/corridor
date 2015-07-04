@@ -467,7 +467,7 @@ func NeighborhoodSubs(aSubs []int) (neighSubs [][]int) {
 
 // function to validate an input sub domain for use in generating
 // a chromosomal mutation via the random walk procedure
-func ValidateSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
+func ValidateMutationSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 
 	// initialize output
 	var output bool
