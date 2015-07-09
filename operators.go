@@ -329,11 +329,35 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 
 // function to generate a generic subDomain for an arbitrary set of node
 // subscripts contained within a given input search domain
-func SubDomain(sourceLocus, destinationLocus, inputDomain *mat64.Dense) (outputSubDomain *mat64.Dense) {
+func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (rowRange, colRange []int, subDomain *Domain) {
 
-	/*
-		PLACE CODE FOR GENERATING A GENERIC SUB DOMAIN HERE!!!!
-	*/
+	// compute index value ranges
+	minRow := math.Min(float64(sourceLocus[0]), float64(destinationLocus[0])) - 1.0
+	minCol := math.Min(float64(sourceLocus[1]), float64(destinationLocus[1])) - 1.0
+	maxRow := math.Max(float64(sourceLocus[0]), float64(destinationLocus[0])) + 1.0
+	maxCol := math.Max(float64(sourceLocus[0]), float64(destinationLocus[1])) + 1.0
+
+	// generate ranges
+	rowRng := []int{int(minRow), int(maxRow)}
+	colRng := []int{int(minCol), int(maxCol)}
+
+	// extract raw domain values
+	rawDomMat := mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowRng[1], colRng[1]))
+
+	// get subdomain matrix dimensions
+	rows, cols := rawDomMat.Dims()
+
+	// mask edge values
+	rawDomMat.SetRow(0, make([]float64, rows))
+	rawDomMat.SetRow(rows-1, make([]float64, rows))
+	rawDomMat.SetCol(0, make([]float64, cols))
+	rawDomMat.SetCol(cols-1, make([]float64, cols))
+
+	// generate sub domain structure
+	subDom := NewDomain(rawDomMat)
+
+	// extract values
+	return rowRng, colRng, subDom
 }
 
 // function to generate a mutation within a given chromosome at a specified

@@ -13,40 +13,6 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-// new sample parameters initialization function
-func NewSampleParameters(searchDomain *Domain) *Parameters {
-
-	// initialize variables
-	sourceSubscripts := make([]int, 2)
-	sourceSubscripts[0] = 3
-	sourceSubscripts[1] = 3
-	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = searchDomain.Rows - 3
-	destinationSubscripts[1] = searchDomain.Cols - 3
-	randomnessCoefficient := 1.0
-	populationSize := 1000
-	selectionFraction := 0.5
-	selectionProbability := 0.8
-	mutationCount := 1
-	mutationFraction := 0.2
-	evolutionSize := 1000
-	maxConcurrency := runtime.NumCPU()
-
-	// return output
-	return &Parameters{
-		SrcSubs: sourceSubscripts,
-		DstSubs: destinationSubscripts,
-		RndCoef: randomnessCoefficient,
-		PopSize: populationSize,
-		SelFrac: selectionFraction,
-		SelProb: selectionProbability,
-		MutaCnt: mutationCount,
-		MutaFrc: mutationFraction,
-		EvoSize: evolutionSize,
-		ConSize: maxConcurrency,
-	}
-}
-
 // new sample domain initialization function
 func NewSampleDomain(rows, cols int) *Domain {
 
@@ -81,6 +47,40 @@ func NewSampleDomain(rows, cols int) *Domain {
 		Cols:   cols,
 		Matrix: domainMatrix,
 		BndCnt: bandCount,
+	}
+}
+
+// new sample parameters initialization function
+func NewSampleParameters(searchDomain *Domain) *Parameters {
+
+	// initialize variables
+	sourceSubscripts := make([]int, 2)
+	sourceSubscripts[0] = 3
+	sourceSubscripts[1] = 3
+	destinationSubscripts := make([]int, 2)
+	destinationSubscripts[0] = searchDomain.Rows - 3
+	destinationSubscripts[1] = searchDomain.Cols - 3
+	randomnessCoefficient := 1.0
+	populationSize := 1000
+	selectionFraction := 0.5
+	selectionProbability := 0.8
+	mutationCount := 1
+	mutationFraction := 0.2
+	evolutionSize := 1000
+	maxConcurrency := runtime.NumCPU()
+
+	// return output
+	return &Parameters{
+		SrcSubs: sourceSubscripts,
+		DstSubs: destinationSubscripts,
+		RndCoef: randomnessCoefficient,
+		PopSize: populationSize,
+		SelFrac: selectionFraction,
+		SelProb: selectionProbability,
+		MutaCnt: mutationCount,
+		MutaFrc: mutationFraction,
+		EvoSize: evolutionSize,
+		ConSize: maxConcurrency,
 	}
 }
 
