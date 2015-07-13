@@ -327,22 +327,26 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 	return subMat
 }
 
+// TODO This section below needs work
+
 // function to generate a generic subDomain for an arbitrary set of node
 // subscripts contained within a given input search domain
-func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (rowRange, colRange []int, subDomain *Domain) {
+func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (subDomain *Domain, subSourcLocus, subDestinationLocus []int) {
 
-	// compute index value ranges
+	// compute row index value ranges
 	minRow := math.Min(float64(sourceLocus[0]), float64(destinationLocus[0])) - 1.0
-	minCol := math.Min(float64(sourceLocus[1]), float64(destinationLocus[1])) - 1.0
 	maxRow := math.Max(float64(sourceLocus[0]), float64(destinationLocus[0])) + 1.0
-	maxCol := math.Max(float64(sourceLocus[0]), float64(destinationLocus[1])) + 1.0
+
+	// compute column index value ranges
+	minCol := math.Min(float64(sourceLocus[1]), float64(destinationLocus[1])) - 1.0
+	maxCol := math.Max(float64(sourceLocus[1]), float64(destinationLocus[1])) + 1.0
 
 	// generate ranges
 	rowRng := []int{int(minRow), int(maxRow)}
 	colRng := []int{int(minCol), int(maxCol)}
 
 	// extract raw domain values
-	rawDomMat := mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowRng[1], colRng[1]))
+	rawDomMat := mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowRng[1]-rowRng[0], colRng[1]-colRng[0]))
 
 	// get subdomain matrix dimensions
 	rows, cols := rawDomMat.Dims()
@@ -356,15 +360,53 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (r
 	// generate sub domain structure
 	subDom := NewDomain(rawDomMat)
 
-	// extract values
-	return rowRng, colRng, subDom
+	// generate sub source and sub destination
+	subSrc := []int{(sourceLocus[0] - sourceLocus[0] + 1), (sourceLocus[1] - sourceLocus[0] + 1)}
+	subDst := []int{(destinationLocus[0] - sourceLocus[0] + 1), (destinationLocus[1] - sourceLocus[1] + 1)}
+
+	// return output
+	return subDom, subSrc, subDst
 }
+
+// function to translate the subscript index values for a given input locus
+// relative to a given offset vector
+func TranslateSubs(offsetVector, orientationVector, inputSubs []int) (outputSubs []int) {
+
+	// initialize output
+	outSubs := make([]int, 2)
+
+	// control on orientation to translate subs
+	outSubs[0] = (orientationVector[0] * inputSubs[0]) + offsetVector[0]
+	outSubs[1] = (orientationVector[1] * inputSubs[1]) + offsetVector[1]
+
+	// return output
+	return outSubs
+}
+
+// function to translate the subscript index values for a given slice of input
+// loci relative to a given offset vector
+func TranslateWalkSubs(offsetVector, orientationVector []int, walkSubs [][]int) (outputWalkSubs [][]int) {
+
+	// initialize output
+	wlkLen := len(walkSubs)
+	outWlkSubs := make([][]int, wlkLen)
+
+	// loop through and translate subscript values
+	for i := 0; i < wlkLen; i++ {
+		outWlkSubs[i] = TranslateSubs(offsetVector, orientationVector, walkSubs[wlkLen-1-i])
+	}
+
+	// return output
+	return outWlkSubs
+}
+
+// TODO End of work section
 
 // function to generate a mutation within a given chromosome at a specified
 // number of mutation loci
 func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
-	// compute chromosome length
+	// compute chromosome len.gth
 	lenChrom := len(inputChromosome.Subs)
 
 	// initialize output chromosome
