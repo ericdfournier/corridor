@@ -361,44 +361,46 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	subDom := NewDomain(rawDomMat)
 
 	// generate sub source and sub destination
-	subSrc := []int{(sourceLocus[0] - sourceLocus[0] + 1), (sourceLocus[1] - sourceLocus[0] + 1)}
-	subDst := []int{(destinationLocus[0] - sourceLocus[0] + 1), (destinationLocus[1] - sourceLocus[1] + 1)}
+
+	// NEED TO FIGURE OUT A WAY TO GENERATE THE PROPER COORDINATE VALUES HERE...
+	subSrc := []int{(sourceLocus[0] - sourceLocus[0] + 1), (sourceLocus[1] - sourceLocus[1] + 1)}
+	subDst := []int{(destinationLocus[0] - destinationLocus[0] + 1), (destinationLocus[1] - destinationLocus[1] + 1)}
 
 	// return output
 	return subDom, subSrc, subDst
 }
 
-// function to translate the subscript index values for a given input locus
-// relative to a given offset vector
-func TranslateSubs(offsetVector, orientationVector, inputSubs []int) (outputSubs []int) {
+//// function to translate the subscript index values for a given input locus
+//// relative to a given offset vector
+//func TranslateSubs(offsetVector, orientationVector, inputSubs []int) (outputSubs []int) {
 
-	// initialize output
-	outSubs := make([]int, 2)
+//	// initialize output
+//	outSubs := make([]int, 2)
 
-	// control on orientation to translate subs
-	outSubs[0] = (orientationVector[0] * inputSubs[0]) + offsetVector[0]
-	outSubs[1] = (orientationVector[1] * inputSubs[1]) + offsetVector[1]
+//	// control on orientation to translate subs
+//	outSubs[0] = inputSubs[0] + offsetVector[0]
+//	outSubs[1] = inputSubs[1] + offsetVector[1]
 
-	// return output
-	return outSubs
-}
+//	// return output
+//	return outSubs
+//}
 
-// function to translate the subscript index values for a given slice of input
-// loci relative to a given offset vector
-func TranslateWalkSubs(offsetVector, orientationVector []int, walkSubs [][]int) (outputWalkSubs [][]int) {
+//// function to translate the subscript index values for a given slice of input
+//// loci relative to a given offset vector
+//func TranslateWalkSubs(offsetVector, orientationVector []int, walkSubs [][]int) (outputWalkSubs [][]int) {
 
-	// initialize output
-	wlkLen := len(walkSubs)
-	outWlkSubs := make([][]int, wlkLen)
+//	// initialize output
+//	wlkLen := len(walkSubs)
+//	outWlkSubs := make([][]int, wlkLen)
 
-	// loop through and translate subscript values
-	for i := 0; i < wlkLen; i++ {
-		outWlkSubs[i] = TranslateSubs(offsetVector, orientationVector, walkSubs[wlkLen-1-i])
-	}
+//	// loop through and translate subscript values
+//	for i := 0; i < wlkLen; i++ {
+//		outWlkSubs[i] = TranslateSubs(offsetVector, orientationVector, walkSubs[wlkLen-1-i])
+//	}
 
-	// return output
-	return outWlkSubs
-}
+//	// return output
+//	return outWlkSubs
+//}
 
 // TODO End of work section
 
