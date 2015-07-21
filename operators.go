@@ -5,6 +5,7 @@
 package corridor
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -331,7 +332,7 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 
 // function to generate a generic subDomain for an arbitrary set of node
 // subscripts contained within a given input search domain
-func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (subDomain *Domain, subSourcLocus, subDestinationLocus []int) {
+func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (subDomain *Domain, subSourceLocus, subDestinationLocus []int) {
 
 	// compute row index value ranges
 	minRow := math.Min(float64(sourceLocus[0]), float64(destinationLocus[0])) - 1.0
@@ -360,49 +361,39 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	// generate sub domain structure
 	subDom := NewDomain(rawDomMat)
 
-	// generate sub source and sub destination
-
-	// NEED TO FIGURE OUT A WAY TO GENERATE THE PROPER COORDINATE VALUES HERE...
-	subSrc := []int{(sourceLocus[0] - sourceLocus[0] + 1), (sourceLocus[1] - sourceLocus[1] + 1)}
-	subDst := []int{(destinationLocus[0] - destinationLocus[0] + 1), (destinationLocus[1] - destinationLocus[1] + 1)}
+	// compute sub source and sub destination subscript indexes
+	subSrc := make([]int, 2)
+	subDst := make([]int, 2)
 
 	// return output
 	return subDom, subSrc, subDst
 }
 
-//// function to translate the subscript index values for a given input locus
-//// relative to a given offset vector
-//func TranslateSubs(offsetVector, orientationVector, inputSubs []int) (outputSubs []int) {
-
-//	// initialize output
-//	outSubs := make([]int, 2)
-
-//	// control on orientation to translate subs
-//	outSubs[0] = inputSubs[0] + offsetVector[0]
-//	outSubs[1] = inputSubs[1] + offsetVector[1]
-
-//	// return output
-//	return outSubs
-//}
-
 //// function to translate the subscript index values for a given slice of input
 //// loci relative to a given offset vector
-//func TranslateWalkSubs(offsetVector, orientationVector []int, walkSubs [][]int) (outputWalkSubs [][]int) {
+func TranslateWalkSubs(sourceSubs []int, inputWalkSubs [][]int) (outputWalkSubs [][]int) {
 
-//	// initialize output
-//	wlkLen := len(walkSubs)
-//	outWlkSubs := make([][]int, wlkLen)
+	// initialize output
+	wlkLen := len(inputWalkSubs)
+	outWlkSubs := make([][]int, wlkLen)
+	outWlkSubs[0] = make([]int, 2)
+	outWlkSubs[0][0] = sourceSubs[0]
+	outWlkSubs[0][1] = sourceSubs[1]
+	newSubs := make([]int, 2)
 
-//	// loop through and translate subscript values
-//	for i := 0; i < wlkLen; i++ {
-//		outWlkSubs[i] = TranslateSubs(offsetVector, orientationVector, walkSubs[wlkLen-1-i])
-//	}
+	// loop through and translate subscript values
+	for i := 1; i < wlkLen; i++ {
+		fmt.Println(i)
+		newSubs[0] = outWlkSubs[i-1][0] + (inputWalkSubs[i][0] - inputWalkSubs[i-1][0])
+		newSubs[1] = outWlkSubs[i-1][1] + (inputWalkSubs[i][1] - inputWalkSubs[i-1][1])
+		outWlkSubs = append(outWlkSubs, newSubs)
+	}
 
-//	// return output
-//	return outWlkSubs
-//}
+	// return output
+	return outWlkSubs
+}
 
-// TODO End of work section
+//TODO The section above still needs work
 
 // function to generate a mutation within a given chromosome at a specified
 // number of mutation loci
