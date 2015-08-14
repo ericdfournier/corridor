@@ -328,46 +328,106 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 	return subMat
 }
 
-// TODO This section below needs work
+//TODO Fix singleton dimension edge case issue below
 
 // function to generate a generic subDomain for an arbitrary set of node
 // subscripts contained within a given input search domain
 func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (subDomain *Domain, subSourceLocus, subDestinationLocus []int) {
 
 	// compute row index value ranges
-	minRow := math.Min(float64(sourceLocus[0]), float64(destinationLocus[0])) - 1.0
-	maxRow := math.Max(float64(sourceLocus[0]), float64(destinationLocus[0])) + 1.0
+	minRow := math.Min(float64(sourceLocus[0]), float64(destinationLocus[0]))
+	maxRow := math.Max(float64(sourceLocus[0]), float64(destinationLocus[0]))
 
 	// compute column index value ranges
-	minCol := math.Min(float64(sourceLocus[1]), float64(destinationLocus[1])) - 1.0
-	maxCol := math.Max(float64(sourceLocus[1]), float64(destinationLocus[1])) + 1.0
+	minCol := math.Min(float64(sourceLocus[1]), float64(destinationLocus[1]))
+	maxCol := math.Max(float64(sourceLocus[1]), float64(destinationLocus[1]))
 
 	// generate ranges
-	rowRng := []int{int(minRow), int(maxRow)}
-	colRng := []int{int(minCol), int(maxCol)}
+	rowRng := []int{int(minRow - 1.0), int(maxRow + 1.0)}
+	colRng := []int{int(minCol - 1.0), int(maxCol + 1.0)}
 
 	// extract raw domain values
-	rawDomMat := mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowRng[1]-rowRng[0], colRng[1]-colRng[0]))
+	rowSpread := rowRng[1] - rowRng[0]
+	colSpread := colRng[1] - colRng[0]
+
+	// initialize subdomain values
+	rawDomMat := mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowSpread, colSpread))
+
+	// overwrite matrix if singleton dimension
+	if rowSpread == 2 {
+		rawDomMat = mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowSpread+1, colSpread))
+	}
+	if colSpread == 2 {
+		rawDomMat = mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowSpread, colSpread+1))
+	}
 
 	// get subdomain matrix dimensions
 	rows, cols := rawDomMat.Dims()
 
 	// mask edge values
-	rawDomMat.SetRow(0, make([]float64, rows))
-	rawDomMat.SetRow(rows-1, make([]float64, rows))
-	rawDomMat.SetCol(0, make([]float64, cols))
-	rawDomMat.SetCol(cols-1, make([]float64, cols))
+	rawDomMat.SetRow(0, make([]float64, rows+1))
+	rawDomMat.SetRow(rows-1, make([]float64, rows+1))
+	rawDomMat.SetCol(0, make([]float64, cols+1))
+	rawDomMat.SetCol(cols-1, make([]float64, cols+1))
 
 	// generate sub domain structure
 	subDom := NewDomain(rawDomMat)
 
 	// compute sub source and sub destination subscript indexes
+	orient := Orientation(sourceLocus, destinationLocus)
+
+	// allocate output variables
 	subSrc := make([]int, 2)
 	subDst := make([]int, 2)
+
+	// pivot output subscript values on orientation vector
+	if orient[0] == -1 && orient[1] == -1 {
+		subSrc[0] = int(rows - 1.0)
+		subSrc[1] = int(cols - 1.0)
+		subDst[0] = int(1.0)
+		subDst[1] = int(1.0)
+	} else if orient[0] == -1 && orient[1] == 0 {
+		subSrc[0] = int(rows - 1.0)
+		subSrc[1] = int(cols - 1.0)
+		subDst[0] = int(1.0)
+		subDst[1] = int(1.0)
+	} else if orient[0] == -1 && orient[1] == 1 {
+		subSrc[0] = int(rows - 1.0)
+		subSrc[1] = int(1.0)
+		subDst[0] = int(1.0)
+		subDst[1] = int(cols - 1.0)
+	} else if orient[0] == 0 && orient[1] == -1 {
+		subSrc[0] = int(rows - 1.0)
+		subSrc[1] = int(cols - 1.0)
+		subDst[0] = int(1.0)
+		subDst[1] = int(1.0)
+	} else if orient[0] == 0 && orient[1] == 1 {
+		subSrc[0] = int(1.0)
+		subSrc[1] = int(1.0)
+		subDst[0] = int(rows - 1.0)
+		subDst[1] = int(cols - 1.0)
+	} else if orient[0] == 1 && orient[1] == -1 {
+		subSrc[0] = int(1.0)
+		subSrc[1] = int(cols - 1.0)
+		subDst[0] = int(rows - 1.0)
+		subDst[1] = int(1.0)
+	} else if orient[0] == 1 && orient[1] == 0 {
+		subSrc[0] = int(1.0)
+		subSrc[1] = int(cols - 1.0)
+		subDst[0] = int(rows - 1.0)
+		subDst[1] = int(1.0)
+	} else if orient[0] == 1 && orient[1] == 1 {
+		subSrc[0] = int(1.0)
+		subSrc[1] = int(1.0)
+		subDst[0] = int(rows - 1.0)
+		subDst[1] = int(cols - 1.0)
+	}
 
 	// return output
 	return subDom, subSrc, subDst
 }
+
+// TODO Fix singleton dimension edge case issue above
 
 //// function to translate the subscript index values for a given slice of input
 //// loci relative to a given offset vector
@@ -377,23 +437,22 @@ func TranslateWalkSubs(sourceSubs []int, inputWalkSubs [][]int) (outputWalkSubs 
 	wlkLen := len(inputWalkSubs)
 	outWlkSubs := make([][]int, wlkLen)
 	outWlkSubs[0] = make([]int, 2)
-	outWlkSubs[0][0] = sourceSubs[0]
-	outWlkSubs[0][1] = sourceSubs[1]
-	newSubs := make([]int, 2)
+	outWlkSubs[0] = sourceSubs
 
 	// loop through and translate subscript values
 	for i := 1; i < wlkLen; i++ {
+		nSubs := make([]int, 2)
+		nSubs[0] = outWlkSubs[i-1][0] + (inputWalkSubs[i][0] - inputWalkSubs[i-1][0])
+		nSubs[1] = outWlkSubs[i-1][1] + (inputWalkSubs[i][1] - inputWalkSubs[i-1][1])
+		fmt.Println(nSubs)
+		fmt.Println(outWlkSubs)
 		fmt.Println(i)
-		newSubs[0] = outWlkSubs[i-1][0] + (inputWalkSubs[i][0] - inputWalkSubs[i-1][0])
-		newSubs[1] = outWlkSubs[i-1][1] + (inputWalkSubs[i][1] - inputWalkSubs[i-1][1])
-		outWlkSubs = append(outWlkSubs, newSubs)
+		outWlkSubs[i] = nSubs
 	}
 
 	// return output
 	return outWlkSubs
 }
-
-//TODO The section above still needs work
 
 // function to generate a mutation within a given chromosome at a specified
 // number of mutation loci
