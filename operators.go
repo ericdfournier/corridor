@@ -328,8 +328,6 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 	return subMat
 }
 
-//TODO Fix singleton dimension edge case issue below
-
 // function to generate a generic subDomain for an arbitrary set of node
 // subscripts contained within a given input search domain
 func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (subDomain *Domain, subSourceLocus, subDestinationLocus []int) {
@@ -365,10 +363,10 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	rows, cols := rawDomMat.Dims()
 
 	// mask edge values
-	rawDomMat.SetRow(0, make([]float64, rows+1))
-	rawDomMat.SetRow(rows-1, make([]float64, rows+1))
-	rawDomMat.SetCol(0, make([]float64, cols+1))
-	rawDomMat.SetCol(cols-1, make([]float64, cols+1))
+	rawDomMat.SetRow(0, make([]float64, rows+cols))
+	rawDomMat.SetRow(rows-1, make([]float64, rows+cols))
+	rawDomMat.SetCol(0, make([]float64, rows+cols))
+	rawDomMat.SetCol(cols-1, make([]float64, rows+cols))
 
 	// generate sub domain structure
 	subDom := NewDomain(rawDomMat)
@@ -382,52 +380,50 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 
 	// pivot output subscript values on orientation vector
 	if orient[0] == -1 && orient[1] == -1 {
-		subSrc[0] = int(rows - 1.0)
-		subSrc[1] = int(cols - 1.0)
+		subSrc[0] = int(rows - 2.0)
+		subSrc[1] = int(cols - 2.0)
 		subDst[0] = int(1.0)
 		subDst[1] = int(1.0)
 	} else if orient[0] == -1 && orient[1] == 0 {
-		subSrc[0] = int(rows - 1.0)
-		subSrc[1] = int(cols - 1.0)
+		subSrc[0] = int(rows - 2.0)
+		subSrc[1] = int(cols - 2.0)
 		subDst[0] = int(1.0)
 		subDst[1] = int(1.0)
 	} else if orient[0] == -1 && orient[1] == 1 {
-		subSrc[0] = int(rows - 1.0)
+		subSrc[0] = int(rows - 2.0)
 		subSrc[1] = int(1.0)
 		subDst[0] = int(1.0)
-		subDst[1] = int(cols - 1.0)
+		subDst[1] = int(cols - 2.0)
 	} else if orient[0] == 0 && orient[1] == -1 {
-		subSrc[0] = int(rows - 1.0)
-		subSrc[1] = int(cols - 1.0)
+		subSrc[0] = int(rows - 2.0)
+		subSrc[1] = int(cols - 2.0)
 		subDst[0] = int(1.0)
 		subDst[1] = int(1.0)
 	} else if orient[0] == 0 && orient[1] == 1 {
 		subSrc[0] = int(1.0)
 		subSrc[1] = int(1.0)
-		subDst[0] = int(rows - 1.0)
-		subDst[1] = int(cols - 1.0)
+		subDst[0] = int(rows - 2.0)
+		subDst[1] = int(cols - 2.0)
 	} else if orient[0] == 1 && orient[1] == -1 {
 		subSrc[0] = int(1.0)
-		subSrc[1] = int(cols - 1.0)
-		subDst[0] = int(rows - 1.0)
+		subSrc[1] = int(cols - 2.0)
+		subDst[0] = int(rows - 2.0)
 		subDst[1] = int(1.0)
 	} else if orient[0] == 1 && orient[1] == 0 {
 		subSrc[0] = int(1.0)
-		subSrc[1] = int(cols - 1.0)
-		subDst[0] = int(rows - 1.0)
+		subSrc[1] = int(cols - 2.0)
+		subDst[0] = int(rows - 2.0)
 		subDst[1] = int(1.0)
 	} else if orient[0] == 1 && orient[1] == 1 {
 		subSrc[0] = int(1.0)
 		subSrc[1] = int(1.0)
-		subDst[0] = int(rows - 1.0)
-		subDst[1] = int(cols - 1.0)
+		subDst[0] = int(rows - 2.0)
+		subDst[1] = int(cols - 2.0)
 	}
 
 	// return output
 	return subDom, subSrc, subDst
 }
-
-// TODO Fix singleton dimension edge case issue above
 
 //// function to translate the subscript index values for a given slice of input
 //// loci relative to a given offset vector
