@@ -450,11 +450,21 @@ func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParamet
 		// loop through the band count to generate sub walk parts
 		for i := 1; i < len(nodeSubs)-1; i++ {
 
+			// DEBUG
+
+			// generate sub domain
+			subSearchDomain, subSource, subDestination := SubDomain(nodeSubs[i], nodeSubs[i+1], searchDomain.Matrix)
+
 			// generate basis solution
-			basisSolution = NewBasis(nodeSubs[i], nodeSubs[i+1], searchDomain)
+			basisSolution = NewBasis(subSource, subDestination, subSearchDomain)
 
 			// generate initial output slice and then append subsequent slices
-			curWalk := DirectedWalk(nodeSubs[i], nodeSubs[i+1], searchDomain, searchParameters, basisSolution)
+			curWalk := DirectedWalk(subSource, subDestination, subSearchDomain, searchParameters, basisSolution)
+
+			// translate subscripts
+			transWalk := TranslateWalkSubs(nodeSubs[i], curWalk)
+
+			// DEBUG
 
 			/*
 				The debug section below is attempting to deal with possible cases
@@ -471,8 +481,8 @@ func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParamet
 			//}
 
 			// append subscripts to output
-			for j := 1; j < len(curWalk); j++ {
-				output = append(output, curWalk[j])
+			for j := 1; j < len(transWalk); j++ {
+				output = append(output, transWalk[j])
 			}
 		}
 	}

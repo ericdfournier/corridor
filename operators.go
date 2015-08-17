@@ -5,7 +5,6 @@
 package corridor
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -440,9 +439,6 @@ func TranslateWalkSubs(sourceSubs []int, inputWalkSubs [][]int) (outputWalkSubs 
 		nSubs := make([]int, 2)
 		nSubs[0] = outWlkSubs[i-1][0] + (inputWalkSubs[i][0] - inputWalkSubs[i-1][0])
 		nSubs[1] = outWlkSubs[i-1][1] + (inputWalkSubs[i][1] - inputWalkSubs[i-1][1])
-		fmt.Println(nSubs)
-		fmt.Println(outWlkSubs)
-		fmt.Println(i)
 		outWlkSubs[i] = nSubs
 	}
 

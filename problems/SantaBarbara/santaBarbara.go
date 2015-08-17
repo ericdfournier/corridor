@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
 	"time"
 
@@ -36,9 +35,6 @@ func main() {
 
 	// import domain
 	searchDomain := corridor.CsvToDomain("searchDomain.csv")
-
-	// DEBUG
-	fmt.Println(searchDomain.BndCnt)
 
 	///////////////////////////////////////////////////////////////////////////////////
 
