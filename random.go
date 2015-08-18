@@ -464,21 +464,20 @@ func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParamet
 			// translate subscripts
 			transWalk := TranslateWalkSubs(nodeSubs[i], curWalk)
 
-			// DEBUG
+			/* TODO
 
-			/*
 				The debug section below is attempting to deal with possible cases
 				where two parts of two different path sections overlap in the final
 				multipart pathway. Attempts to deal with this by iteratively precluding
 				path sections from the search domain have lead to infinite loop conditions.
 				More work is needed to resolve this issue.
-			*/
 
-			// DEBUG
-			//// mask walk section from search domain
-			//for j := 0; j < len(curWalk); j++ {
-			//	searchDomain.Matrix.Set(curWalk[j][0], curWalk[j][1], 0.0)
-			//}
+			// mask walk section from search domain
+			for j := 0; j < len(curWalk); j++ {
+				searchDomain.Matrix.Set(curWalk[j][0], curWalk[j][1], 0.0)
+			}
+
+			*/
 
 			// append subscripts to output
 			for j := 1; j < len(transWalk); j++ {
