@@ -1,6 +1,6 @@
-// Copyright ©2015 The corridor Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.package main
+/* Copyright ©2015 The corridor Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.package main */
 
 package corridor
 
@@ -12,8 +12,8 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-// fitness function to generate the total fitness and chromosome
-// fitness values for a given input chromosome
+/* fitness function to generate the total fitness and chromosome
+fitness values for a given input chromosome */
 func ChromosomeFitness(inputChromosome *Chromosome, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
 	// get chromosome length
@@ -48,8 +48,8 @@ func ChromosomeFitness(inputChromosome *Chromosome, inputObjectives *MultiObject
 	return inputChromosome
 }
 
-// fitness function generate the mean fitness values for all of the chromosomes
-// in a given population
+/* fitness function generate the mean fitness values for all of the chromosomes
+in a given population */
 func PopulationFitness(inputPopulation *Population, inputParameters *Parameters, inputObjectives *MultiObjective) (outputPopulation *Population) {
 
 	// initialize output
@@ -84,9 +84,9 @@ func PopulationFitness(inputPopulation *Population, inputParameters *Parameters,
 	return inputPopulation
 }
 
-// selection operator selects between two chromosomes with a
-// probability of the most fit chromosome being selected
-// determined by the input selection probability ratio
+/* selection operator selects between two chromosomes with a
+probability of the most fit chromosome being selected
+determined by the input selection probability ratio */
 func ChromosomeSelection(chrom1, chrom2 *Chromosome, selectionProb float64) (selectedChrom *Chromosome) {
 
 	// initialize output
@@ -117,9 +117,9 @@ func ChromosomeSelection(chrom1, chrom2 *Chromosome, selectionProb float64) (sel
 	return output
 }
 
-// population selection operator selects half of the input
-// population for reproduction based upon comparative
-// fitness and some randomized input selection fraction
+/* population selection operator selects half of the input
+population for reproduction based upon comparative
+fitness and some randomized input selection fraction */
 func PopulationSelection(inputPopulation *Population, inputParameters *Parameters) (selection chan *Chromosome) {
 
 	// initialize selection channel size
@@ -146,9 +146,9 @@ func PopulationSelection(inputPopulation *Population, inputParameters *Parameter
 	return output
 }
 
-// intersection determines whether or not the subscripts
-// associated with two input chromosomes share any in
-// values in common and reports their relative indices
+/* intersection determines whether or not the subscripts
+associated with two input chromosomes share any in
+values in common and reports their relative indices */
 func ChromosomeIntersection(subs1, subs2 [][]int) (subs1Indices, subs2Indices []int) {
 
 	// initialize output index slice
@@ -174,9 +174,9 @@ func ChromosomeIntersection(subs1, subs2 [][]int) (subs1Indices, subs2Indices []
 
 }
 
-// crossover operator performs the single point crossover
-// operation for two input chromosomes that have
-// previously been selected from a source population
+/* crossover operator performs the single point crossover
+operation for two input chromosomes that have
+previously been selected from a source population */
 func ChromosomeCrossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]int) (crossoverChrom [][]int) {
 
 	// initialize maximum length
@@ -216,9 +216,9 @@ func ChromosomeCrossover(chrom1Ind, chrom2Ind []int, chrom1Subs, chrom2Subs [][]
 
 }
 
-// selection crossover operator performs a single part
-// crossover on each of the individuals provided in an
-// input selection channel of chromosomes
+/* selection crossover operator performs a single part
+crossover on each of the individuals provided in an
+input selection channel of chromosomes */
 func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parameters, inputObjectives *MultiObjective, inputDomain *Domain) (crossover chan *Chromosome) {
 
 	// initialize crossover channel
@@ -261,8 +261,8 @@ func SelectionCrossover(inputSelection chan *Chromosome, inputParameters *Parame
 	return output
 }
 
-// mutationLocus to randomly select a mutation locus and return the adjacent
-// loci along the length of the chromosome
+/* mutationLocus to randomly select a mutation locus and return the adjacent
+loci along the length of the chromosome */
 func MutationLoci(inputChromosome *Chromosome) (previousLocus, mutationLocus, nextLocus []int, mutationIndex int) {
 
 	// compute chromosome length
@@ -283,8 +283,8 @@ func MutationLoci(inputChromosome *Chromosome) (previousLocus, mutationLocus, ne
 	return prvLocus, mutLocus, nxtLocus, mutIndex
 }
 
-// mutation sub domain returns the subdomain to be used for the mutation
-// specific directed walk procedure
+/* mutation sub domain returns the subdomain to be used for the mutation
+specific directed walk procedure */
 func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomain *mat64.Dense) (outputSubDomain *mat64.Dense) {
 
 	// generate mutation locus neighborhood indices
@@ -327,8 +327,8 @@ func MutationSubDomain(previousLocus, mutationLocus, nextLocus []int, inputDomai
 	return subMat
 }
 
-// function to generate a generic subDomain for an arbitrary set of node
-// subscripts contained within a given input search domain
+/* function to generate a generic subDomain for an arbitrary set of node
+subscripts contained within a given input search domain */
 func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (subDomain *Domain, subSourceLocus, subDestinationLocus []int) {
 
 	// compute row index value ranges
@@ -424,8 +424,8 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	return subDom, subSrc, subDst
 }
 
-//// function to translate the subscript index values for a given slice of input
-//// loci relative to a given offset vector
+/* function to translate the subscript index values for a given slice of input
+loci relative to a given offset vector */
 func TranslateWalkSubs(sourceSubs []int, inputWalkSubs [][]int) (outputWalkSubs [][]int) {
 
 	// initialize output
@@ -446,8 +446,8 @@ func TranslateWalkSubs(sourceSubs []int, inputWalkSubs [][]int) (outputWalkSubs 
 	return outWlkSubs
 }
 
-// function to generate a mutation within a given chromosome at a specified
-// number of mutation loci
+/* function to generate a mutation within a given chromosome at a specified
+number of mutation loci */
 func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
 	// compute chromosome len.gth
@@ -560,8 +560,8 @@ func ChromosomeMutation(inputChromosome *Chromosome, inputDomain *Domain, inputP
 	return output
 }
 
-// function to generate multiple mutations on multiple separate loci on the same
-// input chromosome
+/* function to generate multiple mutations on multiple separate loci on the same
+input chromosome */
 func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputChromosome *Chromosome) {
 
 	// loop through mutation count
@@ -573,8 +573,8 @@ func ChromosomeMultiMutation(inputChromosome *Chromosome, inputDomain *Domain, i
 	return inputChromosome
 }
 
-// function to generate mutations within a specified fraction of an input
-// population with those chromosomes being selected at random
+/* function to generate mutations within a specified fraction of an input
+population with those chromosomes being selected at random */
 func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Parameters, inputObjectives *MultiObjective, inputDomain *Domain) (outputChromosomes chan *Chromosome) {
 
 	// calculate the total number of chromosomes that are to receive mutations
@@ -638,8 +638,8 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 	return inputChromosomes
 }
 
-// population evolution operator generates a new population
-// from an input population using the selection and crossover operators
+/* population evolution operator generates a new population
+from an input population using the selection and crossover operators */
 func PopulationEvolution(inputPopulation *Population, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) (outputPopulation *Population) {
 
 	// initialize new empty population
