@@ -1,6 +1,6 @@
-// Copyright ©2015 The corridor Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.package main
+/* Copyright ©2015 The corridor Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.package main */
 
 package corridor
 
@@ -30,9 +30,9 @@ func Distance(aSubs, bSubs []int) (dist float64) {
 	return output
 }
 
-// alldistance computes the distance from each location with the input
-// search domain and a given point defined by an input pair of row
-// column subscripts
+/* alldistance computes the distance from each location with the input
+search domain and a given point defined by an input pair of row
+column subscripts */
 func AllDistance(aSubs []int, searchDomainMatrix *mat64.Dense) (allDistMatrix *mat64.Dense) {
 
 	// get matrix dimensions
@@ -58,9 +58,9 @@ func AllDistance(aSubs []int, searchDomainMatrix *mat64.Dense) (allDistMatrix *m
 
 }
 
-// compute the minimum distance between a given input point and
-// the subscripts comprised of a line segement joining two other
-// input points
+/* compute the minimum distance between a given input point and
+the subscripts comprised of a line segement joining two other
+input points */
 func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 
 	// initialize variables
@@ -115,9 +115,9 @@ func MinDistance(pSubs, aSubs, bSubs []int) (minDist float64) {
 	return output
 }
 
-// allmindistance computes the distance from each location within the
-// input search domain and to the nearest subscript located along the
-// line formed by the two input subscripts
+/* allmindistance computes the distance from each location within the
+input search domain and to the nearest subscript located along the
+line formed by the two input subscripts */
 func AllMinDistance(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (allMinDistMatrix *mat64.Dense) {
 
 	// get matrix dimensions
@@ -143,8 +143,8 @@ func AllMinDistance(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (allMin
 	return output
 }
 
-// distancebands recodes a distance matrix computed from a single
-// source location to ordinal set of bands of increasing distance
+/* distancebands recodes a distance matrix computed from a single
+source location to ordinal set of bands of increasing distance */
 func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat64.Dense) {
 
 	// get matrix dimensions
@@ -193,11 +193,11 @@ func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat6
 	return output
 }
 
-// bandmask selects the elements in a distance band matrix
-// corresponding to a specified input band identification number
-// and outputs a binary matrix of the same dimensions as the distance
-// band matrix with the values at those locations encoded as ones
-// and all other locations encoded as zeros
+/* bandmask selects the elements in a distance band matrix
+corresponding to a specified input band identification number
+and outputs a binary matrix of the same dimensions as the distance
+band matrix with the values at those locations encoded as ones
+and all other locations encoded as zeros */
 func BandMask(bandValue float64, bandMatrix *mat64.Dense) (binaryBandMat *mat64.Dense) {
 
 	// get row column dimensions of band matrix
@@ -227,8 +227,8 @@ func BandMask(bandValue float64, bandMatrix *mat64.Dense) (binaryBandMat *mat64.
 	return output
 }
 
-// nonzerosubs returns a 2-D slice containing the row column indices
-// of all nonzero elements contained wihtin a given input matrix
+/* nonzerosubs returns a 2-D slice containing the row column indices
+of all nonzero elements contained wihtin a given input matrix */
 func NonZeroSubs(inputMatrix *mat64.Dense) (nonZeroSubs [][]int) {
 
 	// get matrix dimensions
@@ -262,9 +262,9 @@ func NonZeroSubs(inputMatrix *mat64.Dense) (nonZeroSubs [][]int) {
 	return output
 }
 
-// findsubs returns a 2-D slice containing the row column indices
-// of all of the elements contained wihtin a given input matrix
-// that are equal in value to some provided input value
+/* findsubs returns a 2-D slice containing the row column indices
+of all of the elements contained wihtin a given input matrix
+that are equal in value to some provided input value */
 func FindSubs(inputValue float64, inputMatrix *mat64.Dense) (foundSubs [][]int) {
 
 	// get matrix dimensions
@@ -298,9 +298,9 @@ func FindSubs(inputValue float64, inputMatrix *mat64.Dense) (foundSubs [][]int) 
 	return output
 }
 
-// orientation accepts as inputs a pair of point subscripts
-// and returns a binary vector indicating the relative orientation
-// of the first point to the second in binary terms
+/* orientation accepts as inputs a pair of point subscripts
+and returns a binary vector indicating the relative orientation
+of the first point to the second in binary terms */
 func Orientation(aSubs, bSubs []int) (orientationVector []int) {
 
 	// initialize output
@@ -328,10 +328,10 @@ func Orientation(aSubs, bSubs []int) (orientationVector []int) {
 	return output
 }
 
-// orientation mask returns a binary encoded matrix for
-// a given point where all points orientated towards
-// a given second point are encoded as 1 and all points
-// orientated away from the given second point as 0
+/* orientation mask returns a binary encoded matrix for
+a given point where all points orientated towards
+a given second point are encoded as 1 and all points
+orientated away from the given second point as 0 */
 func OrientationMask(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (orientationMask *mat64.Dense) {
 
 	// generate matrix dimensions
@@ -372,8 +372,8 @@ func OrientationMask(aSubs, bSubs []int, searchDomainMatrix *mat64.Dense) (orien
 	return output
 }
 
-// bresenham generates the list of subscript indices corresponding to the
-// euclidean shortest paths connecting two subscript pairs in discrete space
+/* bresenham generates the list of subscript indices corresponding to the
+euclidean shortest paths connecting two subscript pairs in discrete space */
 func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 
 	// initialize variables
@@ -443,8 +443,8 @@ func Bresenham(aSubs, bSubs []int) (lineSubs [][]int) {
 	return output
 }
 
-// function to return the subscript indices of the cells corresponding to the
-// queens neighborhood for a given subscript pair
+/* function to return the subscript indices of the cells corresponding to the
+queens neighborhood for a given subscript pair */
 func NeighborhoodSubs(aSubs []int) (neighSubs [][]int) {
 
 	// initialize output slice
@@ -465,8 +465,8 @@ func NeighborhoodSubs(aSubs []int) (neighSubs [][]int) {
 	return output
 }
 
-// function to validate an input sub domain for use in generating
-// a chromosomal mutation via the random walk procedure
+/* function to validate an input sub domain for use in generating
+a chromosomal mutation via the random walk procedure */
 func ValidateMutationSubDomain(subSource, subDestin []int, subMat *mat64.Dense) bool {
 
 	// initialize output
@@ -513,8 +513,8 @@ func ValidateMutationSubDomain(subSource, subDestin []int, subMat *mat64.Dense) 
 	return output
 }
 
-// function validate the tabu neighborhood of an input pair of
-// row column subscripts
+/* function validate the tabu neighborhood of an input pair of
+row column subscripts */
 func ValidateTabu(currentSubs []int, tabuMatrix *mat64.Dense) bool {
 
 	// initialize output
@@ -544,8 +544,8 @@ func ValidateTabu(currentSubs []int, tabuMatrix *mat64.Dense) bool {
 	return output
 }
 
-// function to count the number of digits in an input integer as
-// its base ten logarithm
+/* function to count the number of digits in an input integer as
+its base ten logarithm */
 func DigitCount(input int) (digits int) {
 
 	// compute digits as the log of the input
