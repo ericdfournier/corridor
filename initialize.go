@@ -1,6 +1,6 @@
-// Copyright ©2015 The corridor Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+/* Copyright ©2015 The corridor Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file. */
 
 package corridor
 
@@ -332,9 +332,9 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 	}
 }
 
-// function to return copies of a user specified fraction of
-// the individual chromosomes within a population ranked in terms
-// of individual aggregate fitness
+/* function to return copies of a user specified fraction of
+the individual chromosomes within a population ranked in terms
+of individual aggregate fitness */
 func NewEliteFraction(inputFraction float64, inputPopulation *Population) (outputChromosomes []*Chromosome) {
 
 	// count input chromosomes
@@ -371,10 +371,10 @@ func NewEliteFraction(inputFraction float64, inputPopulation *Population) (outpu
 	return output
 }
 
-// function to return copies of a user specified number of
-// unique individual chromosomes from within a population
-// with each chromosome being ranked in terms of its
-// individual aggregate fitness
+/* function to return copies of a user specified number of
+unique individual chromosomes from within a population
+with each chromosome being ranked in terms of its
+individual aggregate fitness */
 func NewEliteSet(inputCount int, inputPopulation *Population, inputParameters *Parameters) (outputChromosomes []*Chromosome) {
 
 	// check band count against population size
