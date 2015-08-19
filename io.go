@@ -1,6 +1,6 @@
-// Copyright ©2015 The corridor Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+/* Copyright ©2015 The corridor Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file. */
 
 package corridor
 
@@ -14,8 +14,8 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-// function to write an input comma separated value
-// file's contents to an output domain structure
+/* function to write an input comma separated value
+file's contents to an output domain structure */
 func CsvToSubs(inputFilepath string) (outputSubs []int) {
 
 	// open file
@@ -75,8 +75,8 @@ func CsvToSubs(inputFilepath string) (outputSubs []int) {
 	return output
 }
 
-// function to write an input comma separated value
-// file's contents to an output domain structure
+/* function to write an input comma separated value
+file's contents to an output domain structure */
 func CsvToDomain(inputFilepath string) (outputDomain *Domain) {
 
 	// open file
@@ -150,8 +150,8 @@ func CsvToDomain(inputFilepath string) (outputDomain *Domain) {
 	return output
 }
 
-// function to write an input comma separated value
-// file's contents to an output objective structure
+/* function to write an input comma separated value
+file's contents to an output objective structure */
 func CsvToObjective(identifier int, inputFilepath string) (outputObjective *Objective) {
 
 	// open file
@@ -226,8 +226,8 @@ func CsvToObjective(identifier int, inputFilepath string) (outputObjective *Obje
 	return output
 }
 
-// function to write a set of input comma separated value
-// files' contents to an output multiobjective structure
+/* function to write a set of input comma separated value
+files' contents to an output multiobjective structure */
 func CsvToMultiObjective(inputFilepaths ...string) (outputMultiObjective *MultiObjective) {
 
 	// get variadic input length
@@ -257,8 +257,8 @@ func CsvToMultiObjective(inputFilepaths ...string) (outputMultiObjective *MultiO
 	}
 }
 
-// function to write the values from an input
-// chromosome structure to an output csv file
+/* function to write the values from an input
+chromosome structure to an output csv file */
 func ChromosomeToString(inputChromosome *Chromosome) (outputRawString [][]string) {
 
 	// get input chromosome length
@@ -293,8 +293,8 @@ func ChromosomeToString(inputChromosome *Chromosome) (outputRawString [][]string
 	return rawCSVdata
 }
 
-// function to write the values from an input elite set
-// to an output csv file
+/* function to write the values from an input elite set
+to an output csv file */
 func EliteSetToCsv(inputEliteSet []*Chromosome, outputFilepath string) {
 
 	// open file
@@ -337,8 +337,8 @@ func EliteSetToCsv(inputEliteSet []*Chromosome, outputFilepath string) {
 	writer.Flush()
 }
 
-// function to write the runtime parameters from an evolution
-// to an output csv file
+/* function to write the runtime parameters from an evolution
+to an output csv file */
 func RuntimeLogToCsv(inputEvolution *Evolution, inputRuntime time.Duration, outputFilepath string) {
 
 	// open file
