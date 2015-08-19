@@ -451,8 +451,6 @@ func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParamet
 		// loop through the band count to generate sub walk parts
 		for i := 1; i < len(nodeSubs)-1; i++ {
 
-			// DEBUG
-
 			// generate sub domain
 			subSearchDomain, subSource, subDestination := SubDomain(nodeSubs[i], nodeSubs[i+1], searchDomain.Matrix)
 
@@ -467,7 +465,7 @@ func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParamet
 
 			/* TODO
 
-				The debug section below is attempting to deal with possible cases
+				The section below is attempting to deal with possible cases
 				where two parts of two different path sections overlap in the final
 				multipart pathway. Attempts to deal with this by iteratively precluding
 				path sections from the search domain have lead to infinite loop conditions.
