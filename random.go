@@ -1,6 +1,6 @@
-// Copyright ©2015 The corridor Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+/* Copyright ©2015 The corridor Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file. */
 
 package corridor
 
@@ -12,8 +12,8 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-// multivariatenormalrandom generates pairs of bivariate normally distributed
-// random numbers given an input mean vector and covariance matrix
+/* multivariatenormalrandom generates pairs of bivariate normally distributed
+random numbers given an input mean vector and covariance matrix */
 func MultiVariateNormalRandom(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *mat64.Dense) {
 
 	// initialize vector slices
@@ -45,9 +45,9 @@ func MultiVariateNormalRandom(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *m
 	return output
 }
 
-// fixmultivariatenormalrandom converts an input vector of bivariate normally
-// distributed random numbers into a version where the values have been fixed
-// to a [-1, 0 ,1] range
+/* fixmultivariatenormalrandom converts an input vector of bivariate normally
+distributed random numbers into a version where the values have been fixed
+to a [-1, 0 ,1] range */
 func FixMultiVariateNormalRandom(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 
 	// initialize vector slice
@@ -78,8 +78,8 @@ func FixMultiVariateNormalRandom(rndsmp *mat64.Dense) (fixsmp *mat64.Dense) {
 	return output
 }
 
-// newrandom repeatedly generates a new random sample from mvrnd and then fixes
-// it using fixrandom until the sample is comprised of a non [0, 0] case
+/* newrandom repeatedly generates a new random sample from mvrnd and then fixes
+it using fixrandom until the sample is comprised of a non [0, 0] case */
 func NewRandom(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 
 	// initialize rndsmp and fixsmp and output variables
@@ -108,9 +108,9 @@ func NewRandom(mu *mat64.Dense, sigma *mat64.SymDense) (newRand []int) {
 	return output
 }
 
-// newmu generates a matrix representation of mu that reflects the
-// spatial orentiation between the input current subscript and the
-// destination subscript
+/* newmu generates a matrix representation of mu that reflects the
+spatial orentiation between the input current subscript and the
+destination subscript */
 func NewMu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 
 	// compute mu as the orientation vector
@@ -126,9 +126,9 @@ func NewMu(curSubs, dstSubs []int) (mu *mat64.Dense) {
 	return output
 }
 
-// newsigma generates a matrix representation of sigma that reflects the
-// number of iterations in the sampling process as well as the distance
-// from the basis euclidean solution
+/* newsigma generates a matrix representation of sigma that reflects the
+number of iterations in the sampling process as well as the distance
+from the basis euclidean solution */
 func NewSigma(iterations int, randomness, distance float64) (sigma *mat64.SymDense) {
 
 	// impose lower bound on distance
@@ -162,8 +162,8 @@ func NewSigma(iterations int, randomness, distance float64) (sigma *mat64.SymDen
 	return output
 }
 
-// newsubs generates a feasible new subscript value set within the
-// input search domain
+/* newsubs generates a feasible new subscript value set within the
+input search domain */
 func NewSubs(curSubs, destinationSubs []int, curDist float64, searchParameters *Parameters, searchDomain *Domain) (subs []int) {
 
 	// initialize iteration counter
@@ -207,8 +207,8 @@ func NewSubs(curSubs, destinationSubs []int, curDist float64, searchParameters *
 	return output
 }
 
-// directedwalk generates a new directed walk connecting a source subscript to a
-// destination subscript within the context of an input search domain
+/* directedwalk generates a new directed walk connecting a source subscript to a
+destination subscript within the context of an input search domain */
 func DirectedWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int) {
 
 	// initialize chromosomal 2D slice with source subscript as first element
@@ -292,8 +292,9 @@ func DirectedWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searc
 	return output
 }
 
-// mutationwalk generates a new directed walk connecting a source subscript to a
-// destination subscript within the context of an input mutation search domain
+/* mutationwalk generates a new directed walk connecting a source subscript
+to a destination subscript within the context of an input mutation search
+domain */
 func MutationWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searchParameters *Parameters, basisSolution *Basis) (subs [][]int, tabuTest bool) {
 
 	// initialize chromosomal 2D slice with source subscript as first
@@ -350,10 +351,10 @@ func MutationWalk(sourceSubs, destinationSubs []int, searchDomain *Domain, searc
 	return output, test
 }
 
-// newnodesubs generates an poutput slice of new intermediate destination nodes
-// that are progressively further, in terms of euclidean distance, from
-// a given input source location and are orientation towards a given
-// destination location
+/* newnodesubs generates an poutput slice of new intermediate destination nodes
+that are progressively further, in terms of euclidean distance, from
+a given input source location and are orientation towards a given
+destination location */
 func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [][]int) {
 
 	// initialize output
@@ -426,8 +427,8 @@ func NewNodeSubs(searchDomain *Domain, searchParameters *Parameters) (nodeSubs [
 	return output
 }
 
-// multipartdirectedwalk generates a new multipart directed walk from a given set
-// of input problem parameters
+/* multipartdirectedwalk generates a new multipart directed walk from a given set
+of input problem parameters */
 func MultiPartDirectedWalk(nodeSubs [][]int, searchDomain *Domain, searchParameters *Parameters) (subs [][]int) {
 
 	// generate basis solution
