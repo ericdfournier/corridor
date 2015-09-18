@@ -32,6 +32,8 @@ func MultiVariateNormalRandom(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *m
 	// convert to matrix type
 	rnd := mat64.NewDense(2, 1, n)
 	output := mat64.NewDense(2, 1, o)
+	
+	// TODO: Fix breaking change from new gonum release
 
 	// perform cholesky decomposition on covariance matrix
 	lower := mat64.NewTriDense(2, false, nil)
