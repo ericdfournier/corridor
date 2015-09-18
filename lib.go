@@ -160,8 +160,8 @@ func DistanceBands(bandCount int, distanceMatrix *mat64.Dense) (bandMatrix *mat6
 	output := mat64.NewDense(rows, cols, nil)
 
 	// generate band range
-	minDist := distanceMatrix.Min()
-	maxDist := distanceMatrix.Max()
+	minDist := mat64.Min(distanceMatrix)
+	maxDist := mat64.Max(distanceMatrix)
 
 	// initialize band interval unit and slice
 	bandUnit := (maxDist - minDist) / float64(bandCount+1)
