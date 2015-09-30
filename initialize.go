@@ -19,20 +19,12 @@ import (
 // new problem parameters function
 func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize, evolutionSize int, randomnessCoefficient float64) *Parameters {
 
-	// set default mutation count
-	mutationCount := 1
-
-	// set defacult mutation fraction
-	mutationFraction := 0.2
-
-	// set selection fraction
-	selectionFraction := 0.5
-
-	// set selection probability
-	selectionProbability := 0.8
-
-	// get concurrency size
-	maxConcurrency := runtime.NumCPU()
+	// set default parameter values
+	var mutationCount int = 1
+	var maxConcurrency int = runtime.NumCPU()
+	var mutationFraction float64 = 0.2
+	var selectionFraction float64 = 0.5
+	var selectionProbability float64 = 0.8
 
 	// return output
 	return &Parameters{
@@ -80,6 +72,9 @@ func NewObjective(identifier int, fitnessMatrix *mat64.Dense) *Objective {
 // new basis solution initialization function
 func NewBasis(sourceSubs, destinationSubs []int, searchDomain *Domain) *Basis {
 
+	// set default length factor
+	var lenFactor int = 10
+
 	// compute all minimum euclidean distances for search domain
 	allMinimumDistances := AllMinDistance(sourceSubs, destinationSubs, searchDomain.Matrix)
 
@@ -87,7 +82,7 @@ func NewBasis(sourceSubs, destinationSubs []int, searchDomain *Domain) *Basis {
 	subs := Bresenham(sourceSubs, destinationSubs)
 
 	// compute maximum permitted chromosome length
-	maxLength := len(subs) * 10
+	maxLength := len(subs) * lenFactor
 
 	// return output
 	return &Basis{

@@ -33,12 +33,16 @@ func MultiVariateNormalRandom(mu *mat64.Dense, sigma *mat64.SymDense) (rndsmp *m
 	rnd := mat64.NewDense(2, 1, n)
 	output := mat64.NewDense(2, 1, o)
 
-	// perform cholesky decomposition on covariance matrix
+	// initialize matrix variables for cholesky decomposition
 	var c mat64.Cholesky
 	var L mat64.TriDense
+
+	// perform cholesky decomposition on covariance matrix
 	lower := mat64.NewSymDense(2, nil)
 	c.Factorize(sigma)
 	L.LFromCholesky(&c)
+
+	// write cholesky factorization results to output receiver
 	lower.SetSym(0, 0, L.At(0, 0))
 	lower.SetSym(1, 1, L.At(1, 1))
 

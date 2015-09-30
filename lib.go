@@ -14,12 +14,14 @@ import (
 // compute euclidean distance for a pair of subscript indices
 func Distance(aSubs, bSubs []int) (dist float64) {
 
+	// set constants
+	const pow float64 = 2.0
+
 	// initialize variables
 	var x0 float64 = float64(aSubs[0])
 	var x1 float64 = float64(bSubs[0])
 	var y0 float64 = float64(aSubs[1])
 	var y1 float64 = float64(bSubs[1])
-	var pow float64 = 2.0
 	var dx float64 = x1 - x0
 	var dy float64 = y1 - y0
 
