@@ -19,12 +19,18 @@ import (
 // new problem parameters function
 func NewParameters(sourceSubscripts, destinationSubscripts []int, populationSize, evolutionSize int, randomnessCoefficient float64) *Parameters {
 
-	// set default parameter values
-	var mutationCount int = 1
-	var maxConcurrency int = runtime.NumCPU()
-	var mutationFraction float64 = 0.2
-	var selectionFraction float64 = 0.5
-	var selectionProbability float64 = 0.8
+	// set default integer parameter values
+	var (
+		mutationCount  int = 1
+		maxConcurrency int = runtime.NumCPU()
+	)
+
+	// set default floating point parameter values
+	var (
+		mutationFraction     float64 = 0.2
+		selectionFraction    float64 = 0.5
+		selectionProbability float64 = 0.8
+	)
 
 	// return output
 	return &Parameters{
@@ -95,6 +101,9 @@ func NewBasis(sourceSubs, destinationSubs []int, searchDomain *Domain) *Basis {
 // new chromosome initialization function
 func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) *Chromosome {
 
+	// initialize floating point parameter values
+	var aggFit float64 = 0.0
+
 	// generate node subscripts
 	nodeSubs := NewNodeSubs(searchDomain, searchParameters)
 
@@ -107,7 +116,6 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 		fitVal[i] = make([]float64, len(subs))
 	}
 	totFit := make([]float64, searchObjectives.ObjectiveCount)
-	var aggFit float64 = 0.0
 
 	// generate placeholder variables
 	uuid := uuid.NewV4()
@@ -125,6 +133,9 @@ func NewChromosome(searchDomain *Domain, searchParameters *Parameters, searchObj
 // new empty chromosome initialization function
 func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) *Chromosome {
 
+	// initialize floating point parameter values
+	var aggFit float64 = 0.0
+
 	// initialize subscripts
 	subs := make([][]int, 0)
 
@@ -137,7 +148,6 @@ func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) 
 		fitVal[i] = make([]float64, len(subs))
 	}
 	totFit := make([]float64, searchObjectives.ObjectiveCount)
-	var aggFit float64 = 0.0
 
 	// return output
 	return &Chromosome{
@@ -151,6 +161,9 @@ func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) 
 
 // new population initialization function
 func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) *Population {
+
+	// initialize floating point parameter values
+	var aggMeanFit float64 = 0.0
 
 	// initialize communication channel
 	chr := make(chan *Chromosome, searchParameters.PopSize)
@@ -182,7 +195,6 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 
 	// initialize fitness placeholder
 	meanFit := make([]float64, searchObjectives.ObjectiveCount)
-	var aggMeanFit float64 = 0.0
 
 	// return output
 	return &Population{
@@ -197,12 +209,14 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 // new empty population initialization function
 func NewEmptyPopulation(identifier int, searchObjectives *MultiObjective) *Population {
 
+	// initialize floating point parameter values
+	var aggMeanFit float64 = 0.0
+
 	// initialize empty chromosomes channel
 	chr := make(chan *Chromosome)
 
 	// initialize fitness placeholder
 	meanFit := make([]float64, searchObjectives.ObjectiveCount)
-	var aggMeanFit float64 = 0.0
 
 	// return output
 	return &Population{
