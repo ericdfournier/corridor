@@ -15,17 +15,26 @@ func BenchmarkSmall(b *testing.B) {
 
 	// set max processing units
 	runtime.GOMAXPROCS(1)
+	
+	// initialize integer constants
+	const ( 
+		xDim int = 20
+		yDim int = 20
+		bandCount int = 3
+		objectiveCount int = 3
+		populationSize int = 1000
+	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(20, 20)
-	sampleDomain.BndCnt = 3
+	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	objectiveCount := 3
 	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
+	sampleParameters.PopSize = populationSize
 
 	// evolve populations
 	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
@@ -47,17 +56,26 @@ func BenchmarkParallelSmall(b *testing.B) {
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
+	
+	// initialize integer constants
+	const ( 
+		xDim int = 20
+		yDim int = 20
+		bandCount int = 3
+		objectiveCount int = 3
+		populationSize int = 1000
+	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(20, 20)
-	sampleDomain.BndCnt = 3
+	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	objectiveCount := 3
 	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
+	sampleParameters.PopSize = populationSize
 
 	// evolve populations
 	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
@@ -78,18 +96,26 @@ func BenchmarkMedium(b *testing.B) {
 
 	// set max processing units
 	runtime.GOMAXPROCS(1)
+	
+	// initialize integer constants
+	const ( 
+		xDim int = 20
+		yDim int = 20
+		bandCount int = 3
+		objectiveCount int = 3	
+		populationSize int = 10000
+	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(20, 20)
-	sampleDomain.BndCnt = 3
+	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	objectiveCount := 3
 	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
-	sampleParameters.PopSize = 10000
+	sampleParameters.PopSize = populationSize
 
 	// evolve populations
 	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
@@ -111,18 +137,26 @@ func BenchmarkParallelMedium(b *testing.B) {
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
+	
+	// initialize integer constants
+	const ( 
+		xDim int = 20
+		yDim int = 20
+		bandCount int = 3
+		objectiveCount int = 3	
+		populationSize int = 10000
+	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(20, 20)
-	sampleDomain.BndCnt = 3
+	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	objectiveCount := 3
 	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
-	sampleParameters.PopSize = 10000
+	sampleParameters.PopSize = populationSize
 
 	// evolve populations
 	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
@@ -143,18 +177,26 @@ func BenchmarkLarge(b *testing.B) {
 
 	// set max processing units
 	runtime.GOMAXPROCS(1)
+	
+	// initialize integer constants
+	const ( 
+		xDim int = 20
+		yDim int = 20
+		bandCount int = 3
+		objectiveCount int = 3	
+		populationSize int = 100000
+	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(20, 20)
-	sampleDomain.BndCnt = 3
+	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	objectiveCount := 3
 	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
-	sampleParameters.PopSize = 100000
+	sampleParameters.PopSize = populationSize
 
 	// evolve populations
 	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
@@ -176,18 +218,26 @@ func BenchmarkParallelLarge(b *testing.B) {
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
+	
+	// initialize integer constants
+	const ( 
+		xDim int = 20
+		yDim int = 20
+		bandCount int = 3
+		objectiveCount int = 3	
+		populationSize int = 10000
+	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(20, 20)
-	sampleDomain.BndCnt = 3
+	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	objectiveCount := 3
 	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
-	sampleParameters.PopSize = 100000
+	sampleParameters.PopSize = populationSize
 
 	// evolve populations
 	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)

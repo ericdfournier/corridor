@@ -13,6 +13,48 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
+// new sample parameters initialization function
+func NewSampleParameters(searchDomain *Domain) *Parameters {
+
+	// initialize integer constants
+	const (
+		populationSize int = 1000
+		mutationCount int = 1
+		evolutionSize int = 1000
+	)
+	
+	// initialize float constants
+	const (
+		mutationFraction float64 = 0.2
+		selectionFraction float64 = 0.5
+		selectionProbability float64 = 0.8
+		randomnessCoefficient float64 = 1.0
+	)
+	
+	// initialize variables
+	sourceSubscripts := make([]int, 2)
+	sourceSubscripts[0] = 3
+	sourceSubscripts[1] = 3
+	destinationSubscripts := make([]int, 2)
+	destinationSubscripts[0] = searchDomain.Rows - 3
+	destinationSubscripts[1] = searchDomain.Cols - 3
+	maxConcurrency := runtime.NumCPU() 
+
+	// return output
+	return &Parameters{
+		SrcSubs: sourceSubscripts,
+		DstSubs: destinationSubscripts,
+		RndCoef: randomnessCoefficient,
+		PopSize: populationSize,
+		SelFrac: selectionFraction,
+		SelProb: selectionProbability,
+		MutaCnt: mutationCount,
+		MutaFrc: mutationFraction,
+		EvoSize: evolutionSize,
+		ConSize: maxConcurrency,
+	}
+}
+
 // new sample domain initialization function
 func NewSampleDomain(rows, cols int) *Domain {
 
@@ -50,46 +92,15 @@ func NewSampleDomain(rows, cols int) *Domain {
 	}
 }
 
-// new sample parameters initialization function
-func NewSampleParameters(searchDomain *Domain) *Parameters {
-
-	// initialize variables
-	sourceSubscripts := make([]int, 2)
-	sourceSubscripts[0] = 3
-	sourceSubscripts[1] = 3
-	destinationSubscripts := make([]int, 2)
-	destinationSubscripts[0] = searchDomain.Rows - 3
-	destinationSubscripts[1] = searchDomain.Cols - 3
-	randomnessCoefficient := 1.0
-	populationSize := 1000
-	selectionFraction := 0.5
-	selectionProbability := 0.8
-	mutationCount := 1
-	mutationFraction := 0.2
-	evolutionSize := 1000
-	maxConcurrency := runtime.NumCPU()
-
-	// return output
-	return &Parameters{
-		SrcSubs: sourceSubscripts,
-		DstSubs: destinationSubscripts,
-		RndCoef: randomnessCoefficient,
-		PopSize: populationSize,
-		SelFrac: selectionFraction,
-		SelProb: selectionProbability,
-		MutaCnt: mutationCount,
-		MutaFrc: mutationFraction,
-		EvoSize: evolutionSize,
-		ConSize: maxConcurrency,
-	}
-}
-
 // new sample mutation domain initialization function
 func NewSampleMutationDomain() *Domain {
 
-	// fix domain size
-	var rows int = 5
-	var cols int = 5
+	// initialize integer constants
+	const (
+		rows int = 5
+		cols int = 5
+		bandCount int = 2
+	)
 
 	// initialize empty matrix
 	domainSize := rows * cols
@@ -116,9 +127,6 @@ func NewSampleMutationDomain() *Domain {
 	// eliminate center
 	domainMatrix.Set(2, 2, 0.0)
 
-	// set band count to nil
-	var bandCount int = 2
-
 	// return output
 	return &Domain{
 		Rows:   rows,
@@ -131,9 +139,11 @@ func NewSampleMutationDomain() *Domain {
 // new sample objective initialization function
 func NewSampleObjectives(rows, cols, objectiveCount int) *MultiObjective {
 
+	// initialize objective id counter
+	var objectiveId int = 0
+
 	// initialize matrix dimensions
 	objectiveSize := rows * cols
-	var objectiveId int = 0
 
 	// seed random number generator
 	rand.Seed(time.Now().UnixNano())
