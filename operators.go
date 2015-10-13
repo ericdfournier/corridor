@@ -361,8 +361,7 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	// get subdomain matrix dimensions
 	rows, cols := rawDomMat.Dims()
 
-	// TODO
-	// Find explanation for the row column flip in the expression below
+	//TODO Track wby the rows and cols must be inverted in usage below...
 
 	// mask edge values
 	rawDomMat.SetRow(0, make([]float64, cols))
