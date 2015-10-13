@@ -361,11 +361,14 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	// get subdomain matrix dimensions
 	rows, cols := rawDomMat.Dims()
 
+	// TODO
+	// Find explanation for the row column flip in the expression below
+
 	// mask edge values
-	rawDomMat.SetRow(0, make([]float64, rows+cols))
-	rawDomMat.SetRow(rows-1, make([]float64, rows+cols))
-	rawDomMat.SetCol(0, make([]float64, rows+cols))
-	rawDomMat.SetCol(cols-1, make([]float64, rows+cols))
+	rawDomMat.SetRow(0, make([]float64, cols))
+	rawDomMat.SetRow(rows-1, make([]float64, cols))
+	rawDomMat.SetCol(0, make([]float64, rows))
+	rawDomMat.SetCol(cols-1, make([]float64, rows))
 
 	// generate sub domain structure
 	subDom := NewDomain(rawDomMat)

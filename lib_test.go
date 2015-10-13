@@ -56,7 +56,7 @@ func TestAllDistance(t *testing.T) {
 	testCase := AllDistance(aSubs, searchDomainMatrix)
 
 	// log test result
-	if testCase.Equals(expValueMatrix) == true {
+	if mat64.Equal(testCase, expValueMatrix) {
 		t.Log("AllDistance Test: Computed Matrix =", *testCase)
 	} else {
 		t.Error("AllDistance Test: Computed Matrix =", *testCase)
@@ -110,7 +110,7 @@ func TestAllMinDistance(t *testing.T) {
 	testCase := AllMinDistance(aSubs, bSubs, searchDomainMatrix)
 
 	// log test result
-	if testCase.Equals(expValueMatrix) {
+	if mat64.Equal(testCase, expValueMatrix) {
 		t.Log("AllMinDistance Test: Computed Matrix =", testCase)
 	} else {
 		t.Error("AllMinDistance Test: Computed Matrix =", testCase)
@@ -142,7 +142,7 @@ func TestDistanceBands(t *testing.T) {
 	testCase := DistanceBands(bandCount, distanceMatrix)
 
 	// log test result
-	if testCase.Equals(expValueMatrix) {
+	if mat64.Equal(testCase, expValueMatrix) {
 		t.Log("DistanceBands Test: Computed Matrix =", *testCase)
 	} else {
 		t.Error("DistanceBands Test: Computed Matrix =", *testCase)
@@ -178,7 +178,7 @@ func TestBandMask(t *testing.T) {
 	testCase := BandMask(bandValue, bandMatrix)
 
 	// log test results
-	if testCase.Equals(expValueMatrix) {
+	if mat64.Equal(testCase, expValueMatrix) {
 		t.Log("BandMask Test: Computed Matrix =", *testCase)
 	} else {
 		t.Error("BandMask Test: Computed Matrix =", *testCase)
@@ -296,7 +296,7 @@ func TestOrientationMask(t *testing.T) {
 	testCase := OrientationMask(aSubs, bSubs, searchDomainMatrix)
 
 	// log test results
-	if testCase.Equals(expValueMatrix) {
+	if mat64.Equal(testCase, expValueMatrix) {
 		t.Log("OrientationMask Test: Computed Matrix =", *testCase)
 	} else {
 		t.Error("OrientationMask Test: Computed Matrix =", *testCase)

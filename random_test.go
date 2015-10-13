@@ -291,7 +291,7 @@ func TestMutationWalk(t *testing.T) {
 	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
 	var domainVec = []float64{
 		0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 1.0, 1.1, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 1.0, 0.0, 1.0, 0.0,
 		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0}
@@ -337,7 +337,7 @@ func TestNewNodeSubs(t *testing.T) {
 	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
 	var domainVec = []float64{
 		0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 1.0, 1.1, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0}
@@ -368,16 +368,14 @@ func TestMultiPartDirectedWalk(t *testing.T) {
 	// initialize test case
 	t.Log("MultiPartDirectedWalk: Expected Value = [[1 1]...[3 3]]")
 
-	// initialize expected value
-
 	// initialize test case variables
 	var sourceSubs = []int{1, 1}
 	var destinationSubs = []int{3, 3}
 	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
 	var domainVec = []float64{
 		0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.1, 0.0,
-		0.0, 1.0, 1.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 1.0, 1.0, 1.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0}
 	domainMat := mat64.NewDense(5, 5, domainVec)

@@ -196,7 +196,6 @@ func NewSubs(curSubs, destinationSubs []int, curDist float64, searchParameters *
 		output[0] = curSubs[0] + try[0]
 		output[1] = curSubs[1] + try[1]
 
-		// DEBUG
 		// test if currentIndex is forbidden
 		if searchDomain.Matrix.At(output[0], output[1]) == 0.0 {
 			iterations += 1
