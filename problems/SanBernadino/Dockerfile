@@ -3,6 +3,8 @@
 # Based Upon Debian "Wheezy"
 ############################################################
 
-FROM golang:latest
+FROM ericdfournier/corridor:latest
 MAINTAINER Eric D Fournier: me@ericdfournier.com
-RUN go get github.com/ericdfournier/corridor
+
+WORKDIR /go/src/github.com/ericdfournier/corridor/problems/SanBernadino
+RUN go run sanBernadino.go
