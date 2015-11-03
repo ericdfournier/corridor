@@ -6,5 +6,5 @@
 FROM ericdfournier/corridor:latest
 MAINTAINER Eric D Fournier: me@ericdfournier.com
 
-WORKDIR /go/src/github.com/ericdfournier/corridor/problems/SanBernadino
-RUN go run sanBernadino.go
+WORKDIR /go/src/github.com/ericdfournier/corridor/problems/SanBernadinoValidation
+RUN go run sanBernadinoValidation.go
