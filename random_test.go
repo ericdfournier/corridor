@@ -380,11 +380,11 @@ func TestMultiPartDirectedWalk(t *testing.T) {
 		0.0, 0.0, 0.0, 0.0, 0.0}
 	domainMat := mat64.NewDense(5, 5, domainVec)
 	testDomain := NewDomain(domainMat)
-	testDomain.BndCnt = 1
+	testDomain.BndCnt = 3
 	nodeSubs := make([][]int, 3)
-	nodeSubs[0] = []int{1, 1}
-	nodeSubs[1] = []int{3, 1}
-	nodeSubs[2] = []int{3, 3}
+	nodeSubs[0] = sourceSubs
+	nodeSubs[1] = []int{1, 3}
+	nodeSubs[2] = destinationSubs
 
 	// perform test case
 	testCase := MultiPartDirectedWalk(nodeSubs, testDomain, testParams)

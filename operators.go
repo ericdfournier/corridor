@@ -351,17 +351,15 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	rawDomMat := mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowSpread, colSpread))
 
 	// overwrite matrix if singleton dimension
-	if rowSpread == 2 {
+	if rowSpread < 3 {
 		rawDomMat = mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowSpread+1, colSpread))
 	}
-	if colSpread == 2 {
+	if colSpread < 3 {
 		rawDomMat = mat64.DenseCopyOf(inputDomain.View(rowRng[0], colRng[0], rowSpread, colSpread+1))
 	}
 
 	// get subdomain matrix dimensions
 	rows, cols := rawDomMat.Dims()
-
-	//TODO Track wby the rows and cols must be inverted in usage below...
 
 	// mask edge values
 	rawDomMat.SetRow(0, make([]float64, cols))
@@ -389,7 +387,7 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 		subSrc[0] = int(rows - 2.0)
 		subSrc[1] = int(cols - 2.0)
 		subDst[0] = int(1.0)
-		subDst[1] = int(1.0)
+		subDst[1] = int(cols - 2.0)
 	} else if orient[0] == -1 && orient[1] == 1 {
 		subSrc[0] = int(rows - 2.0)
 		subSrc[1] = int(1.0)
@@ -398,10 +396,10 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 	} else if orient[0] == 0 && orient[1] == -1 {
 		subSrc[0] = int(rows - 2.0)
 		subSrc[1] = int(cols - 2.0)
-		subDst[0] = int(1.0)
+		subDst[0] = int(rows - 2.0)
 		subDst[1] = int(1.0)
 	} else if orient[0] == 0 && orient[1] == 1 {
-		subSrc[0] = int(1.0)
+		subSrc[0] = int(rows - 2.0)
 		subSrc[1] = int(1.0)
 		subDst[0] = int(rows - 2.0)
 		subDst[1] = int(cols - 2.0)
@@ -414,7 +412,7 @@ func SubDomain(sourceLocus, destinationLocus []int, inputDomain *mat64.Dense) (s
 		subSrc[0] = int(1.0)
 		subSrc[1] = int(cols - 2.0)
 		subDst[0] = int(rows - 2.0)
-		subDst[1] = int(1.0)
+		subDst[1] = int(cols - 2.0)
 	} else if orient[0] == 1 && orient[1] == 1 {
 		subSrc[0] = int(1.0)
 		subSrc[1] = int(1.0)

@@ -19,18 +19,18 @@ func NewSampleParameters(searchDomain *Domain) *Parameters {
 	// initialize integer constants
 	const (
 		populationSize int = 1000
-		mutationCount int = 1
-		evolutionSize int = 1000
+		mutationCount  int = 1
+		evolutionSize  int = 1000
 	)
-	
+
 	// initialize float constants
 	const (
-		mutationFraction float64 = 0.2
-		selectionFraction float64 = 0.5
-		selectionProbability float64 = 0.8
+		mutationFraction      float64 = 0.2
+		selectionFraction     float64 = 0.5
+		selectionProbability  float64 = 0.8
 		randomnessCoefficient float64 = 1.0
 	)
-	
+
 	// initialize variables
 	sourceSubscripts := make([]int, 2)
 	sourceSubscripts[0] = 3
@@ -38,7 +38,7 @@ func NewSampleParameters(searchDomain *Domain) *Parameters {
 	destinationSubscripts := make([]int, 2)
 	destinationSubscripts[0] = searchDomain.Rows - 3
 	destinationSubscripts[1] = searchDomain.Cols - 3
-	maxConcurrency := runtime.NumCPU() 
+	maxConcurrency := runtime.NumCPU()
 
 	// return output
 	return &Parameters{
@@ -97,8 +97,8 @@ func NewSampleMutationDomain() *Domain {
 
 	// initialize integer constants
 	const (
-		rows int = 5
-		cols int = 5
+		rows      int = 5
+		cols      int = 5
 		bandCount int = 2
 	)
 

@@ -15,12 +15,12 @@ func BenchmarkSmall(b *testing.B) {
 
 	// set max processing units
 	runtime.GOMAXPROCS(1)
-	
+
 	// initialize integer constants
-	const ( 
-		xDim int = 20
-		yDim int = 20
-		bandCount int = 3
+	const (
+		xDim           int = 20
+		yDim           int = 20
+		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 1000
 	)
@@ -44,6 +44,9 @@ func BenchmarkSmall(b *testing.B) {
 
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
+
+	// view sample chromosome
+	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
 
 	// print top individual fitness
 	fmt.Println("Population Mean Fitness =")
@@ -56,12 +59,12 @@ func BenchmarkParallelSmall(b *testing.B) {
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
-	
+
 	// initialize integer constants
-	const ( 
-		xDim int = 20
-		yDim int = 20
-		bandCount int = 3
+	const (
+		xDim           int = 20
+		yDim           int = 20
+		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 1000
 	)
@@ -86,6 +89,9 @@ func BenchmarkParallelSmall(b *testing.B) {
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
 
+	// view sample chromosome
+	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
+
 	// print top individual fitness
 	fmt.Println("Population Mean Fitness =")
 	fmt.Println(finalPop.MeanFitness)
@@ -96,13 +102,13 @@ func BenchmarkMedium(b *testing.B) {
 
 	// set max processing units
 	runtime.GOMAXPROCS(1)
-	
+
 	// initialize integer constants
-	const ( 
-		xDim int = 20
-		yDim int = 20
-		bandCount int = 3
-		objectiveCount int = 3	
+	const (
+		xDim           int = 20
+		yDim           int = 20
+		bandCount      int = 3
+		objectiveCount int = 3
 		populationSize int = 10000
 	)
 
@@ -126,6 +132,9 @@ func BenchmarkMedium(b *testing.B) {
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
 
+	// view sample chromosome
+	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
+
 	// print top individual fitness
 	fmt.Println("Population Mean Fitness =")
 	fmt.Println(finalPop.MeanFitness)
@@ -137,13 +146,13 @@ func BenchmarkParallelMedium(b *testing.B) {
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
-	
+
 	// initialize integer constants
-	const ( 
-		xDim int = 20
-		yDim int = 20
-		bandCount int = 3
-		objectiveCount int = 3	
+	const (
+		xDim           int = 20
+		yDim           int = 20
+		bandCount      int = 3
+		objectiveCount int = 3
 		populationSize int = 10000
 	)
 
@@ -163,6 +172,9 @@ func BenchmarkParallelMedium(b *testing.B) {
 
 	// extract output population
 	finalPop := <-toyEvolution.Populations
+
+	// view sample chromosome
+	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
 
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
@@ -177,13 +189,13 @@ func BenchmarkLarge(b *testing.B) {
 
 	// set max processing units
 	runtime.GOMAXPROCS(1)
-	
+
 	// initialize integer constants
-	const ( 
-		xDim int = 20
-		yDim int = 20
-		bandCount int = 3
-		objectiveCount int = 3	
+	const (
+		xDim           int = 20
+		yDim           int = 20
+		bandCount      int = 3
+		objectiveCount int = 3
 		populationSize int = 100000
 	)
 
@@ -204,6 +216,9 @@ func BenchmarkLarge(b *testing.B) {
 	// extract output population
 	finalPop := <-toyEvolution.Populations
 
+	// view sample chromosome
+	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
+
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
 
@@ -218,13 +233,13 @@ func BenchmarkParallelLarge(b *testing.B) {
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
-	
+
 	// initialize integer constants
-	const ( 
-		xDim int = 20
-		yDim int = 20
-		bandCount int = 3
-		objectiveCount int = 3	
+	const (
+		xDim           int = 20
+		yDim           int = 20
+		bandCount      int = 3
+		objectiveCount int = 3
 		populationSize int = 10000
 	)
 
@@ -244,6 +259,9 @@ func BenchmarkParallelLarge(b *testing.B) {
 
 	// extract output population
 	finalPop := <-toyEvolution.Populations
+
+	// view sample chromosome
+	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
 
 	// view output population
 	ViewPopulation(sampleDomain, sampleParameters, finalPop)
