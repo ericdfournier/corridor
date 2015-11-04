@@ -8,4 +8,4 @@ MAINTAINER Eric D Fournier: me@ericdfournier.com
 
 WORKDIR /go/src/github.com/ericdfournier/corridor/problems/Fresno
 RUN go get -u github.com/ericdfournier.com/corridor
-RUN go run fresno.go
+RUN -i -t /bin/bash
