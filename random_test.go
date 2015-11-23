@@ -370,7 +370,7 @@ func TestMultiPartDirectedWalk(t *testing.T) {
 
 	// initialize test case variables
 	var sourceSubs = []int{1, 1}
-	var destinationSubs = []int{3, 3}
+	var destinationSubs = []int{4, 4}
 	testParams := NewParameters(sourceSubs, destinationSubs, 10, 10, 1.0)
 	var domainVec = []float64{
 		0.0, 0.0, 0.0, 0.0, 0.0,
