@@ -38,7 +38,7 @@
 <p>The work contained in this library is based upon the MOGADOR algorithm that was first introduced by Zhang &amp; Armstrong (2008) in: <a href="http://www.envplan.com/abstract.cgi?id=b32167">http://www.envplan.com/abstract.cgi?id=b32167</a> . It also contains additional modifications to the initialization routine introduced by Fournier (2014) in: placeholderURL . </p>
 
 <h2>
-<a id="supported-input-formats" class="anchor" href="#supported-input-formats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported Input Formats</h2>
+<a id="input-format" class="anchor" href="#input-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input Format</h2>
 
 <p>All inputs must be formatted as comma delimited value (CSV) files. </p>
 
@@ -49,34 +49,34 @@
 
 <p>searchDomain.csv </p>
 
-<pre><code>0,0,0,0,0,0,0,0,
-0,0,1,1,1,1,0,0,
-0,0,1,1,1,1,0,0,
-0,0,1,1,1,1,0,0,
-0,0,0,0,0,0,0,0
+<pre><code>0, 0, 0, 0, 0,
+0, 1, 1, 1, 0,
+0, 1, 1, 1, 0,
+0, 1, 1, 1, 0,
+0, 0, 0, 0, 0
 </code></pre>
 
 <h3>
 <a id="example-search-objectives" class="anchor" href="#example-search-objectives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Search Objectives</h3>
 
-<p>The user should note that the objective values for cells that are outside of the search domain should be set to values that are arbitrarily high. A good rule of thumb for this purpose is to set their values to be equal to the total number of cells (feasible and otherwise) contained within the entire search domain as below.</p>
+<p>The user should note that the objective values for cells that are outside of the search domain will be automatically set to be equal to an arbitrarily high value. Specifically, the objective scores for the locations which are outside of the feasible search domain values are set to be equal to the total number of cells (feasible and otherwise) contained within the entire search domain. For an example illustration of how this work, please see below. </p>
 
 <p>objective1.csv</p>
 
-<pre><code>40,40,40,40,40,40,40,40,
-40,40,10,7,5,4,40,40,
-40,40,2,9,1,2,40,40,
-40,40,7,10,2,4,40,40,
-40,40,40,40,40,40,40,40
+<pre><code>25, 25, 25, 25, 25,
+25, 2, 3, 3, 25,
+25, 1, 2, 5, 25,
+25, 1, 1, 4, 25,
+25, 25, 25, 25, 25;
 </code></pre>
 
 <p>objective2.csv</p>
 
-<pre><code>40,40,40,40,40,40,40,40,
-40,40,3,6,3,4,40,40,
-40,40,8,9,8,2,40,40,
-40,40,4,5,9,5,40,40,
-40,40,40,40,40,40,40,40
+<pre><code>25, 25, 25, 25, 25,
+25, 4, 1, 3, 25,
+25, 5, 3, 6, 25,
+25, 2, 1, 3, 25,
+25, 25, 25, 25, 25;
 </code></pre>
 
 <h3>
@@ -86,13 +86,38 @@
 
 <p>sourceSubs.csv</p>
 
-<pre><code>1,3
+<pre><code>1,1
 </code></pre>
 
 <p>destinationSubs.csv</p>
 
-<pre><code>3,5
+<pre><code>3,3
 </code></pre>
+
+<h2>
+<a id="output-format" class="anchor" href="#output-format" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output Format</h2>
+
+<p>If the Algorithm fails to converge upon a solution within the given iteration limit, an error message will be printed to the console and a basic log.cv file will be written to the local directory. This log file contains information about the computational runtime and the total number of evolutionary iterations that were executed (which in this case will be equal to the maximum number of evolutions specified by the user). </p>
+
+<p>If the Algorithm successfully converges upon a solution within the given iteration limit, a success message will be printed to the console and two files will be written to the local directory. The first is a log.csv file which contains information about the same information quoted previously. The second is an output solution file which contains the row and column subscripts for each step along the solution corridor. Additionally, subsequent rows within this output file will contain the individual, stepwise, objective scores for each of the objectives, for each step along the solution corridor. </p>
+
+<h3>
+<a id="example-output" class="anchor" href="#example-output" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Output</h3>
+
+<p>A possible output solution file for the previously constructed example problem is illustrated below.</p>
+
+<pre><code>[Line #1: Solution #1 Corridor Row Subscripts] 1, 1, 1, 2, 3  
+[Line #2: Solution #1 Corridor Column Subscripts] 1, 2, 3, 3, 3
+[Line #3: Solution #1 Objective 1 Scores] 2, 3, 3, 5, 4
+[Line #4: Solution #1 Objective 2 Scores] 4, 1, 3, 6, 3
+[Line #5: Solution #2 Corridor Row Subscripts] ...
+[Line #6: Solution #2 Corridor Column Subscripts] ...
+[Line #7: Solution #2 Objective 1 Scores] ...
+[Line #8: Solution #2 Objective 2 Scores] ...
+...
+</code></pre>
+
+<p>This pattern is repeated for each output solution requested from the final population by the user. Solutions are automatically sorted by fitness score such that the first solution is the best, the second is the second best, etc.  </p>
 
 <h2>
 <a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>Author</h2>
