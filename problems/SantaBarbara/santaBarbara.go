@@ -11,12 +11,19 @@ import (
 	"github.com/ericdfournier/corridor"
 )
 
-func main() {
+func init() {
+
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// set max processing units
 	cpuCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpuCount)
+
+	///////////////////////////////////////////////////////////////////////////////////
+
+}
+
+func main() {
 
 	///////////////////////////////////////////////////////////////////////////////////
 
@@ -47,8 +54,8 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize parameters
-	populationSize := 100
-	evolutionSize := 100
+	populationSize := 100000
+	evolutionSize := 1000
 	randomness := 1.0
 
 	// generate parameter structure
@@ -70,7 +77,7 @@ func main() {
 	///////////////////////////////////////////////////////////////////////////////////
 
 	// initialize elite count
-	eliteCount := 2
+	eliteCount := 100
 
 	// extract elite set
 	eliteSet := corridor.NewEliteSet(eliteCount, <-searchEvolution.Populations, searchParameters)
