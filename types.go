@@ -84,3 +84,10 @@ type Evolution struct {
 	Populations     chan *Population
 	FitnessGradient []float64
 }
+
+/*  walkers are used in the concurrency model which facilitates
+the parallel problem initializations */
+type Walker struct {
+	Id       uuid.UUID
+	QuitChan chan bool
+}

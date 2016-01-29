@@ -159,6 +159,17 @@ func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) 
 	}
 }
 
+// new walker initialization function
+func NewWalker() Walker {
+
+	// create, and return the walker
+	walker := Walker{
+		Id:       uuid.NewV4(),
+		QuitChan: make(chan bool)}
+
+	return walker
+}
+
 // new population initialization function
 func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) *Population {
 
@@ -168,29 +179,18 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 	// initialize communication channel
 	chr := make(chan *Chromosome, searchParameters.PopSize)
 
-	// initialize new empty chromosome before entering loop
-	newChrom := NewEmptyChromosome(searchDomain, searchObjectives)
+	// initialize walk request channel
+	var walkQueue = make(chan bool, searchParameters.PopSize)
 
-	// initialize concurrency limit channel
-	conc := make(chan bool, searchParameters.ConSize)
-
-	// generate chromosomes via go routines
-	for i := 0; i < searchParameters.PopSize; i++ {
-
-		// write to control channel
-		conc <- true
-
-		// launch chromosome initialization go routines
-		go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) {
-			defer func() { <-conc }()
-			newChrom = NewChromosome(searchDomain, searchParameters, searchObjectives)
-			chr <- ChromosomeFitness(newChrom, searchObjectives)
-		}(searchDomain, searchParameters, searchObjectives)
+	// populate walkqueue channel
+	for j := 0; j < searchParameters.PopSize; j++ {
+		walkQueue <- true
 	}
 
-	// cap parallelism at concurrency limit
-	for j := 0; j < cap(conc); j++ {
-		conc <- true
+	// generate chromosomes via go routines
+	for i := 0; i < searchParameters.ConSize; i++ {
+		walker := NewWalker()
+		walker.Start(searchDomain, searchParameters, searchObjectives, chr, walkQueue)
 	}
 
 	// initialize fitness placeholder
