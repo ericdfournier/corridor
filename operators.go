@@ -580,58 +580,20 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 	// calculate the total number of chromosomes that are to receive mutations
 	mutations := int(math.Floor(float64(inputParameters.PopSize) * float64(inputParameters.MutaFrc)))
 
-	// seed random number generator
-	rand.Seed(time.Now().UnixNano())
+	// create buffered mutation counter channel
+	mutationQueue := make(chan bool, mutations)
 
-	// initialize mutation selection test variable and iteration counter variable
-	var iter int
-	var mutTest int
-
-	// initialize throttle size
-	conc := make(chan bool, inputParameters.ConSize)
-
-	// initialize selection loop
-	for j := 0; j < inputParameters.PopSize; j++ {
-
-		// get current chromosome from channel
-		curChrom := <-inputChromosomes
-
-		// generate random mutation selection binary integer
-		mutTest = rand.Intn(2)
-
-		// screen on mutation indices
-		if mutTest == 1 {
-
-			// write to control channel
-			conc <- true
-
-			// launch go routines
-			go func(curChrom *Chromosome, inputDomain *Domain, inputParameters *Parameters, inputObjectives *MultiObjective) {
-				defer func() { <-conc }()
-				curChrom = ChromosomeMultiMutation(curChrom, inputDomain, inputParameters, inputObjectives)
-			}(curChrom, inputDomain, inputParameters, inputObjectives)
-
-			// update iterator
-			iter += 1
-
-			// return current chromosome back to channel
-			inputChromosomes <- curChrom
-
-		} else {
-
-			// return current chromosome back to channel
-			inputChromosomes <- curChrom
-		}
-
-		// break once the desired number of mutants has been generated
-		if iter == mutations {
-			break
-		}
+	// populate mutation queue
+	for i := 0; i < mutations; i++ {
+		mutationQueue <- true
 	}
 
-	// cap parallelism at concurrency limit
-	for j := 0; j < cap(conc); j++ {
-		conc <- true
+	// initialize selection loop
+	for j := 0; j < inputParameters.ConSize; j++ {
+
+		mutator := NewMutator(inputDomain, inputParameters, inputObjectives)
+		mutator.Start(inputChromosomes, mutationQueue)
+
 	}
 
 	// return selection channel

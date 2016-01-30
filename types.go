@@ -94,5 +94,10 @@ type Walker struct {
 	SearchObjectives *MultiObjective
 }
 
-/* TODO mutators are used to generate point location mutations in
+/* mutators are used to generate point location mutations in
 parallel for a subset of chromosomes within a population */
+type Mutator struct {
+	SearchDomain     *Domain
+	SearchParameters *Parameters
+	SearchObjectives *MultiObjective
+}

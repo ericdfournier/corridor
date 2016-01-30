@@ -249,6 +249,19 @@ func NewEmptyEvolution(searchParameters *Parameters) *Evolution {
 	}
 }
 
+// new mutator initialization function
+func NewMutator(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) Mutator {
+
+	// create, and return the walker
+	mutator := Mutator{
+		SearchDomain:     searchDomain,
+		SearchParameters: searchParameters,
+		SearchObjectives: searchObjectives,
+	}
+
+	return mutator
+}
+
 // new evolution initialization function
 func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObjectives *MultiObjective) *Evolution {
 
