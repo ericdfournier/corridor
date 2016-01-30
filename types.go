@@ -88,6 +88,11 @@ type Evolution struct {
 /*  walkers are used in the concurrency model which facilitates
 the parallel problem initializations */
 type Walker struct {
-	Id       uuid.UUID
-	QuitChan chan bool
+	Id               uuid.UUID
+	SearchDomain     *Domain
+	SearchParameters *Parameters
+	SearchObjectives *MultiObjective
 }
+
+/* TODO mutators are used to generate point location mutations in
+parallel for a subset of chromosomes within a population */

@@ -4,11 +4,11 @@ license that can be found in the LICENSE file. */
 
 package corridor
 
-// start walker method
-func (w Walker) Start(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, chr chan *Chromosome, walkQueue chan bool) {
+// walker method to initialize a parallel pseudo random walk
+func (w Walker) Start(chr chan *Chromosome, walkQueue chan bool) {
 
 	// Initialize goroutine
-	go func(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective, chr chan *Chromosome, walkQueue chan bool) {
+	go func(chr chan *Chromosome, walkQueue chan bool) {
 
 		// enter unbounded for/select loop
 		for {
@@ -18,13 +18,13 @@ func (w Walker) Start(searchDomain *Domain, searchParameters *Parameters, search
 			if walk == true {
 
 				// initialize new empty chromosome
-				newChrom := NewEmptyChromosome(searchDomain, searchObjectives)
+				newChrom := NewEmptyChromosome(w.SearchDomain, w.SearchObjectives)
 
 				// start walk to generate new chromosome
-				newChrom = NewChromosome(searchDomain, searchParameters, searchObjectives)
+				newChrom = NewChromosome(w.SearchDomain, w.SearchParameters, w.SearchObjectives)
 
 				// compute chromosome fitness and return to channel
-				chr <- ChromosomeFitness(newChrom, searchObjectives)
+				chr <- ChromosomeFitness(newChrom, w.SearchObjectives)
 
 			} else if walk == false {
 
@@ -33,5 +33,5 @@ func (w Walker) Start(searchDomain *Domain, searchParameters *Parameters, search
 				return
 			}
 		}
-	}(searchDomain, searchParameters, searchObjectives, chr, walkQueue)
+	}(chr, walkQueue)
 }

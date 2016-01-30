@@ -160,12 +160,18 @@ func NewEmptyChromosome(searchDomain *Domain, searchObjectives *MultiObjective) 
 }
 
 // new walker initialization function
-func NewWalker() Walker {
+func NewWalker(searchDomain *Domain, searchParameters *Parameters, searchObjectives *MultiObjective) Walker {
+
+	// generate uuid
+	uuid := uuid.NewV4()
 
 	// create, and return the walker
 	walker := Walker{
-		Id:       uuid.NewV4(),
-		QuitChan: make(chan bool)}
+		Id:               uuid,
+		SearchDomain:     searchDomain,
+		SearchParameters: searchParameters,
+		SearchObjectives: searchObjectives,
+	}
 
 	return walker
 }
@@ -189,8 +195,8 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 
 	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.ConSize; i++ {
-		walker := NewWalker()
-		walker.Start(searchDomain, searchParameters, searchObjectives, chr, walkQueue)
+		walker := NewWalker(searchDomain, searchParameters, searchObjectives)
+		walker.Start(chr, walkQueue)
 	}
 
 	// initialize fitness placeholder
