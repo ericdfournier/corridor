@@ -259,6 +259,7 @@ func NewMutator(searchDomain *Domain, searchParameters *Parameters, searchObject
 		SearchObjectives: searchObjectives,
 	}
 
+	// return output
 	return mutator
 }
 

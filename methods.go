@@ -41,6 +41,8 @@ func (w Walker) Start(chr chan *Chromosome, walkQueue chan bool) {
 	}()
 }
 
+// TODO Need to verify that sufficient mutations are taking place!!!
+
 // mutator method to initialize a parallel mutation procedure
 func (m Mutator) Start(chr chan *Chromosome, mutationQueue chan bool) {
 
@@ -76,6 +78,7 @@ func (m Mutator) Start(chr chan *Chromosome, mutationQueue chan bool) {
 				// no tokens available
 			} else if mutate == false {
 
+				// close the mutation queue and terminate the goroutine
 				close(mutationQueue)
 				return
 			}
