@@ -111,7 +111,7 @@ func BenchmarkLarge(b *testing.B) {
 		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
-		populationSize int = 10000
+		populationSize int = 100000
 	)
 
 	// initialize domain
