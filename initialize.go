@@ -10,6 +10,7 @@ import (
 	"math"
 	"runtime"
 	"sort"
+	"sync"
 
 	"github.com/gonum/diff/fd"
 	"github.com/gonum/matrix/mat64"
@@ -193,11 +194,17 @@ func NewPopulation(identifier int, searchDomain *Domain, searchParameters *Param
 		walkQueue <- true
 	}
 
+	// initialize wait group
+	var wg sync.WaitGroup
+
 	// generate chromosomes via go routines
 	for i := 0; i < searchParameters.ConSize; i++ {
 		walker := NewWalker(searchDomain, searchParameters, searchObjectives)
-		walker.Start(chr, walkQueue)
+		walker.Start(chr, walkQueue, wg)
 	}
+
+	// wait for walkers to finish
+	wg.Wait()
 
 	// initialize fitness placeholder
 	meanFit := make([]float64, searchObjectives.ObjectiveCount)

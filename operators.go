@@ -7,6 +7,7 @@ package corridor
 import (
 	"math"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/gonum/matrix/mat64"
@@ -585,16 +586,28 @@ func PopulationMutation(inputChromosomes chan *Chromosome, inputParameters *Para
 
 	// populate mutation queue
 	for i := 0; i < mutations; i++ {
+
+		// write tokens
 		mutationQueue <- true
+
 	}
+
+	// initialize wait group
+	var wg sync.WaitGroup
 
 	// initialize selection loop
 	for j := 0; j < inputParameters.ConSize; j++ {
 
+		// generate new mutator
 		mutator := NewMutator(inputDomain, inputParameters, inputObjectives)
-		mutator.Start(inputChromosomes, mutationQueue)
+
+		// start mutator go routines
+		mutator.Start(inputChromosomes, mutationQueue, wg)
 
 	}
+
+	// wait for mutators to finish
+	wg.Wait()
 
 	// return selection channel
 	return inputChromosomes

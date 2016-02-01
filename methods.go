@@ -6,21 +6,30 @@ package corridor
 
 import (
 	"math/rand"
+	"sync"
 	"time"
 )
 
 // walker method to initialize a parallel pseudo random walk
-func (w Walker) Start(chr chan *Chromosome, walkQueue chan bool) {
+func (w Walker) Start(chr chan *Chromosome, walkQueue chan bool, wg sync.WaitGroup) {
+
+	// add go routine to waitgroup
+	wg.Add(1)
 
 	// initialize goroutine
 	go func() {
 
+		// close on completion
+		defer wg.Done()
+
 		// enter unbounded for/select loop
 		for {
-			// pull walk token
-			walk := <-walkQueue
 
-			if walk == true {
+			// select on walk queue token availability
+			select {
+
+			// tokens available
+			case <-walkQueue:
 
 				// initialize new empty chromosome
 				newChrom := NewEmptyChromosome(w.SearchDomain, w.SearchObjectives)
@@ -31,25 +40,29 @@ func (w Walker) Start(chr chan *Chromosome, walkQueue chan bool) {
 				// compute chromosome fitness and return to channel
 				chr <- ChromosomeFitness(newChrom, w.SearchObjectives)
 
-			} else if walk == false {
+			// tokens not available
+			default:
 
-				close(walkQueue)
-
+				// terminate go routine
 				return
 			}
 		}
 	}()
 }
 
-// TODO Need to verify that sufficient mutations are taking place!!!
-
 // mutator method to initialize a parallel mutation procedure
-func (m Mutator) Start(chr chan *Chromosome, mutationQueue chan bool) {
+func (m Mutator) Start(chr chan *Chromosome, mutationQueue chan bool, wg sync.WaitGroup) {
+
+	// add go routine to waitgroup
+	wg.Add(1)
 
 	// initialize goroutine
 	go func() {
 
-		// initialize ubounded for loop
+		// close on completion
+		defer wg.Done()
+
+		// enter ubounded for/select loop
 		for {
 
 			// seed random number generator
@@ -58,28 +71,41 @@ func (m Mutator) Start(chr chan *Chromosome, mutationQueue chan bool) {
 			// generate random mutation selection binary integer
 			mutTest := rand.Intn(2)
 
-			// initialize token
-			mutate := <-mutationQueue
+			// pull chromosomes
+			curChrom := <-chr
 
-			// mutation selected and token available
-			if mutTest == 1 && mutate == true {
+			// select on mutation token availability
+			select {
 
-				// pull chromosomes and generate mutation
-				curChrom := <-chr
-				curChrom = ChromosomeMultiMutation(curChrom, m.SearchDomain, m.SearchParameters, m.SearchObjectives)
+			// tokens available
+			case mutate := <-mutationQueue:
+
+				// muation desired
+				if mutTest == 1 {
+
+					// mutate current chromosome
+					curChrom = ChromosomeMultiMutation(curChrom, m.SearchDomain, m.SearchParameters, m.SearchObjectives)
+
+					// return mutant to channel
+					chr <- curChrom
+
+					// mutation not desired
+				} else if mutTest != 1 {
+
+					// return token to channel
+					mutationQueue <- mutate
+
+					// return chromosome to channel
+					chr <- curChrom
+				}
+
+			// no tokens available
+			default:
+
+				// return chromosome to channel
 				chr <- curChrom
 
-				// mutation not selected and token available
-			} else if mutTest != 1 && mutate == true {
-
-				// return token to channel and exit
-				mutationQueue <- mutate
-
-				// no tokens available
-			} else if mutate == false {
-
-				// close the mutation queue and terminate the goroutine
-				close(mutationQueue)
+				// terminate go routine
 				return
 			}
 		}
