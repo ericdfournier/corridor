@@ -202,7 +202,7 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 	}
 
 	// print sample size
-	fmt.Println("Sample Size (N) = 100")
+	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
 	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
@@ -275,7 +275,7 @@ func BenchmarkMonteCarloMedium(b *testing.B) {
 	}
 
 	// print sample size
-	fmt.Println("Sample Size (N) = 100")
+	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
 	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
@@ -348,7 +348,7 @@ func BenchmarkMonteCarloLarge(b *testing.B) {
 	}
 
 	// print sample size
-	fmt.Println("Sample Size (N) = 100")
+	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
 	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
