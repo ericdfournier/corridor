@@ -6,8 +6,10 @@ package corridor
 
 import (
 	"fmt"
+	"github.com/gonum/stat"
 	"runtime"
 	"testing"
+	"time"
 )
 
 // parallel small problem benchmark
@@ -24,6 +26,7 @@ func BenchmarkSmall(b *testing.B) {
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 1000
+		sampleCount    int = 100
 	)
 
 	// initialize domain
@@ -37,22 +40,40 @@ func BenchmarkSmall(b *testing.B) {
 	sampleParameters := NewSampleParameters(sampleDomain)
 	sampleParameters.PopSize = populationSize
 
-	// evolve populations
-	toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
+	// initialize results slices
+	aggMeanFitnesses := make([]float64, sampleCount)
+	runtimes := make([]float64, sampleCount)
 
-	// extract output population
-	finalPop := <-toyEvolution.Populations
+	// start sample runs
+	for i := 0; i < sampleCount; i++ {
 
-	// view output population
-	ViewPopulation(sampleDomain, sampleParameters, finalPop)
+		// start clock
+		start := time.Now()
 
-	// view sample chromosome
-	ViewChromosome(sampleDomain, sampleParameters, <-finalPop.Chromosomes)
+		// generate evolution
+		toyEvolution := NewEvolution(sampleParameters, sampleDomain, sampleObjectives)
 
-	// print top individual fitness
-	fmt.Println("Population Mean Fitness =")
-	fmt.Println(finalPop.MeanFitness)
+		// write runtime
+		runtimes[i] = time.Since(start).Seconds()
+
+		// extract final output population
+		finalPop := <-toyEvolution.Populations
+
+		// write aggregate mean fitness
+		aggMeanFitnesses[i] = finalPop.AggregateMeanFitness
+
+	}
+
+	// print mean aggregate fitness
+	fmt.Println("Mean Population Aggregate Fitnesses =")
+	fmt.Println(stat.Mean(aggMeanFitnesses, nil))
+
+	// print mean runtimes
+	fmt.Println("Mean Runtime in Seconds")
+	fmt.Println(stat.Mean(runtimes, nil))
 }
+
+// TODO UPDATE BENCHMARKS TO MONTE CARLO SAMPLING FOR ALL!!!
 
 // medium problem benchmark
 func BenchmarkMedium(b *testing.B) {
