@@ -21,19 +21,17 @@ func BenchmarkSingleSmall(b *testing.B) {
 
 	// initialize integer constants
 	const (
-		xDim           int = 20
-		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 1000
 	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain := CsvToDomain("./samples/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -65,19 +63,17 @@ func BenchmarkSingleMedium(b *testing.B) {
 
 	// initialize integer constants
 	const (
-		xDim           int = 20
-		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 10000
 	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain := CsvToDomain("./samples/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -109,19 +105,17 @@ func BenchmarkSingleLarge(b *testing.B) {
 
 	// initialize integer constants
 	const (
-		xDim           int = 20
-		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
-		populationSize int = 10000
+		populationSize int = 100000
 	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain := CsvToDomain("./samples/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -153,8 +147,6 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 
 	// initialize integer constants
 	const (
-		xDim           int = 20
-		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 1000
@@ -162,11 +154,11 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain := CsvToDomain("./samples/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -205,7 +197,7 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
-	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
+	fmt.Printf("Mean Population Aggregate Fitnesses | Minimum Fitness = %v \n | 0", stat.Mean(aggMeanFitnesses, nil))
 
 	// pritn standard deviation of aggregate fitness
 	fmt.Printf("Standard Deviation of Aggregate Fitnesses = %v \n", stat.StdDev(aggMeanFitnesses, nil))
@@ -226,8 +218,6 @@ func BenchmarkMonteCarloMedium(b *testing.B) {
 
 	// initialize integer constants
 	const (
-		xDim           int = 20
-		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 10000
@@ -235,11 +225,11 @@ func BenchmarkMonteCarloMedium(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain := CsvToDomain("./samples/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -278,7 +268,7 @@ func BenchmarkMonteCarloMedium(b *testing.B) {
 	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
-	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
+	fmt.Printf("Mean Population Aggregate Fitnesses | Minimum Fitness = %v \n | 0", stat.Mean(aggMeanFitnesses, nil))
 
 	// pritn standard deviation of aggregate fitness
 	fmt.Printf("Standard Deviation of Aggregate Fitnesses = %v \n", stat.StdDev(aggMeanFitnesses, nil))
@@ -299,8 +289,6 @@ func BenchmarkMonteCarloLarge(b *testing.B) {
 
 	// initialize integer constants
 	const (
-		xDim           int = 20
-		yDim           int = 20
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 100000
@@ -308,11 +296,11 @@ func BenchmarkMonteCarloLarge(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := NewSampleDomain(xDim, yDim)
+	sampleDomain := CsvToDomain("./samples/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := NewSampleObjectives(sampleDomain.Rows, sampleDomain.Cols, objectiveCount)
+	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -351,7 +339,7 @@ func BenchmarkMonteCarloLarge(b *testing.B) {
 	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
-	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
+	fmt.Printf("Mean Population Aggregate Fitnesses | Minimum Fitness = %v \n | 0", stat.Mean(aggMeanFitnesses, nil))
 
 	// pritn standard deviation of aggregate fitness
 	fmt.Printf("Standard Deviation of Aggregate Fitnesses = %v \n", stat.StdDev(aggMeanFitnesses, nil))
