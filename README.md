@@ -6,7 +6,9 @@
 
 The project is hosted as a publicly available GitHub repository. Providing that your local client GOPATH and GOROOT variables have been previously defined, the repository can be cloned and built using the following single shell command:
 
+````
 $ go get github.com/ericdfournier/corridor
+````
 
 ##Description##
 
