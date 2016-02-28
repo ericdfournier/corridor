@@ -22,11 +22,13 @@ The search domain should be encoded in a binary format with cells in the feasibl
 
 searchDomain.csv
 
+````
 0, 0, 0, 0, 0,
 0, 1, 1, 1, 0,
 0, 1, 1, 1, 0,
 0, 1, 1, 1, 0,
 0, 0, 0, 0, 0;
+````
 
 ###Example Search Objectives###
 
@@ -34,19 +36,23 @@ The user should note that the objective values for cells that are outside of the
 
 objective1.csv
 
+````
 $ 25, 25, 25, 25, 25,
 $ 25, 2, 3, 3, 25,
 $ 25, 1, 2, 5, 25,
 $ 25, 1, 1, 4, 25,
 $ 25, 25, 25, 25, 25;
+````
 
 objective2.csv
 
-$ 25, 25, 25, 25, 25,
-$ 25, 4, 1, 3, 25,
-$ 25, 5, 3, 6, 25,
-$ 25, 2, 1, 3, 25,
-$ 25, 25, 25, 25, 25;
+````
+25, 25, 25, 25, 25,
+25, 4, 1, 3, 25,
+25, 5, 3, 6, 25,
+25, 2, 1, 3, 25,
+25, 25, 25, 25, 25;
+````
 
 ###Example Source and Destination Subscripts###
 
