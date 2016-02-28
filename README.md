@@ -101,7 +101,7 @@ The second benchmark suite is a monte carlo based simulation which takes are par
 
 ##Single Benchmark Examples##
 
-A "Single"" sample test suite has been built into the package which allows the user to benchmark both the runtime performance of the algorithm as well as the output solution quality under various parameter settings. This is done in the following set of examples using a contrived problem specification in which there is a single known, globally optimal solution, set amidst a decision space containing randomly distributed costs. This globally optimal solution is plotted below:
+A "Single" sample test suite has been built into the package which allows the user to benchmark both the runtime performance of the algorithm as well as the output solution quality under various parameter settings. This is done in the following set of examples using a contrived problem specification in which there is a single known, globally optimal solution, set amidst a decision space containing randomly distributed costs. This globally optimal solution, relative to the start (S) and destination (D) points, is plotted below:
 
 Globally Optimal Solution, F = [0.0, 0.0, 0.0]:
 
