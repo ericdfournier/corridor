@@ -38,9 +38,9 @@ objective1.csv
 
 ````
 $ 25, 25, 25, 25, 25,
-$ 25, 2, 3, 3, 25,
-$ 25, 1, 2, 5, 25,
-$ 25, 1, 1, 4, 25,
+$ 25,  2,  3,  3, 25,
+$ 25,  1,  2,  5, 25,
+$ 25,  1,  1,  4, 25,
 $ 25, 25, 25, 25, 25;
 ````
 
@@ -48,9 +48,9 @@ objective2.csv
 
 ````
 25, 25, 25, 25, 25,
-25, 4, 1, 3, 25,
-25, 5, 3, 6, 25,
-25, 2, 1, 3, 25,
+25,  4,  1,  3, 25,
+25,  5,  3,  6, 25,
+25,  2,  1,  3, 25,
 25, 25, 25, 25, 25;
 ````
 
@@ -60,12 +60,15 @@ The source and destination subscript files should be formatted to contain, separ
 
 sourceSubs.csv
 
+````
 1,1
+````
 
 destinationSubs.csv
 
+````
 3,3
-
+````
 ##Output Format##
 
 If the Algorithm fails to converge upon a solution within the given iteration limit, an error message will be printed to the console and a basic log.cv file will be written to the local directory. This log file contains information about the computational runtime and the total number of evolutionary iterations that were executed (which in this case will be equal to the maximum number of evolutions specified by the user).
@@ -76,6 +79,7 @@ If the Algorithm successfully converges upon a solution within the given iterati
 
 A possible output solution file for the previously constructed example problem is illustrated below.
 
+````
 [Line #1: Solution #1 Corridor Row Subscripts] 1, 1, 1, 2, 3;
 [Line #2: Solution #1 Corridor Column Subscripts] 1, 2, 3, 3, 3;
 [Line #3: Solution #1 Objective 1 Scores] 2, 3, 3, 5, 4;
@@ -85,6 +89,7 @@ A possible output solution file for the previously constructed example problem i
 [Line #7: Solution #2 Objective 1 Scores] ...
 [Line #8: Solution #2 Objective 2 Scores] ...
 ...
+````
 
 This pattern is repeated for each output solution requested from the final population by the user. Solutions are automatically sorted by fitness score such that the first solution is the best, the second is the second best, etc.
 
@@ -100,6 +105,7 @@ A sample test suite has been built into the package which allows the user to ben
 
 Globally Optimal Solution, F = [0.0, 0.0, 0.0]:
 
+````
 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
@@ -124,15 +130,19 @@ Globally Optimal Solution, F = [0.0, 0.0, 0.0]:
 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+````
 
 ###Small Population Size###
 
 Running the benchmark with a Small population size [P = 1,000], as in the following command, will deliver the following output. Note the characteristics of the population at convergence reveals that a near optimal solution was found. 
 
+````
 $ go test -bench=.SingleSmall
+````
 
 Final Population Distribution at Convergence [Small Population]:
 
+````
 [   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0]
 [   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0]
 [   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0]
@@ -157,10 +167,13 @@ Final Population Distribution at Convergence [Small Population]:
 [   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0]
 [   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0]
 [   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0]
+````
 
 For this particular Small sized benchmark run, the mean fitness values for all of the individual solutions in the final output population were:
 
-$ F = [8.235, 39.484, 83.719]
+````
+F = [8.235, 39.484, 83.719]
+````
 
 56 Evolutions were required to achieve convergence and the elapsed runtime, on this particular machine, was 3.84 seconds.
 
@@ -168,10 +181,13 @@ $ F = [8.235, 39.484, 83.719]
 
 Running the benchmark with a Medium population size [P = 10,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved, and in some cases may deliver the globally optimal solution.
 
+````
 $ go test -bench=.SingleMedium
+````
 
 Final Population Distribution at Convergence [Medium Population]:
 
+````
 [    0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0]
 [    0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0]
 [    0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0]
@@ -196,10 +212,13 @@ Final Population Distribution at Convergence [Medium Population]:
 [    0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0]
 [    0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0]
 [    0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0]
+````
 
 For this particular Medium sized benchmark run the mean fitness values for all of the individual solutions in the final output population were:
 
+````
 F = [4.0409, 6.09, 23.1304]
+````
 
 48 Evolutions were required to achieve convergence and the elapsed runtime, on this particular machine, was 34.305 seconds.
 
@@ -207,10 +226,13 @@ F = [4.0409, 6.09, 23.1304]
 
 Finally, running the benchmark with a Large population size [P = 100,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved to the point in which it will nearly guarantee the delivery of the globally optimal solution for this problems specification.
 
+````
 $ go test -bench=.SingleMedium
+````
 
 Final Population Distribution at Convergence [Large Population]:
 
+````
 [     0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0]
 [     0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0]
 [     0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0]
@@ -235,10 +257,13 @@ Final Population Distribution at Convergence [Large Population]:
 [     0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0]
 [     0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0]
 [     0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0]
+````
 
 For this particular Large sized benchmark run the mean fitness values for all of the individual solutions in the final output population were:
 
+````
 F = [0.01451, 0.02635, 0.04418]
+````
 
 58 Evolutions were required to achieve convergence and the elapsed runtime, on this particular machine, 375.358 seconds.
 
