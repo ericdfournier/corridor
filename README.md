@@ -95,13 +95,11 @@ This pattern is repeated for each output solution requested from the final popul
 
 #Benchmarking#
 
-Two benchmark suites have been developed for this package. The first in a single run benchmark. Which evaluates the performance of the algorithm for a contrived problem specification on a particular machine given a single set of evolutionary runtime parameters. This "Single" suite is usefull for getting a feel for the scaling relationships between population size, runtime, and solution quality. 
-
-The second benchmark suite is a monte carlo based simulation which takes are particular population size setting and uses repeated solution runs to deliver an estimate of the expected variation in average solution qaulity between runs due to the stochastic nature of the evolutionary optimization process. Sample usage of both benchmark suites are provided below.
+Two benchmark suites have been developed for this package. The first in a single run benchmark. Which evaluates the performance of the algorithm for a contrived problem specification on a particular machine given a single set of evolutionary runtime parameters. This "Single" suite is usefull for getting a feel for the scaling relationships between population size, runtime, and solution quality. The second benchmark suite is a Monte Carlo based simulation which takes are particular population size setting and uses repeated solution runs to deliver an estimate of the expected variation in average solution qaulity between runs due to the stochastic nature of the evolutionary optimization process. Sample usage of both benchmark suites are provided below.
 
 ##Single Benchmark Examples##
 
-A "Single" sample test suite has been built into the package which allows the user to benchmark both the runtime performance of the algorithm as well as the output solution quality under various parameter settings. This is done in the following set of examples using a contrived problem specification in which there is a single known, globally optimal solution, set amidst a decision space containing randomly distributed costs. This globally optimal solution, relative to the start (S) and destination (D) points, is plotted below:
+The "Single" sample test suite allows the user to benchmark both the runtime performance of the algorithm as well as the output solution quality under various parameter settings. This is done in the following set of examples using a contrived problem specification in which there is a single known, globally optimal solution, set amidst a decision space containing randomly distributed costs. This globally optimal solution, relative to the start (S) and destination (D) points, is plotted below:
 
 Globally Optimal Solution, F = [0.0, 0.0, 0.0]:
 
@@ -273,7 +271,7 @@ With these three single benchmark run examples, note the roughly linear scaling 
 
 ##Monte Carlo Benchmark Example##
 
-A "MonteCarlo" sample test suite has also been built into the corridor package for evaluating the expected distribution of runtimes between multiple separate solution runs for the same problem specification. The Monte Carlo benchmark suite repeats the single benchmark solution process described below for a fixed number of [N = 100] simulation runs. In the process, it compiles statistics about the mean and standard deviation of average fitness values for the set of final solution populations generated during the 100 simulation runs. At conclusions, it prints these descriptive statistics to the terminal.
+The "MonteCarlo" sample test suite allows the user to evaluate the expected distribution of runtimes between multiple separate solution runs for the same problem specification. The Monte Carlo benchmark suite repeats the single benchmark solution process described below for a fixed number of [N = 100] simulation runs. In the process, it compiles statistics about the mean and standard deviation of average fitness values for the set of final solution populations generated during the 100 simulation runs. At conclusions, it prints these descriptive statistics to the terminal.
 
 ###Small Population Size###
 
