@@ -2,7 +2,7 @@
 
 *corridor* is library containing Go language functions for the implementation of a concurrent genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more measures of cost. The library requires that the user provide a predefined search domain, objective function(s), and input parameters specifying the nature of the problem (i.e. desired start and destination locations).
 
-##Installation##
+#Installation#
 
 The project is hosted as a publicly available GitHub repository. Providing that your local client GOPATH and GOROOT variables have been previously defined, the repository can be cloned and built using the following single shell command:
 
@@ -10,15 +10,15 @@ The project is hosted as a publicly available GitHub repository. Providing that 
 $ go get github.com/ericdfournier/corridor
 ````
 
-##Description##
+#Description#
 
 The work contained in this library is based upon the MOGADOR algorithm that was first introduced by Zhang & Armstrong (2008) in: http://www.envplan.com/abstract.cgi?id=b32167 . It also contains additional modifications to the initialization routine introduced by Fournier (2015) in: http://epb.sagepub.com/content/early/2015/11/30/0265813515618562.abstract .
 
-##Input Format##
+#Input Format#
 
 All inputs must be formatted as comma delimited value (CSV) files.
 
-###Example Search Domain###
+##Example Search Domain##
 
 The search domain should be encoded in a binary format with cells in the feasible search domain set to a value of 1 and cells outside of the feasible search domain set to a value of 0 as below. The user need not generate a "buffer zone" of zero encoded cells surrounding the feasible search domain as this is done automatically by the algorithm at runtime.
 
@@ -32,7 +32,7 @@ $ cat searchDomain.csv
 0, 0, 0, 0, 0;
 ````
 
-###Example Search Objectives###
+##Example Search Objectives##
 
 The user should note that the objective values for cells that are outside of the search domain will be automatically set to be equal to an arbitrarily high value. Specifically, the objective scores for the locations which are outside of the feasible search domain values are set to be equal to the total number of cells (feasible and otherwise) contained within the entire search domain. For an example illustration of how this work, please see below.
 
@@ -56,7 +56,7 @@ $ cat objective2.csv
 25, 25, 25, 25, 25;
 ````
 
-###Example Source and Destination Subscripts###
+##Example Source and Destination Subscripts##
 
 The source and destination subscript files should be formatted to contain, separately, the row and column subscripts corresponding to the location of the either the source or the destination within the context of the input search domain grid. These subscripts should be stored as two comma separated values on a single line of the input .csv file as below.
 
@@ -71,13 +71,13 @@ $ cat destinationSubs.csv
 
 3,3
 ````
-##Output Format##
+#Output Format#
 
 If the Algorithm fails to converge upon a solution within the given iteration limit, an error message will be printed to the console and a basic log.cv file will be written to the local directory. This log file contains information about the computational runtime and the total number of evolutionary iterations that were executed (which in this case will be equal to the maximum number of evolutions specified by the user).
 
 If the Algorithm successfully converges upon a solution within the given iteration limit, a success message will be printed to the console and two files will be written to the local directory. The first is a log.csv file which contains information about the same information quoted previously. The second is an output solution file which contains the row and column subscripts for each step along the solution corridor. Additionally, subsequent rows within this output file will contain the individual, stepwise, objective scores for each of the objectives, for each step along the solution corridor.
 
-###Example Output###
+##Example Output##
 
 A possible output solution file for the previously constructed example problem is illustrated below.
 
@@ -97,7 +97,7 @@ This pattern is repeated for each output solution requested from the final popul
 
 #Benchmarking#
 
-Two benchmark suites have been developed for this package. The first in a single run benchmark. Which evaluates the performance of the algorithm for a contrived problem specification on a particular machine given a single set of evolutionary runtime parameters. This "Single" suite is usefull for getting a feel for the scaling relationships between population size, runtime, and solution quality. The second benchmark suite is a Monte Carlo based simulation which takes are particular population size setting and uses repeated solution runs to deliver an estimate of the expected variation in average solution qaulity between runs due to the stochastic nature of the evolutionary optimization process. Sample usage of both benchmark suites are provided below.
+Two benchmark suites have been developed for this package. The first is a single run benchmark which evaluates the performance of the algorithm for a contrived problem specification on a particular machine given a single set of evolutionary runtime parameters. This "Single" suite is usefull for getting a feel for the scaling relationships between population size, runtime, and solution quality. The second benchmark suite is a Monte Carlo based simulation which takes are particular population size setting and uses repeated solution runs. This "MonteCarlo" suite is useful for generating an estimate of the expected variation in average solution qaulity between runs due to the stochastic nature of the evolutionary optimization process. Sample usage of both benchmark suites are provided below.
 
 ##Single Benchmark Examples##
 
@@ -134,7 +134,7 @@ Globally Optimal Solution, F = [0.0, 0.0, 0.0]:
 
 ###Small Population Size###
 
-Running the benchmark with a Small population size [P = 1,000], as in the following command, will deliver the following output. Note the characteristics of the population at convergence reveals that a near optimal solution was found. 
+Running the benchmark with a "Small" population size [P = 1,000], as in the following command, will deliver the following output. Note the characteristics of the population at convergence reveals that a near optimal solution was found. 
 
 ````
 $ go test -bench=.SingleSmall
@@ -179,7 +179,7 @@ F = [8.235, 39.484, 83.719]
 
 ### Medium Population Size###
 
-Running the benchmark with a Medium population size [P = 10,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved, and in some cases may deliver the globally optimal solution.
+Running the benchmark with a "Medium" population size [P = 10,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved, and in some cases may deliver the globally optimal solution.
 
 ````
 $ go test -bench=.SingleMedium
@@ -224,7 +224,7 @@ F = [4.0409, 6.09, 23.1304]
 
 ###Large Population Size###
 
-Finally, running the benchmark with a Large population size [P = 100,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved to the point in which it will nearly guarantee the delivery of the globally optimal solution for this problems specification.
+Finally, running the benchmark with a "Large" population size [P = 100,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved to the point in which it will nearly guarantee the delivery of the globally optimal solution for this problems specification.
 
 ````
 $ go test -bench=.SingleLarge
@@ -292,7 +292,7 @@ Standard Deviationof Runtimes in Seconds = 0.736894917206145
 
 ###Comments###
 
-The Monte Carlo simulations benchmark suite is useful in helping to determine the distribution of the quality of output solutions that can be expected from certain combinations of problem specifications and evolutionary parameter settings. Due to its long runtime however, it is not advocated for use in most basic package testing scenarios.
+The Monte Carlo simulations benchmark suite is useful in helping to determine the distribution of the quality of output solutions that can be expected from certain combinations of problem specifications and evolutionary parameter settings. Due the long runtimes however, it is not advocated for use in most basic package testing scenarios.
 
 #Author#
 
