@@ -1,6 +1,6 @@
 #Introduction#
 
-corridor is library containing Go language functions for the implementation of a concurrent genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more measures of cost. The library requires that the user provide a predefined search domain, objective function(s), and input parameters specifying the nature of the problem (i.e. desired start and destination locations).
+*corridor* is library containing Go language functions for the implementation of a concurrent genetic algorithm for the multi-objective corridor location problem. This problem involves finding the least cost connected pathway through a discrete search domain in which each location is characterized by one or more measures of cost. The library requires that the user provide a predefined search domain, objective function(s), and input parameters specifying the nature of the problem (i.e. desired start and destination locations).
 
 ##Installation##
 
