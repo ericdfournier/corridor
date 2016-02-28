@@ -20,9 +20,9 @@ All inputs must be formatted as comma delimited value (CSV) files.
 
 The search domain should be encoded in a binary format with cells in the feasible search domain set to a value of 1 and cells outside of the feasible search domain set to a value of 0 as below. The user need not generate a "buffer zone" of zero encoded cells surrounding the feasible search domain as this is done automatically by the algorithm at runtime.
 
-searchDomain.csv
-
 ````
+$ cat searchDomain.csv
+
 0, 0, 0, 0, 0,
 0, 1, 1, 1, 0,
 0, 1, 1, 1, 0,
@@ -34,19 +34,19 @@ searchDomain.csv
 
 The user should note that the objective values for cells that are outside of the search domain will be automatically set to be equal to an arbitrarily high value. Specifically, the objective scores for the locations which are outside of the feasible search domain values are set to be equal to the total number of cells (feasible and otherwise) contained within the entire search domain. For an example illustration of how this work, please see below.
 
-objective1.csv
+````
+$ cat objective1.csv
+
+25, 25, 25, 25, 25,
+25,  2,  3,  3, 25,
+25,  1,  2,  5, 25,
+25,  1,  1,  4, 25,
+25, 25, 25, 25, 25;
+````
 
 ````
-$ 25, 25, 25, 25, 25,
-$ 25,  2,  3,  3, 25,
-$ 25,  1,  2,  5, 25,
-$ 25,  1,  1,  4, 25,
-$ 25, 25, 25, 25, 25;
-````
+$ cat objective2.csv
 
-objective2.csv
-
-````
 25, 25, 25, 25, 25,
 25,  4,  1,  3, 25,
 25,  5,  3,  6, 25,
@@ -58,15 +58,15 @@ objective2.csv
 
 The source and destination subscript files should be formatted to contain, separately, the row and column subscripts corresponding to the location of the either the source or the destination within the context of the input search domain grid. These subscripts should be stored as two comma separated values on a single line of the input .csv file as below.
 
-sourceSubs.csv
-
 ````
+$ cat sourceSubs.csv
+
 1,1
 ````
 
-destinationSubs.csv
-
 ````
+$ cat destinationSubs.csv
+
 3,3
 ````
 ##Output Format##
@@ -99,9 +99,9 @@ Two benchmark suites have been developed for this package. The first in a single
 
 The second benchmark suite is a monte carlo based simulation which takes are particular population size setting and uses repeated solution runs to deliver an estimate of the expected variation in average solution qaulity between runs due to the stochastic nature of the evolutionary optimization process. Sample usage of both benchmark suites are provided below.
 
-##Single Benchmark##
+##Single Benchmark Examples##
 
-A sample test suite has been built into the package which allows the user to benchmark both the runtime performance of the algorithm as well as the output solution quality under various parameter settings. This is done in the following set of examples using a contrived problem specification in which there is a single known, globally optimal solution, set amidst a decision space containing randomly distributed costs. This globally optimal solution is plotted below:
+A "Single"" sample test suite has been built into the package which allows the user to benchmark both the runtime performance of the algorithm as well as the output solution quality under various parameter settings. This is done in the following set of examples using a contrived problem specification in which there is a single known, globally optimal solution, set amidst a decision space containing randomly distributed costs. This globally optimal solution is plotted below:
 
 Globally Optimal Solution, F = [0.0, 0.0, 0.0]:
 
@@ -227,7 +227,7 @@ F = [4.0409, 6.09, 23.1304]
 Finally, running the benchmark with a Large population size [P = 100,000], as in the following command, will deliver something like the following output. Here, the quality of the output solution has improved to the point in which it will nearly guarantee the delivery of the globally optimal solution for this problems specification.
 
 ````
-$ go test -bench=.SingleMedium
+$ go test -bench=.SingleLarge
 ````
 
 Final Population Distribution at Convergence [Large Population]:
@@ -265,13 +265,34 @@ For this particular Large sized benchmark run the mean fitness values for all of
 F = [0.01451, 0.02635, 0.04418]
 ````
 
-58 Evolutions were required to achieve convergence and the elapsed runtime, on this particular machine, 375.358 seconds.
+58 Evolutions were required to achieve convergence and the elapsed runtime, on this particular machine, was 375.358 seconds.
 
-##Monte Carlo Benchmark##
+###Comments###
 
-##Comments##
+With these three single benchmark run examples, note the roughly linear scaling of runtime with increased population size relative to the roughly linear improvement in mean output solution quality with population size. This is an explicit tradeoff of the genetic algorithm approach: larger populations take longer to achieve convergence yet are more likely to deliver globally optimal solutions.
 
-Note the roughly linear scaling of runtime with increased population size. Also note, the roughly linear improvement in mean output solution quality with population size. This is an explicit tradeoff: larger populations are more likely to deliver globally optimal solutions.
+##Monte Carlo Benchmark Example##
+
+A "MonteCarlo" sample test suite has also been built into the corridor package for evaluating the expected distribution of runtimes between multiple separate solution runs for the same problem specification. The Monte Carlo benchmark suite repeats the single benchmark solution process described below for a fixed number of [N = 100] simulation runs. In the process, it compiles statistics about the mean and standard deviation of average fitness values for the set of final solution populations generated during the 100 simulation runs. At conclusions, it prints these descriptive statistics to the terminal.
+
+###Small Population Size###
+
+Monte Carlo simulations take a long time to execute. As a result, only a small population based example is presented below. However, the benchmark code can be modifed to run this type of simulation with any desired number of samples and with a population of any size. 
+
+````
+$ go test -bench=.MonteCarloSmall
+
+...
+Sample Size (N) = 100
+Mean Population Aggregate Fitnesses | Minimum Fitness = 375.8316299999999 | 0.0
+Standard Deviation of Aggregate Fitnesses = 145.1107156924006
+Mean Runtime in Seconds = 4.0307659093499995
+Standard Deviationof Runtimes in Seconds = 0.736894917206145
+````
+
+###Comments###
+
+The Monte Carlo simulations benchmark suite is useful in helping to determine the distribution of the quality of output solutions that can be expected from certain combinations of problem specifications and evolutionary parameter settings. Due to its long runtime however, it is not advocated for use in most basic package testing scenarios.
 
 #Author#
 
