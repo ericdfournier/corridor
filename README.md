@@ -12,7 +12,7 @@ $ go get github.com/ericdfournier/corridor
 
 ##Description##
 
-The work contained in this library is based upon the MOGADOR algorithm that was first introduced by Zhang & Armstrong (2008) in: http://www.envplan.com/abstract.cgi?id=b32167 . It also contains additional modifications to the initialization routine introduced by Fournier (2014) in: http://epb.sagepub.com/content/early/2015/11/30/0265813515618562.abstract .
+The work contained in this library is based upon the MOGADOR algorithm that was first introduced by Zhang & Armstrong (2008) in: http://www.envplan.com/abstract.cgi?id=b32167 . It also contains additional modifications to the initialization routine introduced by Fournier (2015) in: http://epb.sagepub.com/content/early/2015/11/30/0265813515618562.abstract .
 
 ##Input Format##
 
