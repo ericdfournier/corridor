@@ -27,11 +27,11 @@ func BenchmarkSingleSmall(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := CsvToDomain("./samples/domain.csv")
+	sampleDomain := CsvToDomain("./problems/sample/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
+	sampleObjectives := CsvToMultiObjective("./problems/sample/cost1.csv", "./problems/sample/cost2.csv", "./problems/sample/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -69,11 +69,11 @@ func BenchmarkSingleMedium(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := CsvToDomain("./samples/domain.csv")
+	sampleDomain := CsvToDomain("./problems/sample/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
+	sampleObjectives := CsvToMultiObjective("./problems/sample/cost1.csv", "./problems/sample/cost2.csv", "./problems/sample/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -111,11 +111,11 @@ func BenchmarkSingleLarge(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := CsvToDomain("./samples/domain.csv")
+	sampleDomain := CsvToDomain("./problems/sample/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
+	sampleObjectives := CsvToMultiObjective("./problems/sample/cost1.csv", "./problems/sample/cost2.csv", "./problems/sample/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -154,11 +154,11 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := CsvToDomain("./samples/domain.csv")
+	sampleDomain := CsvToDomain("./problems/sample/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
+	sampleObjectives := CsvToMultiObjective("./problems/sample/cost1.csv", "./problems/sample/cost2.csv", "./problems/sample/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -225,11 +225,11 @@ func BenchmarkMonteCarloMedium(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := CsvToDomain("./samples/domain.csv")
+	sampleDomain := CsvToDomain("./problems/sample/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
+	sampleObjectives := CsvToMultiObjective("./problems/sample/cost1.csv", "./problems/sample/cost2.csv", "./problems/sample/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
@@ -296,11 +296,11 @@ func BenchmarkMonteCarloLarge(b *testing.B) {
 	)
 
 	// initialize domain
-	sampleDomain := CsvToDomain("./samples/domain.csv")
+	sampleDomain := CsvToDomain("./problems/sample/domain.csv")
 	sampleDomain.BndCnt = bandCount
 
 	// initialize objectives
-	sampleObjectives := CsvToMultiObjective("./samples/cost1.csv", "./samples/cost2.csv", "./samples/cost3.csv")
+	sampleObjectives := CsvToMultiObjective(".problems/sample/cost1.csv", ".problems/sample/cost2.csv", "./problems/sample/cost3.csv")
 
 	// initialize parameters
 	sampleParameters := NewSampleParameters(sampleDomain)
