@@ -1,3 +1,7 @@
 # MATLAB Scripts #
 ##################
 *.m
+
+# Visual Studio Code Configuration Settings #
+#############################################
+.vscode/
