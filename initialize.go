@@ -316,8 +316,10 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 			// return new population to channel
 			popChan <- newPop
 
-			// increment progress bar
+			// increment progress
 			fmt.Println("Evolution: ", i+1)
+			fmt.Printf("Gradient: %f \n", math.Log10(math.Abs(gradFit[i])))
+			fmt.Printf("Average Fitness: %f \n", newPop.AggregateMeanFitness)
 
 		} else if i >= 1 && i < (searchParameters.EvoSize-1) {
 
@@ -342,6 +344,8 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 
 				// increment progress bar
 				fmt.Println("Evolution: ", i+1)
+				fmt.Printf("Gradient: %f \n", math.Log10(math.Abs(gradFit[i])))
+				fmt.Printf("Average Fitness: %f \n", newPop.AggregateMeanFitness)
 
 			}
 
@@ -355,6 +359,8 @@ func NewEvolution(searchParameters *Parameters, searchDomain *Domain, searchObje
 
 			// print termination message
 			fmt.Println("Convergence Not Achieved, Maximum Number of Evolutions Reached...")
+			fmt.Printf("Gradient: %f \n", math.Log10(math.Abs(gradFit[i])))
+			fmt.Printf("Average Fitness: %f \n", newPop.AggregateMeanFitness)
 
 			// break loop
 			break
