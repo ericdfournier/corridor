@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gonum/stat"
 	"runtime"
+	"sort"
 	"testing"
 	"time"
 )
@@ -150,7 +151,7 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 		bandCount      int = 3
 		objectiveCount int = 3
 		populationSize int = 1000
-		sampleCount    int = 100
+		sampleCount    int = 3
 	)
 
 	// initialize domain
@@ -193,11 +194,17 @@ func BenchmarkMonteCarloSmall(b *testing.B) {
 
 	}
 
+	// sort aggregate mean fitnesses
+	sort.Float64s(aggMeanFitnesses)
+
 	// print sample size
 	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
-	fmt.Printf("Mean Population Aggregate Fitnesses | Minimum Fitness = %v \n | 0", stat.Mean(aggMeanFitnesses, nil))
+	fmt.Printf("Mean Population Aggregate Fitness = %v \n", stat.Mean(aggMeanFitnesses, nil))
+
+	// print minimum fitness
+	fmt.Printf("Minimum Aggregate Fitness = %v \n", aggMeanFitnesses[0])
 
 	// pritn standard deviation of aggregate fitness
 	fmt.Printf("Standard Deviation of Aggregate Fitnesses = %v \n", stat.StdDev(aggMeanFitnesses, nil))
@@ -264,11 +271,17 @@ func BenchmarkMonteCarloMedium(b *testing.B) {
 
 	}
 
+	// sort aggregate mean fitnesses
+	sort.Float64s(aggMeanFitnesses)
+
 	// print sample size
 	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
-	fmt.Printf("Mean Population Aggregate Fitnesses | Minimum Fitness = %v \n | 0", stat.Mean(aggMeanFitnesses, nil))
+	fmt.Printf("Mean Population Aggregate Fitnesses = %v \n", stat.Mean(aggMeanFitnesses, nil))
+
+	// print minimum fitness
+	fmt.Printf("Minimum Aggregate Fitness = %v \n", aggMeanFitnesses[0])
 
 	// pritn standard deviation of aggregate fitness
 	fmt.Printf("Standard Deviation of Aggregate Fitnesses = %v \n", stat.StdDev(aggMeanFitnesses, nil))
@@ -335,11 +348,17 @@ func BenchmarkMonteCarloLarge(b *testing.B) {
 
 	}
 
+	// sort aggregate mean fitnesses
+	sort.Float64s(aggMeanFitnesses)
+
 	// print sample size
 	fmt.Printf("Sample Size (N) = %v \n", sampleCount)
 
 	// print mean aggregate fitness
-	fmt.Printf("Mean Population Aggregate Fitnesses | Minimum Fitness = %v \n | 0", stat.Mean(aggMeanFitnesses, nil))
+	fmt.Printf("Mean Population Aggregate Fitness = %v \n", stat.Mean(aggMeanFitnesses, nil))
+
+	// print minimum fitness
+	fmt.Printf("Minimum Aggregate Fitness = %v \n", aggMeanFitnesses[0])
 
 	// pritn standard deviation of aggregate fitness
 	fmt.Printf("Standard Deviation of Aggregate Fitnesses = %v \n", stat.StdDev(aggMeanFitnesses, nil))
